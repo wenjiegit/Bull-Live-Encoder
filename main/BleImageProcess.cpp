@@ -1,0 +1,326 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) wenjie.zhao
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+#include "BleImageProcess.hpp"
+#include "ui_BleImageProcess.h"
+
+#include <QPainter>
+#include <QPen>
+#include <QEvent>
+#include <QResizeEvent>
+
+#include "BleLog.hpp"
+#include "MOption.h"
+#include "BleImageProcessThread.hpp"
+#include "BleUtil.hpp"
+
+BleImageProcess::BleImageProcess(QWidget *parent)
+    : QWidget(parent)
+    , ui(new Ui::BleImageProcess)
+    , m_activePair(NULL)
+    , m_startMove(false)
+    , m_startResize(false)
+    , m_resizeFromTopLeft(false)
+    , m_resizeFromBottomRight(false)
+    , m_processThread(NULL)
+{
+    ui->setupUi(this);
+
+    connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(onRefreshTimeout()));
+    m_refreshTimer.start(67);
+
+    setMouseTracking(true);
+    setFocusPolicy(Qt::ClickFocus);
+    setFixedSize(MOption::instance()->option("res", "encoder").toSize());
+}
+
+BleImageProcess::~BleImageProcess()
+{
+    for (int i = 0; i < m_sources.size(); ++i) {
+        SourcePair & pair = m_sources[i];
+        pair.source->stopCapture();
+    }
+
+    delete ui;
+}
+
+void BleImageProcess::setProcessThread(QThread *thread)
+{
+    m_processThread = thread;
+}
+
+void BleImageProcess::addCaptureSource(BleSourceAbstract *source, int x, int y, int w, int h)
+{
+    QRect rt = QRect(x, y, w, h);
+    SourcePair pair = {source, rt};
+    m_sources.append(pair);
+    m_activePair = &m_sources.front();
+
+    updateSources();
+    update();
+}
+
+void BleImageProcess::paintEvent(QPaintEvent *event)
+{
+    QPainter p(this);
+
+    // back ground
+    p.fillRect(rect(), QBrush(QColor(48, 48, 48)));
+    QPen pen(Qt::SolidLine);
+    pen.setWidth(2);
+    p.setPen(pen);
+    p.drawRect(rect());
+
+    // element draw
+    for (int i = 0; i < m_sources.size(); ++i) {
+        const SourcePair & pair = m_sources.at(i);
+        BleSourceAbstract *s = pair.source;
+
+        // TODO image data may be used by other thread
+        BleImage image = s->getImage();
+
+        if (image.dataSize <= 0) continue;
+
+        QImage qimage((uchar*)image.data, image.width, image.height, QImage::Format_RGB888);
+        p.drawImage(pair.rect, qimage);
+
+        pen.setColor(Qt::blue);
+        p.setPen(pen);
+        p.drawRect(pair.rect);
+    }
+
+    if (m_activePair && m_activePair->rect.isValid()) {
+        pen.setColor(Qt::white);
+        pen.setWidth(2);
+        pen.setStyle(Qt::DotLine);
+        p.setPen(pen);
+        p.drawRect(m_activePair->rect);
+
+        QRect topLeftRect(m_activePair->rect.x(), m_activePair->rect.y(), 8, 8);
+        p.fillRect(topLeftRect, QBrush(Qt::red));
+
+        QRect bottomRightRect(m_activePair->rect.bottomRight().x(), m_activePair->rect.bottomRight().y(), -8, -8);
+        p.fillRect(bottomRightRect, QBrush(Qt::red));
+    }
+}
+
+void BleImageProcess::mouseMoveEvent(QMouseEvent *event)
+{
+    if (!m_activePair) return;
+
+    QRect topLeftRect(m_activePair->rect.x(), m_activePair->rect.y(), 8, 8);
+    QRect bottomRightRect(m_activePair->rect.bottomRight().x() - 8, m_activePair->rect.bottomRight().y() - 8, 8, 8);
+
+    if (topLeftRect.contains(event->pos())) {
+        setCursor(Qt::SizeFDiagCursor);
+    } else if (bottomRightRect.contains(event->pos())) {
+        setCursor(Qt::SizeFDiagCursor);
+    } else if (m_activePair->rect.contains(event->pos())) {
+        setCursor(Qt::SizeAllCursor);
+    } else {
+        setCursor(Qt::ArrowCursor);
+    }
+
+    if (m_startResize) {
+        if (m_resizeFromTopLeft) {
+            m_activePair->rect.setTopLeft(event->pos());
+        }
+
+        if (m_resizeFromBottomRight){
+            m_activePair->rect.setBottomRight(event->pos());
+        }
+    }
+
+    if (m_startMove) {
+        QPoint diff = QPoint(event->pos().x() - m_lastMovePoint.x(), event->pos().y() - m_lastMovePoint.y());
+
+        int w = m_activePair->rect.width();
+        int h = m_activePair->rect.height();
+        m_activePair->rect.setTopLeft(QPoint(m_activePair->rect.x() + diff.x(), m_activePair->rect.y() + diff.y()));
+        m_activePair->rect.setWidth(w);
+        m_activePair->rect.setHeight(h);
+    }
+
+    if (m_startResize || m_startMove) {
+        updateSources();
+    }
+
+    update();
+    m_lastMovePoint = event->pos();
+}
+
+void BleImageProcess::mousePressEvent(QMouseEvent *e)
+{
+    int findIndex = -1;
+
+    for (int i = 0; i < m_sources.size(); ++i) {
+       SourcePair & pair = m_sources[i];
+        if (pair.rect.contains(e->pos())) {
+            findIndex = i;
+            break;
+        }
+    }
+
+    // if clicked blank area, set m_activePair to NULL.
+    if (findIndex == -1) {
+        m_activePair = NULL;
+        return;
+    }
+
+    // if clicked non blank area, set m_activePair to m_sources[findIndex].
+    if (&m_sources[findIndex] != m_activePair) {
+        m_activePair = &m_sources[findIndex];
+    }
+
+    if (!m_activePair) return;
+
+    QRect topLeftRect(m_activePair->rect.x(), m_activePair->rect.y(), 8, 8);
+    QRect bottomRightRect(m_activePair->rect.bottomRight().x(), m_activePair->rect.bottomRight().y(), -8, -8);
+
+    if (m_activePair->rect.contains(e->pos())) {
+        if (topLeftRect.contains(e->pos()))
+        {
+            m_startResize = true;
+            m_resizeFromTopLeft = true;
+        } else if (bottomRightRect.contains(e->pos())) {
+            m_startResize = true;
+            m_resizeFromBottomRight = true;
+        } else {
+            m_startMove = true;
+        }
+
+    } else {
+        m_startMove = false;
+    }
+
+    m_lastMovePoint = e->pos();
+}
+
+void BleImageProcess::mouseReleaseEvent(QMouseEvent *e)
+{
+    m_startMove = false;
+    m_startResize = false;
+    m_resizeFromTopLeft = false;
+    m_resizeFromBottomRight = false;
+}
+
+void BleImageProcess::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    if (!m_activePair) return;
+
+    m_activePair->rect = rect();
+
+    updateSources();
+    update();
+}
+
+void BleImageProcess::keyPressEvent(QKeyEvent *e)
+{
+    if (!m_activePair) return;
+
+    if (e->key() == Qt::Key_Delete) {
+        m_activePair->source->stopCapture();
+
+        if (m_sources.contains(*m_activePair)) {
+            m_sources.removeAll(*m_activePair);
+            m_activePair = NULL;
+        }
+
+        updateSources();
+        update();
+    }
+
+    QWidget::keyPressEvent(e);
+}
+
+void BleImageProcess::onIncBtnClicked()
+{/*
+    if (m_activePair.rect.isValid()) {
+        int w =  m_activePair.rect.width();
+        int h = m_activePair.rect.height();
+        m_activePair.rect.setWidth(w + 1);
+        m_activePair.rect.setHeight(h + 1);
+    }
+    update();*/
+}
+
+void BleImageProcess::onDecBtnClicked()
+{/*
+    if (m_activePair.rect.isValid()) {
+        int w =  m_activePair.rect.width();
+        int h = m_activePair.rect.height();
+        m_activePair.rect.setWidth(w - 1);
+        m_activePair.rect.setHeight(h - 1);
+    }
+    update();*/
+}
+
+void BleImageProcess::onUpBtnClicked()
+{/*
+    if (m_activePair.rect.isValid()) {
+        int x =  m_activePair.rect.x();
+        int y = m_activePair.rect.y();
+        m_activePair.rect.moveTop(y - 1);
+        update();
+    }*/
+}
+
+void BleImageProcess::onDownBtnClicked()
+{/*
+    if (m_activePair.rect.isValid()) {
+        int y = m_activePair.rect.y();
+        m_activePair.rect.moveBottom(y + m_activePair.rect.height() + 1);
+        update();
+    }*/
+}
+
+void BleImageProcess::onLeftBtnClicked()
+{/*
+    if (m_activePair.rect.isValid()) {
+        int x =  m_activePair.rect.x();
+        m_activePair.rect.moveLeft(x - 1);
+        update();
+    }*/
+}
+
+void BleImageProcess::onRightBtnClicked()
+{/*
+    if (m_activePair.rect.isValid()) {
+        int x =  m_activePair.rect.x();
+        m_activePair.rect.moveRight(x + m_activePair.rect.width() + 1);
+        update();
+    }*/
+}
+
+void BleImageProcess::onRefreshTimeout()
+{
+    update();
+}
+
+void BleImageProcess::updateSources()
+{
+    BleImageProcessThread *ipt = dynamic_cast<BleImageProcessThread*>(m_processThread);
+    if (ipt) {
+        ipt->updateSources(m_sources);
+    }
+}

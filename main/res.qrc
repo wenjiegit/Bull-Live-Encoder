@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/">
+        <file>stylesheet/image/checked.png</file>
+        <file>stylesheet/image/unchecked.png</file>
+        <file>image/closeBtn.png</file>
+        <file>stylesheet/image/down_arrow.png</file>
+        <file>stylesheet/image/up_arrow.png</file>
+        <file>image/comboboxdropdown.png</file>
+        <file>image/bg.png</file>
+        <file>image/btn.png</file>
+        <file>image/main_close.png</file>
+        <file>stylesheet/image/checkbox_checked.png</file>
+        <file>stylesheet/image/checkbox_unchecked.png</file>
+        <file>stylesheet/image/checkbox_unchecked_hover.png</file>
+        <file>image/spin_down.png</file>
+        <file>image/spin_up.png</file>
+        <file>image/scroll_down_arrow.png</file>
+        <file>image/scroll_up_arrow.png</file>
+        <file>image/scroll_left_arrow.png</file>
+        <file>image/scroll_right_arrow.png</file>
+        <file>image/add_camera.png</file>
+        <file>image/add_grab.png</file>
+        <file>image/add_pic.png</file>
+        <file>image/logo.png</file>
+        <file>image/ble_live.png</file>
+        <file>image/ble_setting.png</file>
+        <file>image/ble_start.png</file>
+        <file>image/ble_stop.png</file>
+    </qresource>
+</RCC>

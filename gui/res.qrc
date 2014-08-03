@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/critical.png</file>
+        <file>images/information.png</file>
+        <file>images/question.png</file>
+        <file>images/warning.png</file>
+        <file>images/piebacklinear.png</file>
+        <file>images/btn_close_down.png</file>
+        <file>images/btn_close_highlight.png</file>
+        <file>images/btn_close_normal.png</file>
+        <file>images/btn_max_down.png</file>
+        <file>images/btn_max_highlight.png</file>
+        <file>images/btn_max_normal.png</file>
+        <file>images/MsgboxBtnClose.png</file>
+        <file>images/skinHistoryImage.png</file>
+        <file>images/close.png</file>
+        <file>images/logo.png</file>
+        <file>images/more.png</file>
+        <file>images/titleClose.png</file>
+        <file>images/button.png</file>
+        <file>images/add.png</file>
+        <file>images/pushButton.png</file>
+        <file>images/wait.gif</file>
+    </qresource>
+</RCC>
