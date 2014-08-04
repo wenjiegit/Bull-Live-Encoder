@@ -1,0 +1,11 @@
+QMenu::item:selected 
+{
+	/* when user selects item using mouse or keyboard */
+	background-color : rgba(menu_background-color_red, menu_background-color_green, menu_background-color_blue, menu_background-color_alpha);
+}
+
+QMenu
+{
+	background-color: white; /* sets background of the menu */
+    	border: 1px solid grey;
+}

@@ -1,0 +1,3 @@
+QTableView {
+     selection-background-color: rgba(QTableView_background_color_red, QTableView_background_color_green, QTableView_background_color_blue, QTableView_background_color_alpha);
+ }

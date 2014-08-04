@@ -3,8 +3,7 @@
 # Project created by QtCreator 2012-09-18T15:16:30
 #
 #-------------------------------------------------
-PROJECT_BINDIR = $$PWD/bin
-PROJECT_LIBDIR = $$PWD/lib
+BLE_BINDIR = $$PWD/bin
 
 QT       += core gui winextras multimedia multimediawidgets
 
@@ -24,8 +23,10 @@ LIBS += -L$$PWD/3rdparty/librtmp -lrtmp \
         -L$$PWD/3rdparty/libopencv/lib/ -lopencv_core248 -lopencv_highgui248 -lopencv_imgproc248
 win32:LIBS +=  -lws2_32 -lgdi32 -lwinmm -lz
 
-DESTDIR = $$PROJECT_BINDIR
-unix:QMAKE_RPATHDIR+=$$PROJECT_LIBDIR
+DESTDIR = $$BLE_BINDIR
+
+# copy files to rundir
+win32:system($$PWD/script/copy_file.bat)
 
 SOURCES += \
     src/main.cpp \

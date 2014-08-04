@@ -1,0 +1,56 @@
+QScrollBar:vertical
+{
+	width:12px;
+	border:1px solid grey;
+	border-color:grey;
+	margin:0px,0px,0px,0px;
+	padding-top:10px;
+	padding-bottom:10px;
+}
+QScrollBar::handle:vertical
+{
+	width:16px;
+	background:rgba(vertical_handle_1, vertical_handle_2, vertical_handle_3, vertical_handle_4);
+	border:1px solid rgba(200,200,200, 255);;
+	min-height:20;
+	border-radius:4px;
+}
+
+QScrollBar::handle:vertical::disabled
+{
+	background:#232329;
+}
+QScrollBar::handle:vertical:hover
+{
+	background:rgba(vertical_handle_hover_1, vertical_handle_hover_2, vertical_handle_hover_3, vertical_handle_hover_4);
+	border:1px solid rgba(190,190,190, 255);
+}
+QScrollBar::add-line:vertical
+{
+	height:11px;
+	background-color: rgba(vertical_add-line_1, vertical_add-line_2, vertical_add-line_3, vertical_add-line_4);
+	subcontrol-position:bottom;
+}
+QScrollBar::sub-line:vertical
+{
+	height:11px;
+	 background-color: rgba(vertical_sub-line_1, vertical_sub-line_2, vertical_sub-line_3, vertical_sub-line_4);
+	subcontrol-position:top;
+}
+QScrollBar::add-page:vertical
+{
+	background-color: rgba(255, 255, 255, 120);
+}
+
+QScrollBar::sub-page:vertical
+{
+	background-color: rgba(255, 255, 255, 50);
+}
+
+QScrollBar::up-arrow:vertical{
+	image : url(:/image/scroll_up_arrow.png);
+}
+
+QScrollBar::down-arrow:vertical {
+	image : url(:/image/scroll_down_arrow.png);
+}

@@ -1,0 +1,66 @@
+QScrollBar:horizontal
+{
+	height:12px;
+	border:1px solid grey;
+	border-color:grey;
+	margin:0px,0px,0px,0px;
+	padding-left:16px;
+	padding-right:10px;
+}
+QScrollBar::handle:horizontal
+{
+	height:16px;
+	min-width:20;
+	background:rgba(horizontal_handle_1, horizontal_handle_2, horizontal_handle_3, horizontal_handle_4);
+	border:1px solid rgba(200,200,200, 255);;
+	border-radius:4px;
+}
+QScrollBar::handle:horizontal::disabled
+{
+	background:#232329;
+}
+QScrollBar::handle:horizontal:hover
+{
+	background:rgba(horizontal_handle_hover_1, horizontal_handle_hover_2, horizontal_handle_hover_3, horizontal_handle_hover_4);
+	border:1px solid rgba(190,190,190, 255);
+}
+QScrollBar::add-line:horizontal
+{
+	width:12px;
+	background-color: rgba(horizontal_add-line_1, horizontal_add-line_2, horizontal_add-line_3, horizontal_add-line_4);
+	subcontrol-position:right;
+}
+QScrollBar::sub-line:horizontal
+{
+	width:17px;
+	background-color: rgba(horizontal_sub-line_1, horizontal_sub-line_2, horizontal_sub-line_3, horizontal_sub-line_4);
+	subcontrol-position:left;
+}
+QScrollBar::add-page:horizontal
+{
+	background-color: rgba(220, 220, 220, 120);
+}
+
+QScrollBar::sub-page:horizontal
+{
+	background-color: rgba(220, 220, 220, 120);
+}
+QScrollBar::up-arrow:horizontal
+{
+	border-width:1px;
+	max-height:16px;
+	min-width:17px;
+}
+QScrollBar::down-arrow:horizontal
+{
+	border-style:outset;
+	border-width:1px;
+}
+
+QScrollBar::left-arrow:horizontal{
+	image : url(:/image/scroll_left_arrow.png);
+}
+
+QScrollBar::right-arrow:horizontal {
+	image : url(:/image/scroll_right_arrow.png);
+}
