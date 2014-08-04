@@ -21,38 +21,39 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MCustomDialog_H
-#define MCustomDialog_H
+#ifndef QjtCustomWidget_H
+#define QjtCustomWidget_H
 
 #include <QDialog>
 #include "MThemeWidgetBase.h"
-#include "gui_global.h"
 
 class TitleWidget;
 class QVBoxLayout;
 class NcFramelessHelper;
 
-class GUISHARED_EXPORT MCustomDialog : public QDialog, public ThemedWidgetBase
+class QjtCustomWidget : public QDialog, public ThemedWidgetBase
 {
     Q_OBJECT
 public:
-    explicit MCustomDialog(QWidget *parent = 0);
-    ~MCustomDialog();
+    explicit QjtCustomWidget(QWidget *parent = 0);
+    virtual ~QjtCustomWidget();
 
     void addWidget(QWidget *widget);
     void paintEvent(QPaintEvent *);
     void setTitle(const QString &title);
     void setMovable(bool moveble);
     void setResizable(bool resizable);
-    void setPaintHeight(int linearHeight, int statusHeight);
+    void setPaintHeight(int titleHeight, int linearHeight, int statusHeight);
     
 private:
     TitleWidget *titleWidget;
     QVBoxLayout *vBoxLayout;
     NcFramelessHelper *framelessHelper;
+
+signals:
     
 public slots:
     void onClose();
 };
 
-#endif // MCustomDialog_H
+#endif // QjtCustomWidget_H

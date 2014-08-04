@@ -21,40 +21,45 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef QjtCustomWidget_H
-#define QjtCustomWidget_H
+#ifndef QJTTABBAR_H
+#define QJTTABBAR_H
 
-#include <QDialog>
-#include "MThemeWidgetBase.h"
-#include "gui_global.h"
+#include <QWidget>
 
-class TitleWidget;
-class QVBoxLayout;
-class NcFramelessHelper;
+class QPainter;
+class QMouseEvent;
 
-class GUISHARED_EXPORT QjtCustomWidget : public QDialog, public ThemedWidgetBase
+class QjtTabBar : public QWidget
 {
     Q_OBJECT
-public:
-    explicit QjtCustomWidget(QWidget *parent = 0);
-    virtual ~QjtCustomWidget();
-
-    void addWidget(QWidget *widget);
-    void paintEvent(QPaintEvent *);
-    void setTitle(const QString &title);
-    void setMovable(bool moveble);
-    void setResizable(bool resizable);
-    void setPaintHeight(int titleHeight, int linearHeight, int statusHeight);
     
+public:
+    QjtTabBar(QWidget *parent = 0);
+    ~QjtTabBar();
+    void addItem(const QString &text);
+    void clearItems();
+
+protected:
+    void paintEvent(QPaintEvent *);
+    void mousePressEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
+    void leaveEvent(QEvent *);
+    int mouseRange(QMouseEvent *,int);
+    void drawColor(QPainter *painter,const QRect &rect,int type);
+
 private:
-    TitleWidget *titleWidget;
-    QVBoxLayout *vBoxLayout;
-    NcFramelessHelper *framelessHelper;
+    int m_winHeight;
+    int m_winWidth;
+    int m_rightLeftDistance;
+    int m_topDownDistance;
+    int m_selectItemNum;
+    int m_moveItemNum;
+
+    QStringList m_texts;
+    QList<QRegion> m_Regions;
 
 signals:
-    
-public slots:
-    void onClose();
+    void currentChanged(int);
 };
 
-#endif // QjtCustomWidget_H
+#endif // QJTTABBAR_H

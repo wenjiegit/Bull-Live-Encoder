@@ -21,13 +21,37 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef MCustomDialog_H
+#define MCustomDialog_H
 
-#include "gui_global.h"
-#include <QPixmap>
+#include <QDialog>
+#include "MThemeWidgetBase.h"
 
-QPixmap GUISHARED_EXPORT setAlphaPixmap(const QImage& image, int alpha);
-QPixmap GUISHARED_EXPORT setAlphaPixmap(const QPixmap& image, int alpha);
+class TitleWidget;
+class QVBoxLayout;
+class NcFramelessHelper;
 
-#endif // COMMON_H
+class MCustomDialog : public QDialog, public ThemedWidgetBase
+{
+    Q_OBJECT
+public:
+    explicit MCustomDialog(QWidget *parent = 0);
+    ~MCustomDialog();
+
+    void addWidget(QWidget *widget);
+    void paintEvent(QPaintEvent *);
+    void setTitle(const QString &title);
+    void setMovable(bool moveble);
+    void setResizable(bool resizable);
+    void setPaintHeight(int linearHeight, int statusHeight);
+    
+private:
+    TitleWidget *titleWidget;
+    QVBoxLayout *vBoxLayout;
+    NcFramelessHelper *framelessHelper;
+    
+public slots:
+    void onClose();
+};
+
+#endif // MCustomDialog_H

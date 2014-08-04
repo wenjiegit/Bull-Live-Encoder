@@ -25,7 +25,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define RECSKINDIALOG_H
 
 #include <QDialog>
-#include "gui_global.h"
 
 class QPainter;
 class QKSkinSimulationWidget;
@@ -37,7 +36,7 @@ namespace Ui {
 class RecSkinDialog;
 }
 
-class GUISHARED_EXPORT RecSkinDialog : public QDialog
+class RecSkinDialog : public QDialog
 {
     Q_OBJECT
     
@@ -67,7 +66,7 @@ signals:
 };
 
 
-class GUISHARED_EXPORT QKSkinSimulationWidget : public QWidget
+class QKSkinSimulationWidget : public QWidget
 {
     Q_OBJECT
 

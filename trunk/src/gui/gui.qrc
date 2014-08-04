@@ -20,6 +20,5 @@
         <file>images/button.png</file>
         <file>images/add.png</file>
         <file>images/pushButton.png</file>
-        <file>images/wait.gif</file>
     </qresource>
 </RCC>

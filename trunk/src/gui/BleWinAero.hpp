@@ -27,10 +27,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QColor>
 #include <QWidget>
 
-#include "gui_global.h"
-
 class WindowNotifier;
-class GUISHARED_EXPORT BleWin
+class BleWin
 {
 public:
     static bool enableAeroWindow(QWidget *widget, bool enable = true);

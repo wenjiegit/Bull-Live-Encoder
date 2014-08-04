@@ -25,11 +25,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define QJTMESSAGEBOX_H
 
 #include "MCustomDialog.h"
-#include "gui_global.h"
 
 #include <QMessageBox>
 
-class GUISHARED_EXPORT QjtMessageBox : public MCustomDialog
+class QjtMessageBox : public MCustomDialog
 {
     Q_OBJECT
 public:

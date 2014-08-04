@@ -21,15 +21,33 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef GUI_GLOBAL_H
-#define GUI_GLOBAL_H
+#ifndef MThemeAdaptor_H
+#define MThemeAdaptor_H
 
-#include <QtCore/qglobal.h>
+#include <QSettings>
+#include <QColor>
 
-#if defined(GUILIB_LIBRARY)
-#  define GUISHARED_EXPORT Q_DECL_EXPORT
-#else
-#  define GUISHARED_EXPORT Q_DECL_IMPORT
-#endif
+class MThemeAdaptor {
+public:
+    void addColor(const QString& name, const QColor &c);
+    QColor color(const QString& name);
 
-#endif // GUI_GLOBAL_H
+    //void addPixmap(const QString &);
+    void addPixmap(const QString& name, const QString &p);
+    QPixmap pixmap(const QString& name);
+
+    QString currentSkinConfig();
+
+    static MThemeAdaptor *instance();
+
+private:
+    MThemeAdaptor();
+
+private:
+    QString m_currentSkinConfigName;
+    QString m_currentSkinConfigPath;
+    QSettings* m_settings;
+    static MThemeAdaptor *m_this;
+};
+
+#endif // MThemeAdaptor_H

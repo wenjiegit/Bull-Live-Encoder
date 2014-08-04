@@ -27,7 +27,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QWidget>
 #include <QtGui>
 
-
 class QColorLuminancePicker;
 class QColorPickerWidget;
 

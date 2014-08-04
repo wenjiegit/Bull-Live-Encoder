@@ -25,11 +25,9 @@
 
 #include <QObject>
 
-#include "gui_global.h"
-
 class NcFramelessHelperImpl;
 
-class GUISHARED_EXPORT NcFramelessHelper : public QObject
+class NcFramelessHelper : public QObject
 {
 
 public:

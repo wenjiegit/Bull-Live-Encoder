@@ -21,46 +21,54 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef QJTTABBAR_H
-#define QJTTABBAR_H
+#ifndef RECCHOICESKINWIDGET_H
+#define RECCHOICESKINWIDGET_H
 
 #include <QWidget>
-#include "gui_global.h"
 
-class QPainter;
-class QMouseEvent;
+#include "mutility.h"
+#include "QjtCustomWidget.h"
 
-class GUISHARED_EXPORT QjtTabBar : public QWidget
+class RecSkinWidget;
+class RecSkinColorPalette;
+class RecSkinDialog;
+class RecSkinPickerWidget;
+
+namespace Ui {
+class MSkinChanger;
+}
+
+class MSkinChanger : public QWidget
 {
     Q_OBJECT
     
 public:
-    QjtTabBar(QWidget *parent = 0);
-    ~QjtTabBar();
-    void addItem(const QString &text);
-    void clearItems();
+    explicit MSkinChanger(QWidget *parent = 0);
+    ~MSkinChanger();
+    
+private slots:
+    void onDefinePixmap();
 
-protected:
-    void paintEvent(QPaintEvent *);
-    void mousePressEvent(QMouseEvent *);
-    void mouseMoveEvent(QMouseEvent *);
-    void leaveEvent(QEvent *);
-    int mouseRange(QMouseEvent *,int);
-    void drawColor(QPainter *painter,const QRect &rect,int type);
+    void onAeroTransparentValueChanged(int v);
+    void onWidgetTransparentValueChanged(int v);
+    void onCurrentPixmap(const QString &fileName,const QPixmap &pix,const QColor &averageColor);
 
 private:
-    int m_winHeight;
-    int m_winWidth;
-    int m_rightLeftDistance;
-    int m_topDownDistance;
-    int m_selectItemNum;
-    int m_moveItemNum;
-
-    QStringList m_texts;
-    QList<QRegion> m_Regions;
+    Ui::MSkinChanger *ui;
+    RecSkinWidget *SkinWidget;
+    RecSkinPickerWidget *SkinPickerWidget;
+    RecSkinDialog *SkinDialog;
 
 signals:
-    void currentChanged(int);
+    void currentColor(const QColor &color);
+    void currentPixmap(const QString &fileName,const QPixmap &pix,const QColor &averageColor);
 };
 
-#endif // QJTTABBAR_H
+class MSkinChangerWidget : public QjtCustomWidget
+{
+    Q_OBJECT
+public:
+    explicit MSkinChangerWidget(QWidget *parent = 0);
+};
+
+#endif // RECCHOICESKINWIDGET_H

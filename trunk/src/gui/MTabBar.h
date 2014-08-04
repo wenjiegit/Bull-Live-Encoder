@@ -27,7 +27,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QWidget>
 #include <QPushButton>
 #include <QTimeLine>
-#include "gui_global.h"
 
 class QPixmap;
 class QMouseEvent;
@@ -41,7 +40,7 @@ namespace Ui {
 class MTabBar;
 }
 
-class GUISHARED_EXPORT MTabBar : public QWidget
+class MTabBar : public QWidget
 {
     Q_OBJECT
     
@@ -84,7 +83,7 @@ signals:
 
 /****************************MTabBarPushButton***************************/
 
-class GUISHARED_EXPORT MTabBarPushButton : public QPushButton
+class MTabBarPushButton : public QPushButton
 {
     Q_OBJECT
 public:

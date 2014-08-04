@@ -29,9 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QTimer>
 #include <QTimeLine>
 
-#include "gui_global.h"
-
-class GUISHARED_EXPORT MToolButton : public QToolButton
+class MToolButton : public QToolButton
 {
   Q_OBJECT
 public:

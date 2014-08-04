@@ -30,8 +30,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QMutex>
 #include <QHash>
 
-#include "gui_global.h"
-
 enum interfaceOptions
 {
     OPTION_WindowBGPixmap,
@@ -64,7 +62,7 @@ enum interfaceOptions_Group
     OPTIONS_GROUP_NUM
 };
 
-class GUISHARED_EXPORT MOption : public QObject
+class MOption : public QObject
 {
     Q_OBJECT
 protected:

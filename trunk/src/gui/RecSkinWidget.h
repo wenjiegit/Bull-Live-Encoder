@@ -26,7 +26,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <QWidget>
 #include <QPushButton>
-#include "gui_global.h"
 
 class QLabel;
 class QPainter;
@@ -38,7 +37,7 @@ namespace Ui {
 class RecSkinWidget;
 }
 
-class GUISHARED_EXPORT RecSkinWidget : public QWidget
+class RecSkinWidget : public QWidget
 {
     Q_OBJECT
     
@@ -69,7 +68,7 @@ signals:
 };
 
 /*******************************RecSkinPushButton**************************************/
-class GUISHARED_EXPORT RecSkinPushButton : public QPushButton
+class RecSkinPushButton : public QPushButton
 {
     Q_OBJECT
 
@@ -117,7 +116,7 @@ private:
     bool isEnter;
     bool isSkin;
     bool isColorTrue;
-    bool canDelete; // �������Ƿ�����ɾ��
+    bool canDelete;
     int m_num;
     QString fileName;
     QPushButton *m_closeButton;
@@ -132,7 +131,7 @@ signals:
     void clickNum(int num);
 };
 
-class GUISHARED_EXPORT RecSkinColorPalette : public QWidget
+class RecSkinColorPalette : public QWidget
 {
     Q_OBJECT
 public:
@@ -160,7 +159,7 @@ signals:
     void currentColor(const QColor &color);
 };
 
-class GUISHARED_EXPORT RecSkinColorBrightnessRange :public QWidget
+class RecSkinColorBrightnessRange :public QWidget
 {
     Q_OBJECT
 
@@ -186,4 +185,5 @@ signals:
     void sigMousePressSize(int);
     void currentColor(const QColor &color);
 };
+
 #endif // RECSKINWIDGET_H

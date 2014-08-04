@@ -24,14 +24,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef MTHEMEWIDGETBASE_H
 #define MTHEMEWIDGETBASE_H
 
-#include "gui_global.h"
-
 #include <QPixmap>
 #include <QColor>
 
 class QWidget;
 
-class GUISHARED_EXPORT ThemedWidgetBase
+class ThemedWidgetBase
 {
 public:
     ThemedWidgetBase(QWidget* parent);
@@ -53,7 +51,7 @@ private:
     int m_widgetTransparent;
 };
 
-class GUISHARED_EXPORT WidgetColorAdapter
+class WidgetColorAdapter
 {
 public:
     WidgetColorAdapter();
@@ -64,17 +62,17 @@ public:
 
 extern "C"
 {
-GUISHARED_EXPORT void regThemedWidget(ThemedWidgetBase *w);
-GUISHARED_EXPORT void removeThemedWidget(ThemedWidgetBase *w);
-GUISHARED_EXPORT void updateThemedWidgets();
+void regThemedWidget(ThemedWidgetBase *w);
+void removeThemedWidget(ThemedWidgetBase *w);
+void updateThemedWidgets();
 
-GUISHARED_EXPORT void updateTheme();
+void updateTheme();
 
-GUISHARED_EXPORT void regColorAdapterWidget(WidgetColorAdapter *w);
-GUISHARED_EXPORT void removeColorAdapterWidget(WidgetColorAdapter *w);
+void regColorAdapterWidget(WidgetColorAdapter *w);
+void removeColorAdapterWidget(WidgetColorAdapter *w);
 
 // find the suitable font color, adapt to current theme.
-GUISHARED_EXPORT QColor adapterColor();
+QColor adapterColor();
 }
 
 #endif // MTHEMEWIDGETBASE_H

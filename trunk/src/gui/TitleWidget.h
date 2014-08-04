@@ -21,54 +21,63 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef RECCHOICESKINWIDGET_H
-#define RECCHOICESKINWIDGET_H
+#ifndef TITLEWIDGET_H
+#define TITLEWIDGET_H
 
 #include <QWidget>
-#include "gui_global.h"
-#include "mutility.h"
-#include "QjtCustomWidget.h"
-
-class RecSkinWidget;
-class RecSkinColorPalette;
-class RecSkinDialog;
-class RecSkinPickerWidget;
+#include <QAbstractButton>
+#include "MThemeWidgetBase.h"
 
 namespace Ui {
-class MSkinChanger;
+    class TitleWidget;
 }
 
-class GUISHARED_EXPORT MSkinChanger : public QWidget
+class TitleWidget : public QWidget, public WidgetColorAdapter
 {
     Q_OBJECT
-    
-public:
-    explicit MSkinChanger(QWidget *parent = 0);
-    ~MSkinChanger();
-    
-private slots:
-    void onDefinePixmap();
 
-    void onAeroTransparentValueChanged(int v);
-    void onWidgetTransparentValueChanged(int v);
-    void onCurrentPixmap(const QString &fileName,const QPixmap &pix,const QColor &averageColor);
+public:
+    explicit TitleWidget(QWidget *parent = 0);
+    ~TitleWidget();
+
+    enum{
+        Min_HINT    = 0x00000001,
+        SKIN_HINT   = 0x00000002,
+        MENU_HINT   = 0x00000004,
+        CLOSE_HINT  = 0x00000008,
+        HELP_HINT   = 0x00000010,
+        MAX_HINT    = 0x00000020,
+        USER_HINT1  = 0x00000080,
+        USER_HINT2  = 0x00000100,
+        USER_HINT3  = 0x00000200
+    };
+
+    void setHints(int hints);
+    int hints();
+
+    void addWidget(QWidget *w);
+    void addButton(QAbstractButton* btn);
+
+    QAbstractButton* button(int buttonRole);
+
+    void setTitle(const QString &title);
+    QString title();
+
+protected:
+    void mouseDoubleClickEvent(QMouseEvent *);
+    void paintEvent(QPaintEvent *e);
+    void applyNewAdapter();
 
 private:
-    Ui::MSkinChanger *ui;
-    RecSkinWidget *SkinWidget;
-    RecSkinPickerWidget *SkinPickerWidget;
-    RecSkinDialog *SkinDialog;
+    Ui::TitleWidget *ui;
+    QList<QAbstractButton*> buttons;
+    QAbstractButton *user1Btn;
+    QAbstractButton *user2Btn;
+    QAbstractButton *user3Btn;
+    int hint;
 
 signals:
-    void currentColor(const QColor &color);
-    void currentPixmap(const QString &fileName,const QPixmap &pix,const QColor &averageColor);
+    void doubleClicked();
 };
 
-class GUISHARED_EXPORT MSkinChangerWidget : public QjtCustomWidget
-{
-    Q_OBJECT
-public:
-    explicit MSkinChangerWidget(QWidget *parent = 0);
-};
-
-#endif // RECCHOICESKINWIDGET_H
+#endif // TITLEWIDGET_H
