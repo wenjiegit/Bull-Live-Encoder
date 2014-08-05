@@ -36,10 +36,10 @@ static QList<ThemedWidgetBase*> g_themedWidgets;
 static QList<WidgetColorAdapter*> g_colorAdapter;
 
 ThemedWidgetBase::ThemedWidgetBase(QWidget *parent)
-    : m_themedWidget(parent)
-    , m_titleHeight(0)
+    : m_titleHeight(0)
     , m_linearHeight(0)
     , m_statusHeight(0)
+    , m_themedWidget(parent)
 {
     applyNewTheme();
     regThemedWidget(this);
@@ -155,7 +155,7 @@ void updateTheme()
                                              OPTION_GROUP_Theme).value<QColor>();
 
 
-    int widgetTransparent = MOption::instance()->option(OPTION_WidgetTransparent, OPTION_GROUP_Theme).toInt();
+    //int widgetTransparent = MOption::instance()->option(OPTION_WidgetTransparent, OPTION_GROUP_Theme).toInt();
     int aeroTransparent = MOption::instance()->option(OPTION_AeroTransparent, OPTION_GROUP_Theme).toInt();
     QString sheetPath = QApplication::applicationDirPath() + "/stylesheet";
     // 读取所有的style sheet
@@ -178,13 +178,11 @@ void updateTheme()
         }
     }
 
-    // 替换menu的颜色
     sheetStr.replace("menu_background-color_red",   QString::number(c.red()));
     sheetStr.replace("menu_background-color_green", QString::number(c.green()));
     sheetStr.replace("menu_background-color_blue",  QString::number(c.blue()));
     sheetStr.replace("menu_background-color_alpha", QString::number(aeroTransparent));
 
-    // 替换水平滚动条颜色
     sheetStr.replace("horizontal_handle_1", QString::number(c.red()));
     sheetStr.replace("horizontal_handle_2", QString::number(c.green()));
     sheetStr.replace("horizontal_handle_3", QString::number(c.blue()));
@@ -205,7 +203,6 @@ void updateTheme()
     sheetStr.replace("horizontal_add-line_3", QString::number(c.blue()));
     sheetStr.replace("horizontal_add-line_4", QString::number(140));
 
-    // 替换垂直滚动条颜色
     sheetStr.replace("vertical_handle_1", QString::number(c.red()));
     sheetStr.replace("vertical_handle_2", QString::number(c.green()));
     sheetStr.replace("vertical_handle_3", QString::number(c.blue()));
@@ -226,14 +223,13 @@ void updateTheme()
     sheetStr.replace("vertical_add-line_3", QString::number(c.blue()));
     sheetStr.replace("vertical_add-line_4", QString::number(140));
 
-    // 替换tableview的颜色
     sheetStr.replace("QTableView_background_color_red",     QString::number(c.red()));
     sheetStr.replace("QTableView_background_color_green",   QString::number(c.green()));
     sheetStr.replace("QTableView_background_color_blue",    QString::number(c.blue()));
     sheetStr.replace("QTableView_background_color_alpha",   QString::number(aeroTransparent));
 
     qApp->setStyleSheet(sheetStr);
-    // 更新主题颜色
+
     foreach (WidgetColorAdapter* w, g_colorAdapter) {
         w->applyNewAdapter();
     }

@@ -39,11 +39,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "QjtMessageBox.h"
 #include "MOption.h"
 
-RecSkinWidget::RecSkinWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::RecSkinWidget),
-    m_rowMaxPix(15),
-    nowPixNum(-1)
+RecSkinWidget::RecSkinWidget(QWidget *parent)
+    : QWidget(parent)
+    , ui(new Ui::RecSkinWidget)
+    , nowPixNum(-1)
+    , m_rowMaxPix(15)
 {
     ui->setupUi(this);
     setFixedSize(490,255);
@@ -117,7 +117,7 @@ RecSkinWidget::RecSkinWidget(QWidget *parent) :
 
         ui->horizontalLayoutDefault->addWidget(SkinPushButton);
     }
-    //    /// 这个用于先填充历史记录
+
     QPixmap addPix(":/images/add.png");
     QPixmap historyPix(":/images/skinHistoryImage.png");
     RecSkinPushButton *button = new RecSkinPushButton(this);
@@ -300,7 +300,7 @@ RecSkinPushButton::RecSkinPushButton(QWidget *parent) :
     m_closeButton->setIcon(QIcon(pixmap));
     m_closeButton->resize(pixmap.size());
     m_closeButton->setFlat(true);
-    m_closeButton->setToolTip(tr("删除"));
+    m_closeButton->setToolTip(tr("delete"));
     m_closeButton->hide();
     connect(m_closeButton,SIGNAL(clicked()),
             this,SLOT(onClose()));
@@ -311,7 +311,7 @@ void RecSkinPushButton::onClose()
     emit closeNum(m_num,fileName);
 }
 
-void RecSkinPushButton::paintEvent(QPaintEvent *e)
+void RecSkinPushButton::paintEvent(QPaintEvent */*e*/)
 {
     QPainter painter(this);
 
@@ -345,20 +345,20 @@ void RecSkinPushButton::paintEvent(QPaintEvent *e)
     }
 }
 
-void RecSkinPushButton::enterEvent(QEvent *e)
+void RecSkinPushButton::enterEvent(QEvent */*e*/)
 {
     isEnter = true;
     if(isSkin && canDelete)
         m_closeButton->show();
 }
 
-void RecSkinPushButton::leaveEvent(QEvent *e)
+void RecSkinPushButton::leaveEvent(QEvent */*e*/)
 {
     isEnter = false;
     m_closeButton->hide();
 }
 
-void RecSkinPushButton::mousePressEvent(QMouseEvent *e)
+void RecSkinPushButton::mousePressEvent(QMouseEvent */*e*/)
 {
     if(isSkin)
     {

@@ -47,7 +47,7 @@ BleDesktopAreaSelector::~BleDesktopAreaSelector()
     delete ui;
 }
 
-void BleDesktopAreaSelector::paintEvent(QPaintEvent *event)
+void BleDesktopAreaSelector::paintEvent(QPaintEvent */*event*/)
 {
     QPainter p(this);
 
@@ -82,12 +82,12 @@ void BleDesktopAreaSelector::mousePressEvent(QMouseEvent *e)
     m_startPoint = e->pos();
 }
 
-void BleDesktopAreaSelector::mouseReleaseEvent(QMouseEvent *e)
+void BleDesktopAreaSelector::mouseReleaseEvent(QMouseEvent */*e*/)
 {
     m_startSelect = false;
 }
 
-void BleDesktopAreaSelector::mouseDoubleClickEvent(QMouseEvent *e)
+void BleDesktopAreaSelector::mouseDoubleClickEvent(QMouseEvent */*e*/)
 {
     if (m_selectedRect.isValid()) {
         emit areaSelected(m_selectedRect);

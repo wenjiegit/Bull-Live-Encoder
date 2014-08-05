@@ -136,8 +136,6 @@ private:
     QString m_text;
     int m_distance;
 
-
-
 private:
     void drawColor(int nTopPartOpacity,int nBottomPartOpacity,QPainter *pPainter);
 

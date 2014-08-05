@@ -89,7 +89,7 @@ void BleImageProcess::paintEvent(QPaintEvent *event)
     QPen pen(Qt::SolidLine);
     pen.setWidth(2);
     p.setPen(pen);
-    p.drawRect(rect());
+    p.drawRect(event->rect());
 
     // element draw
     for (int i = 0; i < m_sources.size(); ++i) {
@@ -216,7 +216,7 @@ void BleImageProcess::mousePressEvent(QMouseEvent *e)
     m_lastMovePoint = e->pos();
 }
 
-void BleImageProcess::mouseReleaseEvent(QMouseEvent *e)
+void BleImageProcess::mouseReleaseEvent(QMouseEvent */*e*/)
 {
     m_startMove = false;
     m_startResize = false;
@@ -224,7 +224,7 @@ void BleImageProcess::mouseReleaseEvent(QMouseEvent *e)
     m_resizeFromBottomRight = false;
 }
 
-void BleImageProcess::mouseDoubleClickEvent(QMouseEvent *e)
+void BleImageProcess::mouseDoubleClickEvent(QMouseEvent */*e*/)
 {
     if (!m_activePair) return;
 

@@ -75,6 +75,7 @@ static char * put_be24(char *output, uint32_t nVal)
 }
 #endif
 
+#if 0
 static char * put_be32(char *output, uint32_t nVal)
 {
     output[3] = nVal & 0xff;
@@ -84,6 +85,7 @@ static char * put_be32(char *output, uint32_t nVal)
 
     return output + 4;
 }
+#endif
 
 #if 0
 static char * put_be64(char *output, uint64_t nVal)

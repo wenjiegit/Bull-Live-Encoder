@@ -107,7 +107,7 @@ MString MStringList::join(const MString &sep)
     return ret;
 }
 
-MStringList MStringList::mid(int start, int length)
+MStringList MStringList::mid(int /*start*/, int /*length*/)
 {
     // // TODO : imp
     MStringList ret;

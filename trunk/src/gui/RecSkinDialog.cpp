@@ -30,18 +30,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtGui>
 #include <QMenu>
 #include <QMessageBox>
+#include <QDesktopWidget>
 
 #include "MOption.h"
 #include "mutility.h"
 #include "MThemeWidgetBase.h"
 
-RecSkinDialog::RecSkinDialog(const QImage &mainImage, const QImage &skinImage, QWidget *parent) :
-    QDialog(parent),
-    red(0),
-    green(0),
-    blue(0),
-    increase(10),
-    ui(new Ui::RecSkinDialog)
+RecSkinDialog::RecSkinDialog(const QImage &mainImage, const QImage &skinImage, QWidget *parent)
+    : QDialog(parent)
+    , ui(new Ui::RecSkinDialog)
+    , red(0)
+    , green(0)
+    , blue(0)
+    , increase(10)
 {
     ui->setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint);
@@ -240,11 +241,9 @@ void QKSkinSimulationWidget::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-
-#include <QDesktopWidget>
 void QKSkinSimulationWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    QSize size = QApplication::desktop()->size();
+    //QSize size = QApplication::desktop()->size();
     QPoint g_topPoint = geometry().topLeft();
     g_topPoint = parentWidget()->mapToGlobal(g_topPoint);
     if(g_topPoint.y() < 0)

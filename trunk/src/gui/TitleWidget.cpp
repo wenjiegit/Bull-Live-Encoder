@@ -109,9 +109,9 @@ void TitleWidget::addWidget(QWidget *w)
     //ui->mainLayout->addItem(ui->verticalSpacer);
 }
 
-void TitleWidget::addButton(QAbstractButton* btn)
+void TitleWidget::addButton(QAbstractButton* /*btn*/)
 {
-    // TODO 增加此代码
+    // TODO
 }
 
 void TitleWidget::setTitle(const QString &title)

@@ -32,13 +32,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QDebug>
 #include "MOption.h"
 
-MTabBar::MTabBar(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::MTabBar),
-    startNum(0),
-    buttonspace(10),
-    pushWidth(70),
-    pushHeight(70)
+MTabBar::MTabBar(QWidget *parent)
+    : QWidget(parent)
+    , ui(new Ui::MTabBar)
+    , pushWidth(70)
+    , pushHeight(70)
+    , startNum(0)
+    , buttonspace(10)
 {
     ui->setupUi(this);
     m_pProAnima = 0;
@@ -142,16 +142,29 @@ void MTabBar::animaFinished()
 
 
 /*****************************MTabBarPushButton***************************/
+int num;
+int m_height;
 
+bool isEnter;
+bool isPress;
+bool isAnimation;
+
+QTimeLine timeLine;
+int RGBA;
+int averageRGBA;
+int currentRGBA;
+int maxFrameRange;
+QString m_text;
+int m_distance;
 MTabBarPushButton::MTabBarPushButton(QWidget *parent) :
     QPushButton(parent),
+    m_height(75),
     isEnter(false),
     isPress(false),
     isAnimation(false),
-    currentRGBA(0),
     averageRGBA(0),
+    currentRGBA(0),
     maxFrameRange(10),
-    m_height(75),
     m_distance(5)
 {
     setAttribute(Qt::WA_TranslucentBackground);
@@ -237,7 +250,7 @@ void MTabBarPushButton::paintEvent(QPaintEvent *)
     }
 }
 
-void MTabBarPushButton::drawColor(int nTopPartOpacity,int nBottomPartOpacity,QPainter *painter)
+void MTabBarPushButton::drawColor(int nTopPartOpacity,int /*nBottomPartOpacity*/,QPainter *painter)
 {
     QRect r = rect();
     r.setWidth(r.width() - 1);

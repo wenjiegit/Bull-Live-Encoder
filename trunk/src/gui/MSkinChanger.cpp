@@ -34,10 +34,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "RecSkinWidget.h"
 #include "RecSkinDialog.h"
 
-MSkinChanger::MSkinChanger(QWidget *parent) :
-    QWidget(parent),
-    SkinDialog(0),
-    ui(new Ui::MSkinChanger)
+MSkinChanger::MSkinChanger(QWidget *parent)
+    : QWidget(parent)
+    , ui(new Ui::MSkinChanger)
+    , SkinDialog(0)
 {
     ui->setupUi(this);
     SkinWidget = new RecSkinWidget(this);
@@ -60,8 +60,6 @@ MSkinChanger::MSkinChanger(QWidget *parent) :
     connect(ui->tabBar,SIGNAL(currentChanged(int)),
             ui->stackedWidget,SLOT(setCurrentIndex(int)));
 
-
-    // 加载以前的数值
     connect(ui->areoTransparent, SIGNAL(valueChanged(int)), this, SLOT(onAeroTransparentValueChanged(int)));
     connect(ui->widgetTransparent, SIGNAL(valueChanged(int)), this, SLOT(onWidgetTransparentValueChanged(int)));
 

@@ -61,9 +61,6 @@ static PtrDwmExtendFrameIntoClientArea pDwmExtendFrameIntoClientArea = 0;
 static PtrDwmGetColorizationColor pDwmGetColorizationColor = 0;
 static PtrDwmEnableBlurBehindWindow pDwmEnableBlurBehindWindow = 0;
 
-/*
- *同步响应DWM状态消息
- */
 class WindowNotifier : public QWidget
 {
 public:
@@ -90,10 +87,7 @@ bool resolveLibs()
 }
 
 #endif
-/*!
-  * 检查 DWM 是否开启
-  *
-  */
+
 bool BleWin::isCompositionEnabled()
 {
 #ifdef Q_OS_WIN
@@ -120,17 +114,13 @@ void BleWin::setAeroEnabled(bool enabled)
 
 bool BleWin::m_aeroEnabled = false;
 
-/*!
-  * 对一个widget实现Aero效果.
-  *
-  */
 bool BleWin::enableAeroWindow(QWidget *widget, bool enable)
 {
     Q_ASSERT(widget);
     bool result = false;
 #ifdef Q_OS_WIN
     if (resolveLibs()) {
-        DWM_BLURBEHIND bb = {0};
+        DWM_BLURBEHIND bb;
         HRESULT hr = S_OK;
         bb.fEnable = enable;
         bb.dwFlags = DWM_BB_ENABLE;
@@ -155,7 +145,7 @@ bool BleWin::EnableBlurBehindWindow(HWND window,
 {
     resolveLibs();
 
-    DWM_BLURBEHIND blurBehind = { 0 };
+    DWM_BLURBEHIND blurBehind;
 
     blurBehind.dwFlags = DWM_BB_ENABLE | DWM_BB_TRANSITIONONMAXIMIZED;
     blurBehind.fEnable = enable;
@@ -180,7 +170,7 @@ bool BleWin::enableAeroWindow_r(QWidget *widget, bool enable)
     bool result = false;
 #ifdef Q_OS_WIN
     if (resolveLibs()) {
-        DWM_BLURBEHIND bb = {0};
+        DWM_BLURBEHIND bb;
         HRESULT hr = S_OK;
         bb.fEnable = enable;
         bb.dwFlags = DWM_BB_ENABLE | DWM_BB_TRANSITIONONMAXIMIZED;
@@ -194,9 +184,7 @@ bool BleWin::enableAeroWindow_r(QWidget *widget, bool enable)
 #endif
     return result;
 }
-/*!
-  * 设置Aero绘图区
-  */
+
 bool BleWin::extendFrameIntoClientArea(QWidget *widget, int left, int top, int right, int bottom)
 {
     Q_ASSERT(widget);
@@ -220,9 +208,7 @@ bool BleWin::extendFrameIntoClientArea(QWidget *widget, int left, int top, int r
 #endif
     return result;
 }
-/*!
-  * 返回当前窗口颜色.
-  */
+
 QColor BleWin::colorizatinColor()
 {
     QColor resultColor = QApplication::palette().window().color();
@@ -273,7 +259,6 @@ WindowNotifier *BleWin::windowNotifier()
     return windowNotifierInstance;
 }
 
-/* 所有窗口响应 DWM 状态变换消息 */
 bool WindowNotifier::nativeEvent(const QByteArray & eventType, void * _message, long * result)
 {
     MSG *message = (MSG*)_message;

@@ -259,7 +259,7 @@ MString & MString::operator <<(const MString &str)
     return *this;
 }
 
-MString MString::number(mint32 n, int base)
+MString MString::number(mint32 n, int /*base*/)
 {
     // TODO process base
     char buffer[32] = {0};
@@ -268,7 +268,7 @@ MString MString::number(mint32 n, int base)
     return buffer;
 }
 
-MString MString::number(muint64 n, int base)
+MString MString::number(muint64 n, int /*base*/)
 {
     // TODO process base
     char buffer[64] = {0};
@@ -277,7 +277,7 @@ MString MString::number(muint64 n, int base)
     return buffer;
 }
 
-MString MString::number(size_t n, int base)
+MString MString::number(size_t n, int /*base*/)
 {
     // TODO process base
     char buffer[32] = {0};

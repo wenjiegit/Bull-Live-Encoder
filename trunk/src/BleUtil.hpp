@@ -39,8 +39,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define BleAssert(x) do { assert(x); } while (0)
 
-int ConvertRGB2YUV(unsigned char *RGB, unsigned char *YUV, int WIDTH , int HEIGHT);
-
 // from srs
 template<class T>
 class BleAutoFree
