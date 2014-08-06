@@ -46,6 +46,7 @@ public:
 
 private:
     void drawCursor(QPaintDevice *pd);
+    QPixmap cursorPixmap();
 
 private:
     WId m_wid;

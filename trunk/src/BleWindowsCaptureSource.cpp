@@ -24,6 +24,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleWindowsCaptureSource.hpp"
 #include "BleLog.hpp"
 #include "BleUtil.hpp"
+#include <windows.h>
+#include <winuser.h>
+#include <qwindowdefs.h>
 
 #include <QGuiApplication>
 #include <QScreen>
@@ -31,6 +34,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QElapsedTimer>
 #include <QCursor>
 #include <QPainter>
+#include <QtWin>
+#include <QBitmap>
 
 #define Default_Capture_Interval    50      // default is 20 fps
 
@@ -78,9 +83,12 @@ void BleWindowsCaptureSource::run()
 
         if (screen) {
             QPixmap pixmap = screen->grabWindow(m_wid, m_x, m_y, m_width, m_height);
-#if 0
+#if 1
             // TODO to draw cursor to image
-            drawCursor(&pixmap);
+            QRect desktopRect = QRect(QPoint(0, 0), screen->size());
+            if (desktopRect.contains(QCursor::pos())) {
+                drawCursor(&pixmap);
+            }
 #endif
             QImage image = pixmap.toImage();
 
@@ -134,7 +142,51 @@ void BleWindowsCaptureSource::setCaptureInterval(int interval)
 void BleWindowsCaptureSource::drawCursor(QPaintDevice *pd)
 {
     QPainter p(pd);
-    QPixmap pix = QCursor(Qt::IBeamCursor).pixmap();
-    pix.save("xxx.jpg");
-    p.drawPixmap(10, 10, pix.width(), pix.height(), pix);
+    QPixmap pix = cursorPixmap();
+
+    QPoint point = QCursor::pos();
+    p.drawPixmap(point.x() - m_x, point.y() - m_y, pix.width(), pix.height(), pix);
 }
+
+#ifdef Q_OS_WIN
+QPixmap BleWindowsCaptureSource::cursorPixmap()
+{
+    static HCURSOR cursor = NULL;
+    static QPixmap cachedCursor = QPixmap();
+
+    QPixmap cursorPixmap;
+    HICON icon;
+    CURSORINFO cursorInfo;
+    ICONINFO iconInfo;
+    cursorInfo.cbSize = sizeof(CURSORINFO);
+
+    if(GetCursorInfo(&cursorInfo))
+    {
+        if (cursor == cursorInfo.hCursor)
+            return cachedCursor;
+
+        if (cursorInfo.flags == CURSOR_SHOWING)
+        {
+            icon = CopyIcon(cursorInfo.hCursor);
+            if (GetIconInfo(icon, &iconInfo))
+            {
+                if (iconInfo.hbmColor != NULL) {
+                    cursorPixmap = QtWin::fromHBITMAP(iconInfo.hbmColor, QtWin::HBitmapAlpha);
+                } else if (iconInfo.hbmMask != NULL){//if the cursor hasn't color image (for example, Ibeam cursor)
+                    cursorPixmap = QtWin::fromHBITMAP(iconInfo.hbmMask, QtWin::HBitmapAlpha).mask();
+
+                    //replace white color with transparent
+                    QImage cursorImage = cursorPixmap.copy(0, cursorPixmap.height() / 2, cursorPixmap.width(), cursorPixmap.height() / 2).toImage();
+                    cursorImage.setColor(0, Qt::transparent);
+                    cursorPixmap = QPixmap::fromImage(cursorImage);
+                }
+            }
+        }
+    }
+
+    cursor = cursorInfo.hCursor;
+    cachedCursor = cursorPixmap;
+
+    return cursorPixmap;
+}
+#endif // Q_OS_WIN
