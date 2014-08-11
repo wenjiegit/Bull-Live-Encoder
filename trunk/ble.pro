@@ -14,7 +14,8 @@ INCLUDEPATH +=  src/gui
 INCLUDEPATH +=  $$PWD/src/core \
                 $$PWD/3rdparty/librtmp \
                 $$PWD/3rdparty/libx264 \
-                $$PWD/3rdparty/libopencv/include
+                $$PWD/3rdparty/libopencv/include \
+                $$PWD/3rdparty/libRtAudio/
 
 LIBS += -L$$PWD/3rdparty/librtmp -lrtmp \
         -L$$PWD/3rdparty/libx264/ -lx264 \
@@ -69,7 +70,9 @@ SOURCES += \
     src/gui/RecSkinDialog.cpp \
     src/gui/RecSkinPickerWidget.cpp \
     src/gui/RecSkinWidget.cpp \
-    src/gui/TitleWidget.cpp
+    src/gui/TitleWidget.cpp \
+    3rdparty/libRtAudio/RtAudio.cpp \
+    src/BleAudioCapture.cpp
 
 HEADERS  += \
     src/BleMainWindow.hpp \
@@ -111,7 +114,10 @@ HEADERS  += \
     src/gui/RecSkinDialog.h \
     src/gui/RecSkinPickerWidget.h \
     src/gui/RecSkinWidget.h \
-    src/gui/TitleWidget.h
+    src/gui/TitleWidget.h \
+    3rdparty/libRtAudio/RtAudio.h \
+    3rdparty/libRtAudio/RtError.h \
+    src/BleAudioCapture.hpp
 
 FORMS    += \
     src/BleMainWindow.ui \
