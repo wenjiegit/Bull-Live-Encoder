@@ -5,6 +5,10 @@ which supports H264 + AAC and supports ingest from camer or desktop or some wind
 
 blog: BLE(http://wenjiegit.github.io/Bull-Live-Encoder/)<br/>
 
+donate:
+if you want, you could donate me to help ble better. ^_^
+site: http://wenjiegit.github.io/ble_release/donate.html
+
 history
 ================
 [0.1]&nbsp;&nbsp;2014-07-05&nbsp;&nbsp;&nbsp;init project.<br/>
