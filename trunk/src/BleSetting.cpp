@@ -21,7 +21,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "BleSettingetting.hpp"
+#include "BleSetting.hpp"
 #include "ui_BleSetting.h"
 
 #include <QCameraInfo>
@@ -30,6 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdint.h>
 #include "x264.h"
 #include "MOption.h"
+#include "BleAudioCapture.hpp"
 
 static void addItem(QComboBox *box, const char * const * argv)
 {
@@ -48,6 +49,26 @@ BleSetting::BleSetting(QWidget *parent) :
     ui(new Ui::BleSetting)
 {
     ui->setupUi(this);
+
+    // add audio info
+    QHash<int, QString> audioDevices = BleAudioCapture::availableDevices();
+    QHash<int, QString>::iterator iter = audioDevices.begin();
+    while (iter != audioDevices.end()) {
+        ui->audioDevice->addItem(iter.value(), QVariant(iter.key()));
+        ++iter;
+    }
+
+    ui->audioFormat->addItem("AAC");
+    ui->audioFormat->addItem("MP3");
+
+    ui->audioChannels->addItem("Stereo");
+    ui->audioChannels->addItem("Mono");
+
+    ui->audioSampleRate->addItem("44100");
+    ui->audioSampleRate->addItem("22050");
+    ui->audioSampleRate->addItem("11025");
+
+    ui->audioBitrate->addItem("");
 
     addItem(ui->x264Preset,  x264_preset_names);
     addItem(ui->x264Tune,    x264_tune_names);

@@ -38,7 +38,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "MOption.h"
 #include "MSkinChanger.h"
 
-#include "BleSettingetting.hpp"
+#include "BleSetting.hpp"
 #include "BleEncoderThread.hpp"
 #include "BleRtmpSendThread.hpp"
 #include "BleUtil.hpp"

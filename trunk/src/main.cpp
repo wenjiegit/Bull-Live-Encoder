@@ -7,8 +7,13 @@
 #include "BleMainWindow.hpp"
 #include "BleLog.hpp"
 
+#include "BleAudioEncoder_AAC.hpp"
+#include "BleAudioCapture.hpp"
+
 int main(int argc, char *argv[])
 {
+    BleAudioCapture cp;
+    cp.startCapture();
     QApplication a(argc, argv);
 
     // not supported color printf on win

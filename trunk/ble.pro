@@ -10,19 +10,24 @@ QT       += core gui winextras multimedia multimediawidgets
 TARGET = ble
 TEMPLATE = app
 
+# for RtAudio defines
+DEFINES += __WINDOWS_DS__
+
 INCLUDEPATH +=  src/gui
-INCLUDEPATH +=  $$PWD/src/core \
-                $$PWD/3rdparty/librtmp \
-                $$PWD/3rdparty/libx264 \
-                $$PWD/3rdparty/libopencv/include \
-                $$PWD/3rdparty/libRtAudio/
+INCLUDEPATH +=  src/core \
+                3rdparty/librtmp \
+                3rdparty/libx264 \
+                3rdparty/libopencv/include \
+                3rdparty/libRtAudio/ \
+                3rdparty/libfaac/include
 
 LIBS += -L$$PWD/3rdparty/librtmp -lrtmp \
         -L$$PWD/3rdparty/libx264/ -lx264 \
         -L$$PWD/3rdparty/libopenssl/ -lssl \
         -L$$PWD/3rdparty/libopenssl/ -lcrypto \
-        -L$$PWD/3rdparty/libopencv/lib/ -lopencv_core248 -lopencv_highgui248 -lopencv_imgproc248
-win32:LIBS +=  -lws2_32 -lgdi32 -lwinmm -lz
+        -L$$PWD/3rdparty/libopencv/lib/ -lopencv_core248 -lopencv_highgui248 -lopencv_imgproc248 \
+        -L$$PWD/3rdparty/libfaac/lib/ -lfaac
+LIBS += -ldsound -lole32 -lwinmm -lgdi32 -lws2_32 -lz
 
 DESTDIR = $$BLE_BINDIR
 
@@ -72,7 +77,8 @@ SOURCES += \
     src/gui/RecSkinWidget.cpp \
     src/gui/TitleWidget.cpp \
     3rdparty/libRtAudio/RtAudio.cpp \
-    src/BleAudioCapture.cpp
+    src/BleAudioCapture.cpp \
+    src/BleAudioEncoder_AAC.cpp
 
 HEADERS  += \
     src/BleMainWindow.hpp \
@@ -80,7 +86,7 @@ HEADERS  += \
     src/core/mstring.hpp \
     src/core/mstringlist.hpp \
     src/BleX264Encoder.hpp \
-    src/BleSettingetting.hpp \
+    src/BleSetting.hpp \
     src/BleEncoderThread.hpp \
     src/BleUtil.hpp \
     src/BleRtmpMuxer.hpp \
@@ -117,7 +123,8 @@ HEADERS  += \
     src/gui/TitleWidget.h \
     3rdparty/libRtAudio/RtAudio.h \
     3rdparty/libRtAudio/RtError.h \
-    src/BleAudioCapture.hpp
+    src/BleAudioCapture.hpp \
+    src/BleAudioEncoder_AAC.hpp
 
 FORMS    += \
     src/BleMainWindow.ui \
