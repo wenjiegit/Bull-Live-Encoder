@@ -41,6 +41,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/opencv.hpp"
 
+#include "BleAVQueue.hpp"
+
 #define Max_Queue_Size     (20)
 
 BleEncoderThread::BleEncoderThread(QObject *parent)
@@ -91,7 +93,12 @@ void BleEncoderThread::run()
 
            QByteArray arr = m_x264Encoder->encode((uchar*)imgYUV->imageData, image->pts);
 
-            {
+           BleVideoPacket *pkt = new BleVideoPacket(Video_Type_H264);
+           pkt->data = arr;
+           BleAVQueue::instance()->enqueue(pkt);
+
+#if 0
+           {
                 BleAutoLocker(m_getMutex);
 
                 OutPacket pkt;
@@ -99,7 +106,7 @@ void BleEncoderThread::run()
                 pkt.nalu = arr;
                 m_nalus.push_back(pkt);
 
-#if 0
+
                 printf("%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n"
                         ,(uchar)arr.data()[0]
                         ,(uchar)arr.data()[1]
@@ -112,8 +119,8 @@ void BleEncoderThread::run()
                         ,(uchar)arr.data()[8]
                         ,(uchar)arr.data()[9]
                         ,(uchar)arr.data()[10]);
-#endif
             }
+#endif
 
             cvReleaseImageHeader(&cvImage);
             cvReleaseImage(&imgYUV);

@@ -52,6 +52,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleDesktopAreaSelector.hpp"
 #include "BlePictureSource.hpp"
 #include "BleWinAero.hpp"
+#include "BleAudioCapture.hpp"
+#include "BleErrno.hpp"
+#include "QjtMessageBox.h"
 
 #define BLE_TITLE "Bull Live Encoder"
 
@@ -286,6 +289,26 @@ void BleMainWindow::onEncodeStart()
     START_THREAD(m_sendThread);
     START_THREAD(m_imageProcessThread);
 
+    m_audioCaptureThread = new BleAudioCapture;
+
+    int audioSampleRate = MOption::instance()->option("sample_rate", "audio").toInt();
+
+    int audioChannels = -1;
+    QString audioChannelsStr = MOption::instance()->option("channels", "audio").toString();
+    if (audioChannelsStr == "Mono") {
+        audioChannels = 1;
+    } else if (audioChannelsStr == "Stereo") {
+        audioChannels = 2;
+    }
+
+    int audioBitrate = MOption::instance()->option("bitrate", "audio").toInt() * 1000;
+    int devID = MOption::instance()->option("dev_id", "audio").toInt();
+
+    int ret = m_audioCaptureThread->startCapture(audioBitrate, audioSampleRate, audioChannels, devID);
+    if (ret != BLE_SUCESS) {
+        QjtMessageBox::critical(this, tr("error"), tr("start audio capture error."));
+    }
+
     ui->startBtn->setEnabled(false);
 }
 
@@ -294,6 +317,9 @@ void BleMainWindow::onEncodeStop()
     STOP_THREAD(m_sendThread);
     STOP_THREAD(m_encoderThread);
     STOP_THREAD(m_imageProcessThread);
+    STOP_THREAD(m_audioCaptureThread);
+
+    BleFree(m_audioCaptureThread);
 
     ui->startBtn->setEnabled(true);
 }

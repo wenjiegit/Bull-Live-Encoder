@@ -49,7 +49,7 @@ BlePictureSource::BlePictureSource(const QString &picName)
 
 BleImage BlePictureSource::getImage()
 {
-    return m_image;
+    return m_image.clone();
 }
 
 void BlePictureSource::stopCapture()

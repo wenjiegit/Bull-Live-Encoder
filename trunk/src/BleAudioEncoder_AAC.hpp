@@ -4,28 +4,32 @@
 #include <QByteArray>
 
 #include "faac.h"
+#include "BleAudioEncoderAbstract.hpp"
 
-class BleAudioEncoder_AAC
+class BleAudioEncoder_AAC : public BleAudioEncoderAbstract
 {
 public:
     BleAudioEncoder_AAC();
 
     virtual bool init(int samplerate, int channel, int bitrate);
     virtual void fini();
-    virtual bool encode(const QByteArray &data, QByteArray &output);
+    virtual bool encode(const QByteArray &data, QByteArray &output);\
+    virtual int getFrameSize();
+
+    QByteArray getHeader();
 
 public:
     //int sample_rate;
     int m_nFrameSize;
     int m_channels;
-    //int bit_rate;
 
-    unsigned long m_nSamplesInput;
-    unsigned long m_nMaxbytesOutput;
+    unsigned long m_samplesInputSize;
+    unsigned long m_maxOutputSize;
 
     faacEncHandle   m_faacHandle;
     int*            m_pInBuf;
-    QByteArray          m_outputBuffer;
+    unsigned char *m_outputBuffer;
+    QByteArray m_header;
 };
 
 #endif // BLEAUDIOENCODER_AAC_HPP

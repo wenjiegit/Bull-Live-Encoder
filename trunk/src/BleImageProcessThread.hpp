@@ -48,7 +48,6 @@ public:
     void updateSources(QList<SourcePair> & sources);
     void setInternal(int internal);
     QQueue<BleImage *> getQueue();
-    BleImage getCurrentImage();
 
 private:
     int m_width;

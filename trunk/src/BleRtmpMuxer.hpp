@@ -76,6 +76,8 @@ public:
     */
     int addAACSpeci(char *data, int size);
 
+    int addAudio(char *data, int size, unsigned long long pts);
+
     int setMetaData(const FlvMetaData &metaData);
 
     /*!

@@ -47,7 +47,7 @@ BleImageProcess::BleImageProcess(QWidget *parent)
     ui->setupUi(this);
 
     connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(onRefreshTimeout()));
-    m_refreshTimer.start(67);
+    m_refreshTimer.start(100);
 
     setMouseTracking(true);
     setFocusPolicy(Qt::ClickFocus);
@@ -101,8 +101,14 @@ void BleImageProcess::paintEvent(QPaintEvent *event)
 
         if (image.dataSize <= 0) continue;
 
-        QImage qimage((uchar*)image.data, image.width, image.height, QImage::Format_RGB888);
-        p.drawImage(pair.rect, qimage);
+        QImage qimage;
+        if (image.format == BleImage_Format_RGB888) {
+            qimage = QImage((uchar*)image.data, image.width, image.height, QImage::Format_RGB888).rgbSwapped();
+        } else if (image.format == BleImage_Format_BGR24) {
+            qimage = QImage((uchar*)image.data, image.width, image.height, QImage::Format_RGB888);
+        }
+
+        p.drawImage(pair.rect, qimage.rgbSwapped());
 
         pen.setColor(Qt::blue);
         p.setPen(pen);

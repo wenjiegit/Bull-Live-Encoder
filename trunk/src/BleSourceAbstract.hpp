@@ -28,8 +28,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QRect>
 
 #define BleImage_Format_Invalid         -1
-#define BleImage_Format_RGB24           0x01
+#define BleImage_Format_RGB888          0x01
 #define BleImage_Format_BGR24           0x02
+#define BleImage_Format_RGB32           0x03
 #define BleImage_Format_YUV420          0x04
 
 struct BleImage
@@ -49,6 +50,8 @@ struct BleImage
 
     BleImage & operator=(BleImage & other);
     BleImage(const BleImage & other);
+
+    BleImage clone();
 
     int addRef();
     int deRef();

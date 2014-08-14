@@ -22,6 +22,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include "BleRtmpSendThread.hpp"
+
+#include <QElapsedTimer>
+#include <QDebug>
+
 #include "BleRtmpMuxer.hpp"
 #include "BleEncoderThread.hpp"
 #include "BleLog.hpp"
@@ -32,6 +36,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef Q_OS_WIN
 #include "windows.h"
 #endif
+
+#include "BleAVQueue.hpp"
 
 BleRtmpSendThread::BleRtmpSendThread(QObject * parent)
     : BleThread(parent)
@@ -105,24 +111,34 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
     BleAssert(encodeThread);
 
     while (!m_stop) {
-        // get from encode thread
-        QList<BleEncoderThread::OutPacket> nalus = encodeThread->getNalu();
-        if (nalus.isEmpty()) {
+        // get from queue
+        QElapsedTimer timer;
+        timer.start();
+        QQueue<BleAVPacket *> pkts = BleAVQueue::instance()->dequeue();
+        if (pkts.isEmpty()) {
             msleep(50);
             continue;
         }
-        log_info("get nalues count = %d", nalus.size());
+        log_info("get pkts count = %d", pkts.size());
 
-        for (int i = 0; i < nalus.size(); ++i) {
-            BleEncoderThread::OutPacket & pkt = nalus[i];
-            if (muxer.addH264(pkt.nalu.data(), pkt.nalu.size()
-                              , pkt.captureTime, pkt.captureTime) != TRUE ) {
-                ret = BLE_RTMPSEND_ERROR;
-                return ret;
+        while (!pkts.empty()) {
+            BleAVPacket *pkt = pkts.dequeue();
+            QByteArray &data = pkt->data;
+
+            if (pkt->pktType == Packet_Type_Video) {
+                if (muxer.addH264(data.data(), data.size(), pkt->pts, pkt->pts) != TRUE ) {
+                    ret = BLE_RTMPSEND_ERROR;
+                    return ret;
+                }
+            } else if (pkt->pktType == Packet_Type_Audio) {
+                if (muxer.addAudio(data.data(), data.size() , pkt->pts) != TRUE ) {
+                    ret = BLE_RTMPSEND_ERROR;
+                    return ret;
+                }
             }
+            log_info("send pkt pts = %d  %d", pkt->pts, timer.elapsed());
 
-            log_info("rtmp send success size = %d, pts = %d", pkt.nalu.size(),
-                     pkt.captureTime);
+            BleFree(pkt);
         }
     }
 

@@ -217,6 +217,11 @@ int BleRtmpMuxer::addAACSpeci(char *data, int size)
     return m_rtmpAU->sendPacket(pkt, 0, RTMP_PACKET_TYPE_AUDIO, StreamChannel_Audio);
 }
 
+int BleRtmpMuxer::addAudio(char *data, int size, unsigned long long pts)
+{
+    return m_rtmpAU->sendPacket(string(data, size), pts, RTMP_PACKET_TYPE_AUDIO, StreamChannel_Audio);
+}
+
 int BleRtmpMuxer::setMetaData(const FlvMetaData &metaData)
 {
     m_metaData.clear();

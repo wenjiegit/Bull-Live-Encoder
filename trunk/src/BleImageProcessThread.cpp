@@ -92,7 +92,7 @@ void BleImageProcessThread::run()
                 cvResize(cvImage, resizedImage, CV_INTER_LINEAR);
             }
 
-            if (bleImage.format != BleImage_Format_BGR24) {
+            if (bleImage.format == BleImage_Format_RGB888) {
                 cvConvertImage(resizedImage, resizedImage, CV_CVTIMG_SWAP_RB);
             }
 

@@ -47,7 +47,7 @@ int BleX264Encoder::init()
     MOption *option = MOption::instance();
 
     QString presetName  = option->option("preset", "x264").toString();
-    //QString tuneName    = option->option("tune", "x264").toString();
+    QString tuneName    = option->option("tune", "x264").toString();
     QString profileName = option->option("profile", "x264").toString();
     int fps = option->option("fps", "encoder").toInt();
     int bps = option->option("bitrate", "encoder").toInt();
@@ -65,7 +65,12 @@ int BleX264Encoder::init()
 
     m_x264Param = new x264_param_t;
 
-    x264_param_default_preset(m_x264Param , presetName.toStdString().c_str(), NULL);
+    if (tuneName == "Default" || tuneName.isEmpty()) {
+        x264_param_default_preset(m_x264Param , presetName.toStdString().c_str(), NULL);
+    } else {
+        x264_param_default_preset(m_x264Param , presetName.toStdString().c_str(), tuneName.toStdString().c_str());
+    }
+
     x264_param_apply_profile(m_x264Param, profileName.toStdString().c_str());
 
     if(bUseCBR)

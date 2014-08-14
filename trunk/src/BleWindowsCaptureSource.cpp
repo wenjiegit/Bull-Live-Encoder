@@ -22,12 +22,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include "BleWindowsCaptureSource.hpp"
-#include "BleLog.hpp"
-#include "BleUtil.hpp"
+
 #include <windows.h>
 #include <winuser.h>
 #include <qwindowdefs.h>
-
 #include <QGuiApplication>
 #include <QScreen>
 #include <QImage>
@@ -36,6 +34,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QPainter>
 #include <QtWin>
 #include <QBitmap>
+
+#include "BleLog.hpp"
+#include "BleUtil.hpp"
+
+// opecv
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/opencv.hpp"
 
 #define Default_Capture_Interval    50      // default is 20 fps
 
@@ -59,9 +64,9 @@ BleImage BleWindowsCaptureSource::getImage()
 {
     BleAutoLocker(m_modifyMutex);
 
-    BleImage be;
-    be = m_image;
-    return be;
+//    BleImage be;
+//    be = m_image;
+    return m_image.clone();
 }
 
 void BleWindowsCaptureSource::stopCapture()
@@ -106,7 +111,7 @@ void BleWindowsCaptureSource::run()
             memcpy(be.data, image.bits(), image.byteCount());
 
             be.dataSize = image.byteCount();
-            be.format = BleImage_Format_RGB24;
+            be.format = BleImage_Format_RGB888;
 
             m_image = be;
 

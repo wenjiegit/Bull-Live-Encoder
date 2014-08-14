@@ -44,11 +44,24 @@ static void addItem(QComboBox *box, const char * const * argv)
     }
 }
 
+static void setIndex(QComboBox *box, const QString &str)
+{
+    int index = box->findText(str);
+    if (index >= 0) {
+        box->setCurrentIndex(index);
+    }
+}
+
 BleSetting::BleSetting(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::BleSetting)
 {
     ui->setupUi(this);
+
+    connect(ui->audioSampleRate, SIGNAL(currentIndexChanged(QString))
+            , this, SLOT(onAudioBitrateChanged(QString)));
+    connect(ui->audioChannels, SIGNAL(currentIndexChanged(QString))
+            , this, SLOT(onAudioBitrateChanged(QString)));
 
     // add audio info
     QHash<int, QString> audioDevices = BleAudioCapture::availableDevices();
@@ -68,11 +81,12 @@ BleSetting::BleSetting(QWidget *parent) :
     ui->audioSampleRate->addItem("22050");
     ui->audioSampleRate->addItem("11025");
 
-    ui->audioBitrate->addItem("");
-
     addItem(ui->x264Preset,  x264_preset_names);
     addItem(ui->x264Tune,    x264_tune_names);
     addItem(ui->x264Profile, x264_profile_names);
+
+    // add default tune, which is NULL
+    ui->x264Tune->insertItem(0, "Default");
 
     // add res
     QSettings resIni("res.ini", QSettings::IniFormat);
@@ -123,6 +137,19 @@ void BleSetting::onApplyClicked()
 {
     MOption *option = MOption::instance();
 
+    // audio group
+    int audioDevID = ui->audioDevice->itemData(ui->audioDevice->currentIndex()).toInt();
+    QString audioFormat = ui->audioFormat->currentText();
+    QString audioChannels = ui->audioChannels->currentText();
+    QString audioSampleRate = ui->audioSampleRate->currentText();
+    QString audioBitrate = ui->audioBitrate->currentText();
+
+    option->setOption(audioDevID, "dev_id", "audio");
+    option->setOption(audioFormat, "format", "audio");
+    option->setOption(audioChannels, "channels", "audio");
+    option->setOption(audioSampleRate, "sample_rate", "audio");
+    option->setOption(audioBitrate, "bitrate", "audio");
+
     QString format      = ui->format->currentText();
     QVariant res        = ui->res->itemData(ui->res->currentIndex());
     QString fps         = ui->fps->currentText();
@@ -151,19 +178,109 @@ void BleSetting::onApplyClicked()
     option->setOption(address, "address", "network");
 }
 
+void BleSetting::onAudioBitrateChanged(const QString &text)
+{
+    Q_UNUSED(text);
+
+    QString channels = ui->audioChannels->currentText();
+    QString sampleRate = ui->audioSampleRate->currentText();
+
+    if (channels == "Mono" && sampleRate == "44100") {              // one channel, 44.1 KHZ
+        ui->audioBitrate->clear();
+
+        ui->audioBitrate->addItem("224");
+        ui->audioBitrate->addItem("192");
+        ui->audioBitrate->addItem("160");
+        ui->audioBitrate->addItem("128");
+        ui->audioBitrate->addItem("112");
+        ui->audioBitrate->addItem("96");
+        ui->audioBitrate->addItem("80");
+        ui->audioBitrate->addItem("64");
+        ui->audioBitrate->addItem("56");
+
+        ui->audioBitrate->setCurrentText("56");
+    } else if (channels == "Mono" && sampleRate == "22050") {       // one channel, 22.05 KHZ
+        ui->audioBitrate->clear();
+
+        ui->audioBitrate->addItem("48");
+        ui->audioBitrate->addItem("40");
+        ui->audioBitrate->addItem("32");
+
+        ui->audioBitrate->setCurrentText("48");
+    } else if (channels == "Mono" && sampleRate == "11025") {       // one channel, 11.025 KHZ
+        ui->audioBitrate->addItem("20");
+        ui->audioBitrate->addItem("18");
+
+        ui->audioBitrate->setCurrentText("20");
+    } else if (channels == "Stereo" && sampleRate == "44100") {     // two channel, 44.1 KHZ
+        ui->audioBitrate->clear();
+
+        ui->audioBitrate->addItem("224");
+        ui->audioBitrate->addItem("192");
+        ui->audioBitrate->addItem("160");
+        ui->audioBitrate->addItem("128");
+        ui->audioBitrate->addItem("112");
+        ui->audioBitrate->addItem("96");
+
+        ui->audioBitrate->setCurrentText("96");
+    } else if (channels == "Stereo" && sampleRate == "22050") {     // two channel, 22.05 KHZ
+        ui->audioBitrate->clear();
+
+        ui->audioBitrate->addItem("80");
+        ui->audioBitrate->addItem("64");
+        ui->audioBitrate->addItem("56");
+        ui->audioBitrate->addItem("48");
+        ui->audioBitrate->addItem("40");
+
+        ui->audioBitrate->setCurrentText("80");
+    } else if (channels == "Stereo" && sampleRate == "11025") {     // two channel, 11.025 KHZ
+        ui->audioBitrate->clear();
+
+        ui->audioBitrate->addItem("32");
+        ui->audioBitrate->addItem("24");
+        ui->audioBitrate->addItem("20");
+
+        ui->audioBitrate->setCurrentText("32");
+    }
+}
+
 void BleSetting::restore()
 {
     MOption *option = MOption::instance();
+
+    // audio group
+    int audioDevID = option->option("dev_id", "audio").toInt();
+    QString audioFormat = option->option("format", "audio").toString();
+    QString audioChannels = option->option("channels", "audio").toString();
+    QString audioSampleRate = option->option("sample_rate", "audio").toString();
+    QString audioBitrate = option->option("sample_rate", "audio").toString();
+
+    // find dev ID
+    int audioDevCount = ui->audioDevice->count();
+    for (int i = 0; i < audioDevCount; ++i) {
+        if (ui->audioDevice->itemData(i).toInt() == audioDevID) {
+            ui->audioDevice->setCurrentIndex(i);
+            break;
+        }
+    }
+
+    setIndex(ui->audioFormat, audioFormat);
+    setIndex(ui->audioChannels, audioChannels);
+    setIndex(ui->audioSampleRate, audioSampleRate);
+    setIndex(ui->audioBitrate, audioBitrate);
 
     // encoder group
     QString format      = option->option("format", "encoder").toString();
     QVariant res        = option->option("res", "encoder");
     QString fps         = option->option("fps", "encoder").toString();
     QString bitrate     = option->option("bitrate", "encoder").toString();
-    ui->format->setCurrentIndex(ui->format->findText(format));
+
+    setIndex(ui->format, format);
+
     ui->res->setCurrentIndex(ui->res->findData(res));
-    ui->fps->setCurrentIndex(ui->fps->findText(fps));
-    ui->bitrate->setCurrentIndex(ui->bitrate->findText(bitrate));
+
+    setIndex(ui->fps, fps);
+    setIndex(ui->bitrate, bitrate);
 
     // x264 group
     QString x264Preset  = option->option("preset", "x264").toString();
@@ -173,12 +290,12 @@ void BleSetting::restore()
     QString keyFrameInterval = option->option("KeyFrameInterval", "x264").toString();
     QString quality = option->option("quality", "x264").toString();
 
-    ui->x264Preset->setCurrentIndex(ui->x264Preset->findText(x264Preset));
-    ui->x264Tune->setCurrentIndex(ui->x264Tune->findText(x264Tune));
-    ui->x264Profile->setCurrentIndex(ui->x264Profile->findText(x264Profile));
-    ui->bitrateMode->setCurrentIndex(ui->bitrateMode->findText(bitrateMode));
-    ui->keyFrameInterval->setCurrentIndex(ui->keyFrameInterval->findText(keyFrameInterval));
-    ui->quality->setCurrentIndex(ui->quality->findText(quality));
+    setIndex(ui->x264Preset, x264Preset);
+    setIndex(ui->x264Tune, x264Tune);
+    setIndex(ui->x264Profile, x264Profile);
+    setIndex(ui->bitrateMode, bitrateMode);
+    setIndex(ui->keyFrameInterval, keyFrameInterval);
+    setIndex(ui->quality, quality);
 
     // network group
     QString address     = option->option("address", "network").toString();

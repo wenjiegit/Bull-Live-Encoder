@@ -43,6 +43,8 @@ public:
 private slots:
     void onApplyClicked();
 
+    void onAudioBitrateChanged(const QString & text);
+
 private:
     void restore();
 

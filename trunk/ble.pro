@@ -78,7 +78,10 @@ SOURCES += \
     src/gui/TitleWidget.cpp \
     3rdparty/libRtAudio/RtAudio.cpp \
     src/BleAudioCapture.cpp \
-    src/BleAudioEncoder_AAC.cpp
+    src/BleAudioEncoder_AAC.cpp \
+    src/BleAVQueue.cpp \
+    src/BleAVUtil.cpp \
+    src/BleAudioEncoderAbstract.cpp
 
 HEADERS  += \
     src/BleMainWindow.hpp \
@@ -124,7 +127,10 @@ HEADERS  += \
     3rdparty/libRtAudio/RtAudio.h \
     3rdparty/libRtAudio/RtError.h \
     src/BleAudioCapture.hpp \
-    src/BleAudioEncoder_AAC.hpp
+    src/BleAudioEncoder_AAC.hpp \
+    src/BleAVQueue.hpp \
+    src/BleAVUtil.hpp \
+    src/BleAudioEncoderAbstract.hpp
 
 FORMS    += \
     src/BleMainWindow.ui \

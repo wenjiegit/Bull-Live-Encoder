@@ -41,6 +41,7 @@ class BleRtmpSendThread;
 class BleCameraSource;
 class BleImageProcessThread;
 class BleImageProcess;
+class BleAudioCapture;
 
 class BleMainWindow : public QMainWindow, public ThemedWidgetBase
 {
@@ -86,6 +87,7 @@ private:
     BleRtmpSendThread  *m_sendThread;
     BleImageProcessThread *m_imageProcessThread;
     BleImageProcess *m_imageProcessWidget;
+    BleAudioCapture *m_audioCaptureThread;
 };
 
 #endif // BleMainWindow_H

@@ -72,6 +72,22 @@ BleImage::BleImage(const BleImage &other)
     this->addRef();
 }
 
+BleImage BleImage::clone()
+{
+    BleImage image;
+    image.width = width;
+    image.height = height;
+    image.pts = pts;
+    image.format = format;
+
+    image.data = new char[dataSize];
+    memcpy(image.data, data, dataSize);
+
+    image.dataSize = dataSize;
+
+    return image;
+}
+
 int BleImage::addRef()
 {
     *ref += 1;

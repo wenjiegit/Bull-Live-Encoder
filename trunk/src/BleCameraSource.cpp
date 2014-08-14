@@ -46,7 +46,7 @@ BleCameraSource::BleCameraSource(QObject *parent)
 BleImage BleCameraSource::getImage()
 {
     BleAutoLocker(m_modifyMutex);
-    return m_image;
+    return m_image.clone();
 }
 
 void BleCameraSource::stopCapture()
