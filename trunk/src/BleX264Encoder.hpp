@@ -40,6 +40,8 @@ public:
     int init();
     QByteArray encode(unsigned char *rgbframe, unsigned long long ts);
 
+    virtual int getFrameDuration();
+
 private:
     void fini();
 

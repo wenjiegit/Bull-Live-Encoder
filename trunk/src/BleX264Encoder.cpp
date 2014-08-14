@@ -163,6 +163,19 @@ QByteArray BleX264Encoder::encode(unsigned char *rgbframe, unsigned long long ts
     return ret;
 }
 
+int BleX264Encoder::getFrameDuration()
+{
+    MOption *option = MOption::instance();
+    int fps = option->option("fps", "encoder").toInt();
+
+    if (fps > 0) {
+        return 1000 / fps;
+    }
+
+    // 40 : default duration
+    return 40;
+}
+
 void BleX264Encoder::fini()
 {
     BleFree(m_pictureIn);

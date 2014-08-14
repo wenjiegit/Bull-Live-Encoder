@@ -12,6 +12,7 @@ public:
     virtual void fini() = 0;
     virtual bool encode(const QByteArray &data, QByteArray &output) = 0;
     virtual int getFrameSize() = 0;
+    virtual int getFrameDuration() = 0;
 
 protected:
     int m_samplerate;

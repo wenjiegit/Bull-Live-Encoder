@@ -62,6 +62,9 @@ void BleEncoderThread::init()
     // TODO free m_x264Encoder
     m_x264Encoder = new BleX264Encoder;
     m_x264Encoder->init();
+
+    BleAVQueue::instance()->timestampBuilder()->
+            setVideoCaptureInternal(m_x264Encoder->getFrameDuration());
 }
 
 void BleEncoderThread::run()

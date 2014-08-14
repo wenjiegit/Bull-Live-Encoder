@@ -127,6 +127,11 @@ int BleAudioEncoder_AAC::getFrameSize()
     return m_samplesInputSize * 16 / 8;
 }
 
+int BleAudioEncoder_AAC::getFrameDuration()
+{
+    return getFrameSize() * 1000 / (m_samplerate * 16 / 8 * 2);
+}
+
 QByteArray BleAudioEncoder_AAC::getHeader()
 {
     return m_header;

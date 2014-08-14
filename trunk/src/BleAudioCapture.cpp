@@ -149,6 +149,9 @@ int BleAudioCapture::startCapture(int bitrate, int sampleRate, int channels, int
         return BLE_AUDIO_DEVICE_OPEN_ERROR;
     }
 
+    BleAVQueue::instance()->timestampBuilder()->
+            setAudioCaptureInternal(m_audioEncoder->getFrameDuration());
+
     start();
 
     return BLE_SUCESS;
