@@ -32,6 +32,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtWin>
 #include <QDesktopWidget>
 #include <QFileDialog>
+#include <QLabel>
 
 #include "NcFramelessHelper.h"
 #include "MThemeAdaptor.h"
@@ -55,6 +56,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleAudioCapture.hpp"
 #include "BleErrno.hpp"
 #include "QjtMessageBox.h"
+#include "BleVersion.hpp"
 
 #define BLE_TITLE "Bull Live Encoder"
 
@@ -147,6 +149,8 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
 #endif
 
     setWindowTitle(BLE_TITLE);
+    QString versionStr = QString("  version: %1").arg(BLE_VERSION_STR);
+    ui->statusBar->addWidget(new QLabel(versionStr));
 }
 
 BleMainWindow::~BleMainWindow()

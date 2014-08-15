@@ -24,3 +24,4 @@ history
 [0.1]&nbsp;&nbsp;2014-08-04&nbsp;&nbsp;&nbsp;support H264 encoding use libx264.<br/>
 [0.1]&nbsp;&nbsp;2014-08-04&nbsp;&nbsp;&nbsp;support transfer rtmp to media server.<br/>
 [0.1]&nbsp;&nbsp;2014-08-05&nbsp;&nbsp;&nbsp;add script on windows.<br/>
+[0.1]&nbsp;&nbsp;2014-08-15&nbsp;&nbsp;&nbsp;support AAC Encode<br/>

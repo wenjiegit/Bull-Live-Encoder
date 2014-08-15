@@ -16,6 +16,10 @@
   <layout class="QHBoxLayout" name="horizontalLayout_3">
    <item>
     <widget class="QScrollArea" name="scrollArea">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(255, 255, 255, 0);
+border:none;</string>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -24,8 +28,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>863</width>
-        <height>425</height>
+        <width>865</width>
+        <height>427</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">

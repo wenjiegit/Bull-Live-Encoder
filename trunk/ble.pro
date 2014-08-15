@@ -130,7 +130,8 @@ HEADERS  += \
     src/BleAudioEncoder_AAC.hpp \
     src/BleAVQueue.hpp \
     src/BleAVUtil.hpp \
-    src/BleAudioEncoderAbstract.hpp
+    src/BleAudioEncoderAbstract.hpp \
+    src/BleVersion.hpp
 
 FORMS    += \
     src/BleMainWindow.ui \
