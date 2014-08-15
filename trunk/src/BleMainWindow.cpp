@@ -152,15 +152,10 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
 BleMainWindow::~BleMainWindow()
 {
     STOP_THREAD(m_sendThread);
-    qDebug() << "1";
     STOP_THREAD(m_encoderThread);
-    qDebug() << "2";
-
     STOP_THREAD(m_imageProcessThread);
-    qDebug() << "3";
 
     delete ui;
-        qDebug() << "4";
 }
 
 void BleMainWindow::paintEvent(QPaintEvent *e)

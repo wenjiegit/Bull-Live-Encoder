@@ -10,6 +10,10 @@ donate
 if you want, you could donate me to help ble better. ^_^<br/>
 site: http://wenjiegit.github.io/ble_release/donate.html<br/>
 
+BLE ZIP File Download
+=================
+download: BLE(http://wenjiegit.github.io/ble_release/download.html)
+
 history
 ================
 [0.1]&nbsp;&nbsp;2014-07-05&nbsp;&nbsp;&nbsp;init project.<br/>
