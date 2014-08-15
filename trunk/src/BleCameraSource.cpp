@@ -59,7 +59,7 @@ void BleCameraSource::stopCapture()
 void BleCameraSource::run()
 {
     IplImage *pImg = NULL;
-    CvCapture *cap = cvCaptureFromCAM(m_cameraIndex);
+    CvCapture *cap = cvCreateCameraCapture(m_cameraIndex);
     if (!cap) {
         log_error("open camera failed.");
         return;
@@ -97,9 +97,7 @@ void BleCameraSource::run()
         }
         msleep(needSleepMs);
     }
-
-    // TODO : ca not release cap or will crash.
-    // cvReleaseCapture(&cap);
+    cvReleaseCapture(&cap);
 
     log_trace("BleCameraCapture exit normally.");
 }

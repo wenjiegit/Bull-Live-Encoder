@@ -125,7 +125,7 @@ void BleImageProcessThread::run()
         m_modifyOutputMutex.lock();
 
         // if delayed about 1s , then discard some image.
-        if (m_outputQueue.size() > 20) {
+        if (m_outputQueue.size() > 40) {
             log_trace("queue has many mang image, maybe your encoder is too slow!");
             goto end;
         }

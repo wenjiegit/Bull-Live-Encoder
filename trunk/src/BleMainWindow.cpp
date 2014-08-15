@@ -152,10 +152,15 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
 BleMainWindow::~BleMainWindow()
 {
     STOP_THREAD(m_sendThread);
+    qDebug() << "1";
     STOP_THREAD(m_encoderThread);
+    qDebug() << "2";
+
     STOP_THREAD(m_imageProcessThread);
+    qDebug() << "3";
 
     delete ui;
+        qDebug() << "4";
 }
 
 void BleMainWindow::paintEvent(QPaintEvent *e)
@@ -318,6 +323,8 @@ void BleMainWindow::onEncodeStop()
     STOP_THREAD(m_encoderThread);
     STOP_THREAD(m_imageProcessThread);
     STOP_THREAD(m_audioCaptureThread);
+
+    m_audioCaptureThread->stopCapture();
 
     BleFree(m_audioCaptureThread);
 
