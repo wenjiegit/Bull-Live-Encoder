@@ -32,6 +32,9 @@ border:none;</string>
         <height>427</height>
        </rect>
       </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; color:#272727;&quot;&gt;use &lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; color:#00557f;&quot;&gt;nav key&lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; color:#272727;&quot;&gt; to resize selected region&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout"/>

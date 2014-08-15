@@ -85,6 +85,8 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
     ui->addCameraBtn->setToolTip(tr("add a camera source"));
     ui->addWindowGrabBtn->setToolTip(tr("add a desktop grab source"));
     ui->addPicBtn->setToolTip(tr("add a picture source"));
+    ui->startBtn->setToolTip(tr("begin rtmp streaming"));
+    ui->startBtn->setToolTip(tr("stop rtmp streaming"));
 
     ui->titleWidget->setFixedHeight(32);
     ui->titleWidget->setTitle(BLE_TITLE);

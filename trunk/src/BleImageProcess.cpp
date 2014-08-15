@@ -244,7 +244,8 @@ void BleImageProcess::keyPressEvent(QKeyEvent *e)
 {
     if (!m_activePair) return;
 
-    if (e->key() == Qt::Key_Delete) {
+    int key = e->key();
+    if (key == Qt::Key_Delete) {
         m_activePair->source->stopCapture();
 
         if (m_sources.contains(*m_activePair)) {
@@ -254,68 +255,104 @@ void BleImageProcess::keyPressEvent(QKeyEvent *e)
 
         updateSources();
         update();
+    } else if (key == Qt::Key_Up) {
+        onUpBtnClicked();
+    } else if (key == Qt::Key_Down) {
+        onDownBtnClicked();
+    } else if (key == Qt::Key_Left) {
+        onLeftBtnClicked();
+    } else if (key == Qt::Key_Right) {
+        onRightBtnClicked();
+    } else if (key == Qt::Key_PageUp) {
+        onIncBtnClicked();
+    } else if (key == Qt::Key_PageDown) {
+        onDecBtnClicked();
+    } else {
+        QWidget::keyPressEvent(e);
     }
-
-    QWidget::keyPressEvent(e);
 }
 
 void BleImageProcess::onIncBtnClicked()
-{/*
-    if (m_activePair.rect.isValid()) {
-        int w =  m_activePair.rect.width();
-        int h = m_activePair.rect.height();
-        m_activePair.rect.setWidth(w + 1);
-        m_activePair.rect.setHeight(h + 1);
+{
+    if (!m_activePair) return;
+
+    QRect &r = m_activePair->rect;
+    if (r.isValid()) {
+        int w =  r.width();
+        int h = r.height();
+        r.setWidth(w + 1);
+        r.setHeight(h + 1);
     }
-    update();*/
+
+    update();
 }
 
 void BleImageProcess::onDecBtnClicked()
-{/*
-    if (m_activePair.rect.isValid()) {
-        int w =  m_activePair.rect.width();
-        int h = m_activePair.rect.height();
-        m_activePair.rect.setWidth(w - 1);
-        m_activePair.rect.setHeight(h - 1);
+{
+    if (!m_activePair) return;
+
+    QRect &r = m_activePair->rect;
+    if (r.isValid()) {
+        int w =  r.width();
+        int h = r.height();
+        r.setWidth(w - 1);
+        r.setHeight(h - 1);
     }
-    update();*/
+
+    update();
 }
 
 void BleImageProcess::onUpBtnClicked()
-{/*
-    if (m_activePair.rect.isValid()) {
-        int x =  m_activePair.rect.x();
-        int y = m_activePair.rect.y();
-        m_activePair.rect.moveTop(y - 1);
-        update();
-    }*/
+{
+    if (!m_activePair) return;
+
+    QRect &r = m_activePair->rect;
+    if (r.isValid()) {
+        int x =  r.x();
+        int y = r.y();
+        r.moveTop(y - 1);
+    }
+
+    update();
 }
 
 void BleImageProcess::onDownBtnClicked()
-{/*
-    if (m_activePair.rect.isValid()) {
-        int y = m_activePair.rect.y();
-        m_activePair.rect.moveBottom(y + m_activePair.rect.height() + 1);
-        update();
-    }*/
+{
+    if (!m_activePair) return;
+
+    QRect &r = m_activePair->rect;
+    if (r.isValid()) {
+        int y = r.y();
+        r.moveBottom(y + r.height() + 1);
+    }
+
+    update();
 }
 
 void BleImageProcess::onLeftBtnClicked()
-{/*
-    if (m_activePair.rect.isValid()) {
-        int x =  m_activePair.rect.x();
-        m_activePair.rect.moveLeft(x - 1);
-        update();
-    }*/
+{
+    if (!m_activePair) return;
+
+    QRect &r = m_activePair->rect;
+    if (r.isValid()) {
+        int x =  r.x();
+        r.moveLeft(x - 1);
+    }
+
+    update();
 }
 
 void BleImageProcess::onRightBtnClicked()
-{/*
-    if (m_activePair.rect.isValid()) {
-        int x =  m_activePair.rect.x();
-        m_activePair.rect.moveRight(x + m_activePair.rect.width() + 1);
-        update();
-    }*/
+{
+    if (!m_activePair) return;
+
+    QRect &r = m_activePair->rect;
+    if (r.isValid()) {
+        int x =  r.x();
+        r.moveRight(x + r.width() + 1);
+    }
+
+    update();
 }
 
 void BleImageProcess::onRefreshTimeout()
