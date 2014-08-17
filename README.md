@@ -9,6 +9,12 @@ Blog: BLE(http://wenjiegit.github.io/Bull-Live-Encoder/)<br/>
 ![preview](https://github.com/wenjiegit/Bull-Live-Encoder/blob/master/trunk/images/ble_002.jpg)<br/>
 ![preview](https://github.com/wenjiegit/Bull-Live-Encoder/blob/master/trunk/images/ble_003.jpg)<br/>
 <br/>
+
+donate
+=================
+if you want, you could donate me to help ble better. ^_^<br/>
+site: http://wenjiegit.github.io/ble_release/donate.html<br/>
+
 Features
 =================
 1. push video(H.264) and audio(AAC) to rtmp server.<br/>
@@ -17,7 +23,11 @@ Features
 4. ingest from picture.<br/>
 5. ingest from video file using ffmpeg SDK.<br/>
 6. support all of sources combination.<br/>
-<br/>
+
+BLE Download
+=================
+download: BLE(http://wenjiegit.github.io/ble_release/download.html)
+
 Build Env
 =================
 1. windows<br/>
@@ -27,22 +37,13 @@ Build Env
     with libx264.<br/>
     with libfaac.<br/>
     with RtAudio.<br/>
-<br/>
+
 2. Linux with GUI<br/>
     waiting...<br/>
-<br/>
+
 3. Mac<br/>
     waiting...<br/>
-<br/>
-donate
-=================
-if you want, you could donate me to help ble better. ^_^<br/>
-site: http://wenjiegit.github.io/ble_release/donate.html<br/>
-<br/>
-BLE Download
-=================
-download: BLE(http://wenjiegit.github.io/ble_release/download.html)
-<br/>
+
 history
 =================
 [0.1]&nbsp;&nbsp;2014-07-05&nbsp;&nbsp;&nbsp;init project.<br/>
