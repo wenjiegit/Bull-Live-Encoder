@@ -27,9 +27,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/opencv.hpp"
 
+#include "BleLog.hpp"
+
 BlePictureSource::BlePictureSource(const QString &picName)
 {
-    IplImage * pImg = cvLoadImage(picName.toStdString().c_str());
+    IplImage * pImg = cvLoadImage(picName.toLocal8Bit().data());
     if (pImg) {
         BleImage be;
         be.width = pImg->width;
@@ -44,6 +46,8 @@ BlePictureSource::BlePictureSource(const QString &picName)
         m_image = be;
 
         cvReleaseImage(&pImg);
+    } else {
+        log_error("cvLoadImage %s failed.", picName.toStdString().c_str());
     }
 }
 

@@ -178,25 +178,44 @@ void BleImageProcess::mouseMoveEvent(QMouseEvent *event)
 void BleImageProcess::mousePressEvent(QMouseEvent *e)
 {
     int findIndex = -1;
-
-    for (int i = 0; i < m_sources.size(); ++i) {
-       SourcePair & pair = m_sources[i];
-        if (pair.rect.contains(e->pos())) {
-            findIndex = i;
-            break;
-        }
+    for (int i = m_sources.size() - 1; i >= 0; --i) {
+        SourcePair & pair = m_sources[i];
+         if (pair.rect.contains(e->pos())) {
+             findIndex = i;
+             break;
+         }
     }
 
-    // if clicked blank area, set m_activePair to NULL.
-    if (findIndex == -1) {
-        m_activePair = NULL;
-        return;
-    }
-
-    // if clicked non blank area, set m_activePair to m_sources[findIndex].
-    if (&m_sources[findIndex] != m_activePair) {
+    if (findIndex != -1) {
         m_activePair = &m_sources[findIndex];
+    } else {
+        m_activePair = NULL;
     }
+
+//    if (m_activePair && m_activePair->rect.contains(e->pos())) {
+
+//    } else {
+//        int findIndex = -1;
+
+//        for (int i = 0; i < m_sources.size(); ++i) {
+//           SourcePair & pair = m_sources[i];
+//            if (pair.rect.contains(e->pos())) {
+//                findIndex = i;
+//                break;
+//            }
+//        }
+
+//        // if clicked blank area, set m_activePair to NULL.
+//        if (findIndex == -1) {
+//            m_activePair = NULL;
+//            return;
+//        }
+
+//        // if clicked non blank area, set m_activePair to m_sources[findIndex].
+//        if (&m_sources[findIndex] != m_activePair) {
+//            m_activePair = &m_sources[findIndex];
+//        }
+//    }
 
     if (!m_activePair) return;
 
@@ -270,6 +289,11 @@ void BleImageProcess::keyPressEvent(QKeyEvent *e)
     } else {
         QWidget::keyPressEvent(e);
     }
+}
+
+void BleImageProcess::focusOutEvent(QFocusEvent *e)
+{
+    m_activePair = NULL;
 }
 
 void BleImageProcess::onIncBtnClicked()
@@ -366,4 +390,20 @@ void BleImageProcess::updateSources()
     if (ipt) {
         ipt->updateSources(m_sources);
     }
+}
+
+int BleImageProcess::getPairIndex(SourcePair *pair)
+{
+    if (!pair) return -1;
+    QList<SourcePair> m_sources;
+
+    for (int i = 0; i < m_sources.size(); ++i) {
+        SourcePair *p = &m_sources[i];
+
+        if (pair == p) {
+            return i;
+        }
+    }
+
+    return -1;
 }
