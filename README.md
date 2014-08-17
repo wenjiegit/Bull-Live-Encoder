@@ -2,9 +2,11 @@ Bull-Live-Encoder
 =================
 Bull Live Encoder is a tool for pushing rtmp to server,<br/>
 which supports H264 + AAC and supports ingest from camer or desktop or some windows.<br/>
-
+<br/>
 Blog: BLE(http://wenjiegit.github.io/Bull-Live-Encoder/)<br/>
-
+<br/>
+![preview](https://github.com/wenjiegit/Bull-Live-Encoder/master/images/ble_001.png)<br/>
+<br/>
 Features
 =================
 1. push video(H.264) and audio(AAC) to rtmp server.<br/>
@@ -13,7 +15,7 @@ Features
 4. ingest from picture.<br/>
 5. ingest from video file using ffmpeg SDK.<br/>
 6. support all of sources combination.<br/>
-
+<br/>
 Build Env
 =================
 1. windows<br/>
@@ -29,16 +31,16 @@ Build Env
 <br/>
 3. Mac<br/>
     waiting...<br/>
-
+<br/>
 donate
 =================
 if you want, you could donate me to help ble better. ^_^<br/>
 site: http://wenjiegit.github.io/ble_release/donate.html<br/>
-
+<br/>
 BLE Download
 =================
 download: BLE(http://wenjiegit.github.io/ble_release/download.html)
-
+<br/>
 history
 =================
 [0.1]&nbsp;&nbsp;2014-07-05&nbsp;&nbsp;&nbsp;init project.<br/>
