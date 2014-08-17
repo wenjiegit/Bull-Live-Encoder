@@ -21,4 +21,33 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "BleAVUtil.hpp"
+#ifndef BLEFILESOURCE_HPP
+#define BLEFILESOURCE_HPP
+
+#include "BleSourceAbstract.hpp"
+#include "BleThread.hpp"
+
+#include <QMutex>
+
+class BleFileSource : public BleThread, public BleSourceAbstract
+{
+    Q_OBJECT
+public:
+    BleFileSource(QObject * parent = 0);
+
+    virtual BleImage getImage();
+    virtual void stopCapture();
+    virtual void run();
+
+    virtual void setCaptureInterval(int interval);
+
+    void setFileName(const QString &fileName);
+
+private:
+    QString m_fileName;
+    BleImage m_image;
+    QMutex m_modifyMutex;
+    int m_interval;
+};
+
+#endif // BLEFILESOURCE_HPP

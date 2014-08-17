@@ -54,6 +54,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BlePictureSource.hpp"
 #include "BleWinAero.hpp"
 #include "BleAudioCapture.hpp"
+#include "BleFileSource.hpp"
 #include "BleErrno.hpp"
 #include "QjtMessageBox.h"
 #include "BleVersion.hpp"
@@ -75,16 +76,19 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
     ui->addPicBtn->setPixmap(QPixmap(":/image/add_pic.png"));
     ui->startBtn->setPixmap(QPixmap(":/image/ble_start.png"));
     ui->stopBtn->setPixmap(QPixmap(":/image/ble_stop.png"));
+    ui->addFileSourceBtn->setPixmap(QPixmap(":/image/add_file.png"));
 
     ui->addCameraBtn->setFixedHeight(48);
     ui->addWindowGrabBtn->setFixedHeight(48);
     ui->addPicBtn->setFixedHeight(48);
     ui->startBtn->setFixedHeight(48);
     ui->stopBtn->setFixedHeight(48);
+    ui->addFileSourceBtn->setFixedHeight(48);
 
     ui->addCameraBtn->setToolTip(tr("add a camera source"));
     ui->addWindowGrabBtn->setToolTip(tr("add a desktop grab source"));
     ui->addPicBtn->setToolTip(tr("add a picture source"));
+    ui->addFileSourceBtn->setToolTip(tr("add a file source"));
     ui->startBtn->setToolTip(tr("begin rtmp streaming"));
     ui->startBtn->setToolTip(tr("stop rtmp streaming"));
 
@@ -122,6 +126,8 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
             , this, SLOT(onAddWindowGrab()));
     connect(ui->addPicBtn, SIGNAL(clicked())
             , this, SLOT(onAddPic()));
+    connect(ui->addFileSourceBtn, SIGNAL(clicked())
+            , this, SLOT(onAddFileSource()));
 
     // tray setting
     m_systemTrayIcon = new QSystemTrayIcon(QIcon(":/image/logo.png"), this);
@@ -380,4 +386,19 @@ void BleMainWindow::onAddPic()
 
     BlePictureSource *source = new BlePictureSource(picName);
     m_imageProcessWidget->addCaptureSource(source, 10, 10, 320, 240);
+}
+
+void BleMainWindow::onAddFileSource()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("please select a video file"),
+                                                    "",
+                                                    tr("Videos (*.flv *.rmvb *.mp4)"));
+
+    if (fileName.isEmpty()) return;
+
+    BleFileSource *source = new BleFileSource();
+    source->setFileName(fileName);
+    source->start();
+
+    m_imageProcessWidget->addCaptureSource(source, 30, 30, 320, 240);
 }

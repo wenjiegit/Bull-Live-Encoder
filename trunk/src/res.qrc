@@ -26,5 +26,6 @@
         <file>image/ble_setting.png</file>
         <file>image/ble_start.png</file>
         <file>image/ble_stop.png</file>
+        <file>image/add_file.png</file>
     </qresource>
 </RCC>

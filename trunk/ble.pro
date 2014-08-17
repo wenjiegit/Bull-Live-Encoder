@@ -81,7 +81,8 @@ SOURCES += \
     src/BleAudioEncoder_AAC.cpp \
     src/BleAVQueue.cpp \
     src/BleAVUtil.cpp \
-    src/BleAudioEncoderAbstract.cpp
+    src/BleAudioEncoderAbstract.cpp \
+    src/BleFileSource.cpp
 
 HEADERS  += \
     src/BleMainWindow.hpp \
@@ -131,7 +132,8 @@ HEADERS  += \
     src/BleAVQueue.hpp \
     src/BleAVUtil.hpp \
     src/BleAudioEncoderAbstract.hpp \
-    src/BleVersion.hpp
+    src/BleVersion.hpp \
+    src/BleFileSource.hpp
 
 FORMS    += \
     src/BleMainWindow.ui \

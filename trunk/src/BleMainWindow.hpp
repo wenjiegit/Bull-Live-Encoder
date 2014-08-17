@@ -42,6 +42,7 @@ class BleCameraSource;
 class BleImageProcessThread;
 class BleImageProcess;
 class BleAudioCapture;
+class BleFileSource;
 
 class BleMainWindow : public QMainWindow, public ThemedWidgetBase
 {
@@ -74,6 +75,7 @@ private slots:
     void onAddWindowGrab();
     void onDesktopSelected(const QRect &rect);
     void onAddPic();
+    void onAddFileSource();
 
 private:
     Ui::BleMainWindow *ui;
@@ -88,6 +90,7 @@ private:
     BleImageProcessThread *m_imageProcessThread;
     BleImageProcess *m_imageProcessWidget;
     BleAudioCapture *m_audioCaptureThread;
+    BleFileSource *m_fileCaptureThread;
 };
 
 #endif // BleMainWindow_H
