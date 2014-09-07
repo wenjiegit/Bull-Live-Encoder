@@ -122,6 +122,9 @@ int BleX264Encoder::init()
     m_x264Param->cpu |=X264_CPU_MMXEXT;
     m_x264Param->cpu |=X264_CPU_SSE;
 
+    // level set
+    m_x264Param->i_level_idc = 3.1;
+
     m_x264Encoder = x264_encoder_open(m_x264Param);
 
     m_pictureIn = new x264_picture_t;
