@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <QMutex>
 #include <QQueue>
+#include <QHash>
 
 #include "BleTimestampBulider.hpp"
 #include "BleAVUtil.hpp"
@@ -38,6 +39,11 @@ public:
     static BleAVQueue *instance();
 
     void enqueue(BleAVPacket * pkt);
+
+    BleAVPacket * finPkt();
+
+    void updatePkt(BleAVPacket * pkt);
+
     QQueue<BleAVPacket *> dequeue();
 
     inline BleTimestampBulider *timestampBuilder();
@@ -45,7 +51,7 @@ public:
 private:
     BleTimestampBulider m_timestampBulider;
     QMutex m_mutex;
-    QQueue<BleAVPacket *> m_queue;
+    QList<BleAVPacket *> m_queue;
 };
 
 // inline function

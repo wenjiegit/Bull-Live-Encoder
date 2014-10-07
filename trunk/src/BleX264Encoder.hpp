@@ -30,6 +30,11 @@ extern "C"{
 }
 
 #include <QObject>
+#include <QList>
+
+#include "mstream.hpp"
+
+class BleVideoPacket;
 
 class BleX264Encoder
 {
@@ -38,7 +43,7 @@ public:
     ~BleX264Encoder();
 
     int init();
-    QByteArray encode(unsigned char *rgbframe, unsigned long long ts);
+    int encode(unsigned char *rgbframe, mint64 pts);
 
     virtual int getFrameDuration();
 
@@ -49,6 +54,9 @@ private:
     x264_param_t * m_x264Param;
     x264_picture_t *m_pictureIn;
     x264_t *m_x264Encoder;
+    int delayOffset;
+    bool bFirstFrameProcessed;
+    int frameShift;
 };
 
 #endif // BLEX264ENCODER_H

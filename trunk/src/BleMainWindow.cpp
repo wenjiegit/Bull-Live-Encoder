@@ -207,16 +207,13 @@ void BleMainWindow::onMin()
 
 void BleMainWindow::onMax()
 {
-    if(!m_maxBtn)
-    {
+    if(!m_maxBtn) {
         m_rectRestoreWindow = geometry();
         setGeometry(qApp->desktop()->availableGeometry());
         framelessHelper->setWidgetMovable(false);
         framelessHelper->setWidgetResizable(false);
         ui->titleWidget->button(TitleWidget::MAX_HINT)->setToolTip(tr("restore"));
-    }
-    else
-    {
+    } else {
         setGeometry(m_rectRestoreWindow);
         framelessHelper->setWidgetMovable(true);
         framelessHelper->setWidgetResizable(true);
@@ -290,7 +287,6 @@ void BleMainWindow::onEncodeStart()
 {
     m_encoderThread->init();
 
-    // TODO make this a option
     QSize si = MOption::instance()->option("res", "encoder").toSize();
     int fps = MOption::instance()->option("fps", "encoder").toInt();
 
@@ -298,7 +294,6 @@ void BleMainWindow::onEncodeStart()
     m_imageProcessThread->setInternal(1000 / fps);
 
     START_THREAD(m_encoderThread);
-    START_THREAD(m_sendThread);
     START_THREAD(m_imageProcessThread);
 
     m_audioCaptureThread = new BleAudioCapture;
@@ -312,6 +307,7 @@ void BleMainWindow::onEncodeStart()
     } else if (audioChannelsStr == "Stereo") {
         audioChannels = 2;
     }
+    BleAssert(audioChannels != -1);
 
     int audioBitrate = MOption::instance()->option("bitrate", "audio").toInt() * 1000;
     int devID = MOption::instance()->option("dev_id", "audio").toInt();
@@ -320,6 +316,8 @@ void BleMainWindow::onEncodeStart()
     if (ret != BLE_SUCESS) {
         QjtMessageBox::critical(this, tr("error"), tr("start audio capture error."));
     }
+
+    START_THREAD(m_sendThread);
 
     ui->startBtn->setEnabled(false);
 }

@@ -94,11 +94,7 @@ void BleEncoderThread::run()
 
             cvCvtColor(cvImage, imgYUV, CV_BGR2YUV_I420);
 
-           QByteArray arr = m_x264Encoder->encode((uchar*)imgYUV->imageData, image->pts);
-
-           BleVideoPacket *pkt = new BleVideoPacket(Video_Type_H264);
-           pkt->data = arr;
-           BleAVQueue::instance()->enqueue(pkt);
+            m_x264Encoder->encode((uchar*)imgYUV->imageData, image->pts);
 
 #if 0
            {

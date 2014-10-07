@@ -21,7 +21,7 @@ INCLUDEPATH +=  src/core \
                 3rdparty/libRtAudio/ \
                 3rdparty/libfaac/include
 
-LIBS += -L$$PWD/3rdparty/librtmp -lrtmp \
+LIBS += -L$$PWD/3rdparty/librtmp/ -lrtmp \
         -L$$PWD/3rdparty/libx264/ -lx264 \
         -L$$PWD/3rdparty/libopenssl/ -lssl \
         -L$$PWD/3rdparty/libopenssl/ -lcrypto \
@@ -82,7 +82,9 @@ SOURCES += \
     src/BleAVQueue.cpp \
     src/BleAVUtil.cpp \
     src/BleAudioEncoderAbstract.cpp \
-    src/BleFileSource.cpp
+    src/BleFileSource.cpp \
+    src/core/mstream.cpp \
+    src/BleContext.cpp
 
 HEADERS  += \
     src/BleMainWindow.hpp \
@@ -133,7 +135,9 @@ HEADERS  += \
     src/BleAVUtil.hpp \
     src/BleAudioEncoderAbstract.hpp \
     src/BleVersion.hpp \
-    src/BleFileSource.hpp
+    src/BleFileSource.hpp \
+    src/core/mstream.hpp \
+    src/BleContext.hpp
 
 FORMS    += \
     src/BleMainWindow.ui \

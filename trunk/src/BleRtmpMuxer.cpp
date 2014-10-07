@@ -23,6 +23,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <iostream>
 
 #include "BleRtmpMuxer.hpp"
 #include "rtmp.h"
@@ -154,72 +156,15 @@ private:
 BleRtmpMuxer::BleRtmpMuxer()
 {
 }
-#include <iostream>
-int BleRtmpMuxer::addH264(char *data, int size, unsigned long long pts, unsigned long long dts)
+
+int BleRtmpMuxer::addH264(const MStream &data, unsigned long long dts)
 {
-    MString msdata(data, size);
-
-    static MString delim0;
-    static MString delim1;
-    if (delim0.empty()) {
-        delim0.append(1, 0x00);
-        delim0.append(1, 0x00);
-        delim0.append(1, 0x00);
-        delim0.append(1, 0x01);
-    }
-
-    if (delim1.empty()) {
-        delim1.append(1, 0x00);
-        delim1.append(1, 0x00);
-        delim1.append(1, 0x01);
-    }
-
-    MStringList nalus;
-    MStringList nalu_0 = msdata.split(delim0);
-    while (!nalu_0.empty()) {
-        MString nalu = nalu_0.front();
-        MStringList nalu_1 = nalu.split(delim1);
-
-        nalus << nalu_1;
-        nalu_0.pop_front();
-    }
-
-    for (MStringList::iterator iter = nalus.begin(); iter != nalus.end(); ++iter)
-    {
-        MString &nalu = *iter;
-
-        char *nalu_data = const_cast<char*>(nalu.data());
-        int ret = addH264Internal(nalu_data, nalu.size(), pts, dts);
-
-        if (ret != TRUE) {
-            return ret;
-        }
-    }
-
-    return TRUE;
+    return m_rtmpAU->sendPacket(data, dts, RTMP_PACKET_TYPE_VIDEO, StreamChannel_Video);
 }
 
-int BleRtmpMuxer::addAAC(char *data, int size, unsigned long long pts)
+int BleRtmpMuxer::addAAC(const MStream &data, unsigned long long dts)
 {
-    MString audioData(data, size);
-    if (audioData.size() < 7) return 0;
-
-    audioData.erase(0, 7);
-    char* ad = const_cast<char*>(audioData.data());
-    
-    return addAACInternal(ad, audioData.size(), pts);
-}
-
-int BleRtmpMuxer::addAACSpeci(char *data, int size)
-{
-    string pkt = genAudioFrame(data, size, true);
-    
-    return m_rtmpAU->sendPacket(pkt, 0, RTMP_PACKET_TYPE_AUDIO, StreamChannel_Audio);
-}
-
-int BleRtmpMuxer::addAudio(char *data, int size, unsigned long long pts)
-{
-    return m_rtmpAU->sendPacket(string(data, size), pts, RTMP_PACKET_TYPE_AUDIO, StreamChannel_Audio);
+    return m_rtmpAU->sendPacket(data, dts, RTMP_PACKET_TYPE_AUDIO, StreamChannel_Audio);
 }
 
 int BleRtmpMuxer::setMetaData(const FlvMetaData &metaData)
@@ -290,11 +235,6 @@ int BleRtmpMuxer::start()
 int BleRtmpMuxer::stop()
 {
     return m_rtmpAU->close();
-}
-
-int BleRtmpMuxer::init()
-{
-    return 0;
 }
 
 string BleRtmpMuxer::genSequenceHeader()
@@ -424,6 +364,13 @@ RtmpAU::RtmpAU(const string &url)
     , m_pRtmp(RTMP_Alloc())
 {
     RTMP_Init(m_pRtmp);
+    m_pRtmp->m_bUseNagle = TRUE;
+
+    m_pRtmp->Link.flashVer.av_val = "FMLE/3.0 (compatible; FMSc/1.0)";
+    m_pRtmp->Link.flashVer.av_len = (int)strlen(m_pRtmp->Link.flashVer.av_val);
+
+    m_pRtmp->m_outChunkSize = 4096;//RTMP_DEFAULT_CHUNKSIZE;//
+    m_pRtmp->m_bSendChunkSizeInfo = TRUE;
 }
 
 RtmpAU::~RtmpAU()
@@ -447,6 +394,16 @@ int RtmpAU::connect()
 
     if ((ret = RTMP_ConnectStream(m_pRtmp, 0)) != TRUE) {
         return ret;
+    }
+
+    int tcpBufferSize = 8196*4;
+    int curTCPBufSize, curTCPBufSizeSize = 4;
+    getsockopt (m_pRtmp->m_sb.sb_socket, SOL_SOCKET, SO_SNDBUF, (char *)&curTCPBufSize, &curTCPBufSizeSize);
+
+    if(curTCPBufSize < int(tcpBufferSize))
+    {
+        setsockopt (m_pRtmp->m_sb.sb_socket, SOL_SOCKET, SO_SNDBUF, (const char *)&tcpBufferSize, sizeof(tcpBufferSize));
+        getsockopt (m_pRtmp->m_sb.sb_socket, SOL_SOCKET, SO_SNDBUF, (char *)&curTCPBufSize, &curTCPBufSizeSize);
     }
 
     return ret;

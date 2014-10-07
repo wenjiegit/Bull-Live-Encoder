@@ -29,6 +29,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 class BleAudioEncoderAbstract
 {
 public:
+    enum AudioEncoderType
+    {
+        AAC,
+        MP3
+    };
+
+public:
     BleAudioEncoderAbstract();
 
     virtual bool init(int samplerate, int channel, int bitrate) = 0;
@@ -36,11 +43,13 @@ public:
     virtual bool encode(const QByteArray &data, QByteArray &output) = 0;
     virtual int getFrameSize() = 0;
     virtual int getFrameDuration() = 0;
+    inline AudioEncoderType encoderType() { return m_encoderType; }
 
 protected:
     int m_samplerate;
     int m_channels;
     int m_bitrate;
+    AudioEncoderType m_encoderType;
 };
 
 #endif // BLEAUDIOENCODERABSTRACT_HPP

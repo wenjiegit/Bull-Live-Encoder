@@ -88,6 +88,10 @@ BleSetting::BleSetting(QWidget *parent) :
     // add default tune, which is NULL
     ui->x264Tune->insertItem(0, "Default");
 
+    // add default profile, which is not set
+    // @see http://mewiki.project357.com/wiki/X264_Settings
+    ui->x264Profile->insertItem(0, "Default");
+
     // add res
     QSettings resIni("res.ini", QSettings::IniFormat);
     QStringList keys = resIni.allKeys();
@@ -109,6 +113,12 @@ BleSetting::BleSetting(QWidget *parent) :
     ui->keyFrameInterval->addItem("3");
     ui->keyFrameInterval->addItem("4");
     ui->keyFrameInterval->addItem("5");
+    ui->keyFrameInterval->addItem("5");
+    ui->keyFrameInterval->addItem("6");
+    ui->keyFrameInterval->addItem("7");
+    ui->keyFrameInterval->addItem("8");
+    ui->keyFrameInterval->addItem("9");
+    ui->keyFrameInterval->addItem("10");
 
     // add quality
     ui->quality->addItem("0");

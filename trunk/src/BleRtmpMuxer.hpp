@@ -26,6 +26,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <string>
 
+#include "mstream.hpp"
+
 using namespace std;
 
 /*!
@@ -65,18 +67,12 @@ public:
     /*!
         @param data point to one NALU
     */
-    int addH264(char *data, int size, unsigned long long pts, unsigned long long dts);
+    int addH264(const MStream &data, unsigned long long dts);
 
     /*!
         @param data point to one audio frame
     */
-    int addAAC(char *data, int size, unsigned long long pts);
-    /*!
-        @param data point to one audio spc
-    */
-    int addAACSpeci(char *data, int size);
-
-    int addAudio(char *data, int size, unsigned long long pts);
+    int addAAC(const MStream &data, unsigned long long dts);
 
     int setMetaData(const FlvMetaData &metaData);
 
@@ -100,7 +96,6 @@ public:
     int stop();
 
 private:
-    int init();
     string genSequenceHeader();
     string genSPS();
     string genVideoFrame(char *data, int size, unsigned long long pts, unsigned long long dts, bool keyframe);

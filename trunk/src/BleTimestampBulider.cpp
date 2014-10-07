@@ -60,28 +60,12 @@ qint64 BleTimestampBulider::addVideoFrame()
 {
     BleAutoLocker(m_mutex);
 
-    qint64 ret = 0;
-    if (m_videoTimestamp == 0) {
-        ret = 0;
-        m_videoTimestamp += m_videoInternal;
-    } else {
-        ret = growTimestamp(m_videoTimestamp, m_videoInternal, m_audioTimestamp);
-    }
-
-    return ret;
+    return growTimestamp(m_videoTimestamp, m_videoInternal, m_audioTimestamp);;
 }
 
 qint64 BleTimestampBulider::addAudioFrame()
 {
     BleAutoLocker(m_mutex);
 
-    qint64 ret = 0;
-    if (m_audioTimestamp == 0) {
-        ret = 0;
-        m_audioTimestamp += m_audiInternal;
-    } else {
-        ret = growTimestamp(m_audioTimestamp, m_audiInternal, m_videoTimestamp);
-    }
-
-    return ret;
+    return growTimestamp(m_audioTimestamp, m_audiInternal, m_videoTimestamp);;
 }

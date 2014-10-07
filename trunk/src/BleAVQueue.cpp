@@ -48,26 +48,44 @@ BleAVQueue *BleAVQueue::instance()
 void BleAVQueue::enqueue(BleAVPacket *pkt)
 {
     BleAutoLocker(m_mutex);
-    if (m_queue.size() > 300) {
-        return;
+
+    // just enqueue
+    m_queue << pkt;
+}
+
+BleAVPacket *BleAVQueue::finPkt()
+{
+    // find first un-ready video
+    for (int i = 0; i < m_queue.size(); ++i) {
+        BleAVPacket *pkt = m_queue.at(i);
+        if (!pkt->ready) return pkt;
     }
 
-    if (pkt->pktType == Packet_Type_Audio) {
-        pkt->pts = m_timestampBulider.addAudioFrame();
-        //pkt->pts = QDateTime::currentDateTime().toMSecsSinceEpoch() - startTime;
-    } else if (pkt->pktType == Packet_Type_Video) {
-        pkt->pts = m_timestampBulider.addVideoFrame();
-    }
-    pkt->dts = pkt->pts;
+    return NULL;
+}
 
-    m_queue.enqueue(pkt);
+void BleAVQueue::updatePkt(BleAVPacket *pkt)
+{
+    BleAutoLocker(m_mutex);
+
+    pkt->ready = true;
 }
 
 QQueue<BleAVPacket *> BleAVQueue::dequeue()
 {
     BleAutoLocker(m_mutex);
-    QQueue<BleAVPacket *> ret = m_queue;
-    m_queue.clear();
 
-    return ret;
+    QQueue<BleAVPacket *> pkts;
+    while (!m_queue.empty()) {
+        BleAVPacket *pkt = m_queue.first();
+        if (pkt->ready) {
+            pkts << pkt;
+
+            // erase from m_queue
+            m_queue.removeFirst();
+        } else
+            break;
+    }
+
+    return pkts;
 }

@@ -32,6 +32,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleUtil.hpp"
 #include "BleErrno.hpp"
 #include "MOption.h"
+#include "BleContext.hpp"
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -110,6 +111,38 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
     BleEncoderThread *encodeThread = dynamic_cast<BleEncoderThread*>(m_encodeThread);
     BleAssert(encodeThread);
 
+    // if H264 + AAC
+    // send sequence header
+    // send video sh
+    {
+        BleAVPacket *pkt = appCtx->videoSH;
+        MStream &data = pkt->data;
+        if (muxer.addH264(data, pkt->dts) != TRUE ) {
+            ret = BLE_RTMPSEND_ERROR;
+            return ret;
+        }
+    }
+
+    // send audio sh
+    {
+        BleAVPacket *pkt = appCtx->audioSH;
+        MStream &data = pkt->data;
+        if (muxer.addAAC(data, pkt->dts) != TRUE ) {
+            ret = BLE_RTMPSEND_ERROR;
+            return ret;
+        }
+    }
+
+    // send video sei
+    {
+        BleAVPacket *pkt = appCtx->seiPkt;
+        MStream &data = pkt->data;
+        if (muxer.addH264(data, pkt->dts) != TRUE ) {
+            ret = BLE_RTMPSEND_ERROR;
+            return ret;
+        }
+    }
+
     while (!m_stop) {
         // get from queue
         QElapsedTimer timer;
@@ -123,15 +156,15 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
 
         while (!pkts.empty()) {
             BleAVPacket *pkt = pkts.dequeue();
-            QByteArray &data = pkt->data;
+            MStream &data = pkt->data;
 
             if (pkt->pktType == Packet_Type_Video) {
-                if (muxer.addH264(data.data(), data.size(), pkt->pts, pkt->pts) != TRUE ) {
+                if (muxer.addH264(data, pkt->dts) != TRUE ) {
                     ret = BLE_RTMPSEND_ERROR;
                     return ret;
                 }
             } else if (pkt->pktType == Packet_Type_Audio) {
-                if (muxer.addAudio(data.data(), data.size() , pkt->pts) != TRUE ) {
+                if (muxer.addAAC(data, pkt->dts) != TRUE ) {
                     ret = BLE_RTMPSEND_ERROR;
                     return ret;
                 }

@@ -30,6 +30,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleLog.hpp"
 #include "BleSourceAbstract.hpp"
 #include "BleUtil.hpp"
+#include "BleAVUtil.hpp"
+#include "BleAVQueue.hpp"
 
 #include <QDateTime>
 #include <QElapsedTimer>
@@ -125,6 +127,8 @@ void BleImageProcessThread::run()
         m_modifyOutputMutex.lock();
 
         // if delayed about 1s , then discard some image.
+        // TODO make this to option
+        // TODO check AVQueue size
         if (m_outputQueue.size() > 40) {
             log_trace("queue has many mang image, maybe your encoder is too slow!");
             goto end;
@@ -144,7 +148,12 @@ void BleImageProcessThread::run()
             be->format = BleImage_Format_BGR24;
 
             m_timestampBuilder.setVideoCaptureInternal(m_internal);
-            be->pts = m_timestampBuilder.addVideoFrame();
+            //be->pts = m_timestampBuilder.addVideoFrame();
+
+            BleVideoPacket *pkt = new BleVideoPacket(Video_Type_H264);
+            pkt->ready = false;
+            pkt->dts = be->pts = BleAVQueue::instance()->timestampBuilder()->addVideoFrame();
+            BleAVQueue::instance()->enqueue(pkt);
 
             m_outputQueue.enqueue(be);
         }

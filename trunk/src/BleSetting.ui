@@ -67,7 +67,7 @@
          <item row="10" column="1">
           <widget class="QComboBox" name="bitrate">
            <property name="currentIndex">
-            <number>4</number>
+            <number>0</number>
            </property>
            <item>
             <property name="text">
@@ -81,12 +81,47 @@
            </item>
            <item>
             <property name="text">
+             <string>120</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>150</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>180</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>200</string>
             </property>
            </item>
            <item>
             <property name="text">
+             <string>250</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>300</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>350</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>400</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>450</string>
             </property>
            </item>
            <item>

@@ -21,66 +21,42 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef BLEAVPACKET_HPP
-#define BLEAVPACKET_HPP
+#ifndef MSTREAM_HPP
+#define MSTREAM_HPP
 
-#include <QByteArray>
-#include "mstream.hpp"
+#include "mstring.hpp"
 
-#define Packet_Type_Audio 0x08
-#define Packet_Type_Video 0x09
-
-#define Audio_Type_AAC 0x01
-#define Audio_Type_MP3 0x02
-
-#define Video_Type_H264 0x17
-
-class BleAVPacket
+class MStream : public MString
 {
 public:
-    BleAVPacket(char type)
-        : pktType(type)
-        , pts(0)
-        , dts(0)
-        , ready(false)
-    {
+    MStream();
 
-    }
-    virtual ~BleAVPacket() {}
+    void write1Bytes(uchar value);
+    void write2Bytes(mint16 value);
+    void write3Bytes(int value);
+    void write4Bytes(int value);
+    void write8Bytes(mint64 value);
+    void write8Bytes(double value);
+    void writeString(const MString &value);
+    void writeString(const char *data, int size);
 
-    MStream data;
-    char pktType;
-    qint64 pts;
-    qint64 dts;
-    bool ready;
+    int read1Bytes(mint8 &var);
+    int read2Bytes(mint16 &var);
+    int read3Bytes(mint32 &var);
+    int read4Bytes(mint32 &var);
+    int read8Bytes(double &var);
+
+    int readString(mint16 len, MString &var);
+
+    int left();
+    int skip(int len);
+    void reset();
+    bool end();
+    int pos();
+    void print(int len);
+
+private:
+    mint32 m_pos;
 };
 
-class BleAudioPacket : public BleAVPacket
-{
-public:
-    BleAudioPacket(char at)
-        : BleAVPacket(Packet_Type_Audio)
-        , audioType(at)
-    {
-
-    }
-    ~BleAudioPacket() {}
-
-    char audioType;
-};
-
-class BleVideoPacket : public BleAVPacket
-{
-public:
-    BleVideoPacket(char vt)
-        : BleAVPacket(Packet_Type_Video)
-        , videoType(vt)
-    {
-
-    }
-    ~BleVideoPacket() {}
-
-    char videoType;
-};
-
-#endif // BLEAVPACKET_HPP
+#endif // MSTREAM_HPP

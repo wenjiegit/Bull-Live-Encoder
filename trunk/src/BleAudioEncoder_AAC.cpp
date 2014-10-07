@@ -29,6 +29,7 @@ BleAudioEncoder_AAC::BleAudioEncoder_AAC()
     : m_faacHandle(0)
     , m_outputBuffer(NULL)
 {
+    m_encoderType = AAC;
 }
 
 bool BleAudioEncoder_AAC::init(int samplerate, int channel, int bitrate)

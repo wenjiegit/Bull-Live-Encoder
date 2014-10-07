@@ -31,6 +31,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleAVQueue.hpp"
 #include "BleAudioEncoder_AAC.hpp"
 #include "BleErrno.hpp"
+#include "BleContext.hpp"
 
 #include "MOption.h"
 
@@ -70,18 +71,8 @@ BleAudioCapture::~BleAudioCapture()
 void BleAudioCapture::run()
 {
     m_stop = false;
+
     while (!m_stop) {
-
-        // if use aac, then should send aac sequence header.
-        BleAudioEncoder_AAC *aac_encoder = dynamic_cast<BleAudioEncoder_AAC*>(m_audioEncoder);
-        if (!m_hasSendHeader && aac_encoder) {
-            BleAudioPacket *pkt = new BleAudioPacket(Audio_Type_AAC);
-            pkt->data = aac_encoder->getHeader();
-
-            BleAVQueue::instance()->enqueue(pkt);
-            m_hasSendHeader = true;
-        }
-
         int frameSize = m_audioEncoder->getFrameSize();
 
         m_mutex.lock();
@@ -102,7 +93,9 @@ void BleAudioCapture::run()
 
             if (outputArray.size() > 0) {
                 BleAudioPacket *pkt = new BleAudioPacket(Audio_Type_AAC);
-                pkt->data = outputArray;
+                pkt->data.writeString(MString(outputArray.data(), outputArray.size()));
+                pkt->dts = BleAVQueue::instance()->timestampBuilder()->addAudioFrame();
+                pkt->ready = true;
                 BleAVQueue::instance()->enqueue(pkt);
             }
         }
@@ -148,6 +141,17 @@ int BleAudioCapture::startCapture(int bitrate, int sampleRate, int channels, int
     if (!m_audioEncoder->init(m_sampleRate, m_channels, m_bitrate)) {
         log_error("audio encoder error");
         return BLE_AUDIO_INIT_ERROR;
+    }
+
+    if (m_audioEncoder->encoderType() == BleAudioEncoderAbstract::AAC) {
+        // update audio sh
+        BleAudioPacket *pkt = new BleAudioPacket(Audio_Type_AAC);
+        QByteArray arr = dynamic_cast<BleAudioEncoder_AAC*>(m_audioEncoder)->getHeader();
+        pkt->data.writeString(arr.data(), arr.size());
+        pkt->ready = true;
+        pkt->dts = 0;
+
+        appCtx->audioSH = pkt;
     }
 
     m_grabEngine = new RtAudio;
