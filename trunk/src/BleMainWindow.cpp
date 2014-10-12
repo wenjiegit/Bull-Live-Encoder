@@ -420,7 +420,7 @@ void BleMainWindow::onAddFileSource()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("please select a video file"),
                                                     "",
-                                                    tr("Videos (*.flv *.rmvb *.mp4)"));
+                                                    tr("Videos (*.flv *.rmvb *.mp4 *.mkv *.avi *.wmv)"));
 
     if (fileName.isEmpty()) return;
 

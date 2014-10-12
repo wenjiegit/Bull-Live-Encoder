@@ -93,6 +93,7 @@ void BleRtmpSendThread::run()
 
         log_trace("connect to %s success.", url.toStdString().c_str());
         ret = service(*muxer);
+        muxer->stop();
 
         if (ret != BLE_SUCESS) {
             log_error("rtmp send error, ret = %d", ret);
@@ -239,20 +240,23 @@ int BleRtmpSendThread::sendVideoSei(BleRtmpMuxer &muxer)
 
 void BleRtmpSendThread::onTimeout()
 {
-    BleAutoLocker(m_mutex);
+    if (!m_mutex.tryLock()) return;
+
     int audioKbps = m_audioKbps * 1000 / m_timer.interval();
     int videoKbps = m_videoKbps * 1000 / m_timer.interval();
     int fps = m_fps * 1000 / m_timer.interval();
+
+    m_audioKbps = 0;
+    m_videoKbps = 0;
+    m_fps = 0;
+
+    m_mutex.unlock();
 
     kbps bs = {audioKbps, videoKbps, fps};
     m_kbps.append(bs);
 
     // average value
     if (m_kbps.size() > 4) m_kbps.removeFirst();
-
-    m_audioKbps = 0;
-    m_videoKbps = 0;
-    m_fps = 0;
 
     int audioKbpsAll = 0;
     int videoKbpsAll = 0;
