@@ -67,6 +67,8 @@ BleImageProcess::~BleImageProcess()
 void BleImageProcess::setProcessThread(QThread *thread)
 {
     m_processThread = thread;
+
+    updateSources();
 }
 
 void BleImageProcess::addCaptureSource(BleSourceAbstract *source, int x, int y, int w, int h)
@@ -84,12 +86,10 @@ void BleImageProcess::paintEvent(QPaintEvent *event)
 {
     QPainter p(this);
 
+    p.setRenderHint(QPainter::SmoothPixmapTransform);
+
     // back ground
     p.fillRect(rect(), QBrush(QColor(48, 48, 48)));
-    QPen pen(Qt::SolidLine);
-    pen.setWidth(2);
-    p.setPen(pen);
-    p.drawRect(event->rect());
 
     // element draw
     for (int i = 0; i < m_sources.size(); ++i) {
@@ -102,20 +102,26 @@ void BleImageProcess::paintEvent(QPaintEvent *event)
         if (image.dataSize <= 0) continue;
 
         QImage qimage;
-        if (image.format == BleImage_Format_RGB888) {
-            qimage = QImage((uchar*)image.data, image.width, image.height, QImage::Format_RGB888).rgbSwapped();
-        } else if (image.format == BleImage_Format_BGR24) {
-            qimage = QImage((uchar*)image.data, image.width, image.height, QImage::Format_RGB888);
+        if (image.format == BleImage_Format_BGR24) {
+            IplImage *oriImage = cvCreateImageHeader(cvSize(image.width, image.height), IPL_DEPTH_8U, 3);
+            cvSetData(oriImage, image.data, image.width*3);
+
+            IplImage *dstImage = cvCreateImageHeader(cvSize(image.width, image.height), IPL_DEPTH_8U, 3);
+            cvSetData(dstImage, image.data, image.width*3);
+
+            cvCvtColor(oriImage, dstImage, CV_BGR2RGB);
+
+            cvReleaseImageHeader(&oriImage);
+            cvReleaseImageHeader(&dstImage);
         }
+        qimage = QImage((uchar*)image.data, image.width, image.height, QImage::Format_RGB888);
 
-        p.drawImage(pair.rect, qimage.rgbSwapped());
-
-        pen.setColor(Qt::blue);
-        p.setPen(pen);
-        p.drawRect(pair.rect);
+        p.drawImage(pair.rect, qimage);
     }
 
     if (m_activePair && m_activePair->rect.isValid()) {
+        QPen pen(Qt::SolidLine);
+
         pen.setColor(Qt::white);
         pen.setWidth(2);
         pen.setStyle(Qt::DotLine);
@@ -191,31 +197,6 @@ void BleImageProcess::mousePressEvent(QMouseEvent *e)
     } else {
         m_activePair = NULL;
     }
-
-//    if (m_activePair && m_activePair->rect.contains(e->pos())) {
-
-//    } else {
-//        int findIndex = -1;
-
-//        for (int i = 0; i < m_sources.size(); ++i) {
-//           SourcePair & pair = m_sources[i];
-//            if (pair.rect.contains(e->pos())) {
-//                findIndex = i;
-//                break;
-//            }
-//        }
-
-//        // if clicked blank area, set m_activePair to NULL.
-//        if (findIndex == -1) {
-//            m_activePair = NULL;
-//            return;
-//        }
-
-//        // if clicked non blank area, set m_activePair to m_sources[findIndex].
-//        if (&m_sources[findIndex] != m_activePair) {
-//            m_activePair = &m_sources[findIndex];
-//        }
-//    }
 
     if (!m_activePair) return;
 
@@ -381,7 +362,14 @@ void BleImageProcess::onRightBtnClicked()
 
 void BleImageProcess::onRefreshTimeout()
 {
-    update();
+    if (!m_sources.empty())
+        update();
+}
+
+void BleImageProcess::onSettingChanged()
+{
+    QSize si = MOption::instance()->option("res", "encoder").toSize();
+    setFixedSize(si);
 }
 
 void BleImageProcess::updateSources()

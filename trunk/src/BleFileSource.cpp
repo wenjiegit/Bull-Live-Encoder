@@ -81,8 +81,7 @@ void BleFileSource::run()
 
         m_image = be;
 
-        m_modifyMutex.unlock();        // Start unlock
-
+        m_modifyMutex.unlock();        // End unlock
 
         int elapsedMs = elapsedTimer.elapsed();
         int needSleepMs = m_interval - elapsedMs;

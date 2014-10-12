@@ -54,17 +54,20 @@ BleEncoderThread::BleEncoderThread(QObject *parent)
 
 BleEncoderThread::~BleEncoderThread()
 {
-
 }
 
 void BleEncoderThread::init()
 {
-    // TODO free m_x264Encoder
     m_x264Encoder = new BleX264Encoder;
     m_x264Encoder->init();
 
     BleAVQueue::instance()->timestampBuilder()->
             setVideoCaptureInternal(m_x264Encoder->getFrameDuration());
+}
+
+void BleEncoderThread::fini()
+{
+    BleFree(m_x264Encoder);
 }
 
 void BleEncoderThread::run()
@@ -96,48 +99,20 @@ void BleEncoderThread::run()
 
             m_x264Encoder->encode((uchar*)imgYUV->imageData, image->pts);
 
-#if 0
-           {
-                BleAutoLocker(m_getMutex);
-
-                OutPacket pkt;
-                pkt.captureTime = image->pts;
-                pkt.nalu = arr;
-                m_nalus.push_back(pkt);
-
-
-                printf("%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n"
-                        ,(uchar)arr.data()[0]
-                        ,(uchar)arr.data()[1]
-                        ,(uchar)arr.data()[2]
-                        ,(uchar)arr.data()[3]
-                        ,(uchar)arr.data()[4]
-                        ,(uchar)arr.data()[5]
-                        ,(uchar)arr.data()[6]
-                        ,(uchar)arr.data()[7]
-                        ,(uchar)arr.data()[8]
-                        ,(uchar)arr.data()[9]
-                        ,(uchar)arr.data()[10]);
-            }
-#endif
-
             cvReleaseImageHeader(&cvImage);
             cvReleaseImage(&imgYUV);
+
+            if (m_stop) break;
+        }
+
+        // do clean
+        for (int i = 0; i > images.size(); ++i) {
+            BleImage *img = images.at(i);
+            BleFree(img);
         }
     }
 
-    BleFree(m_x264Encoder);
     log_trace("BleEncoderThread exit normally.");
-}
-
-QList<BleEncoderThread::OutPacket> BleEncoderThread::getNalu()
-{
-    BleAutoLocker(m_getMutex);
-    QList<BleEncoderThread::OutPacket> ret;
-    ret = m_nalus;
-    m_nalus.clear();
-
-    return ret;
 }
 
 void BleEncoderThread::setProcessThread(QThread *thread)

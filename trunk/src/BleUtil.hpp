@@ -73,9 +73,9 @@ public:
 #define BleAutoFreeArray(className, instance) \
     BleAutoFree<className> BleAutoFree##instance(&instance, true)
 
-#define STOP_THREAD(thread) \
+#define SAFE_STOP_THREAD(thread) \
     do { \
-        if (thread->isRunning()) { thread->stop(); thread->wait(); } \
+        if (thread && thread->isRunning()) { thread->stop(); thread->wait(); } \
     } while (0)
 
 #define START_THREAD(thread) \

@@ -20,5 +20,10 @@
         <file>images/button.png</file>
         <file>images/add.png</file>
         <file>images/pushButton.png</file>
+        <file>images/checkbox_checked.png</file>
+        <file>images/checkbox_unchecked.png</file>
+        <file>images/checkbox_unchecked_hover.png</file>
+        <file>images/checked.png</file>
+        <file>images/unchecked.png</file>
     </qresource>
 </RCC>

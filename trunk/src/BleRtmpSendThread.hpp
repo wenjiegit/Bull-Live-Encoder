@@ -26,6 +26,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "BleThread.hpp"
 
+#include <QMutex>
+#include <QTimer>
+#include <QList>
+
 class BleRtmpMuxer;
 
 class BleRtmpSendThread : public BleThread
@@ -33,8 +37,7 @@ class BleRtmpSendThread : public BleThread
     Q_OBJECT
 public:
     BleRtmpSendThread(QObject * parent = 0);
-
-    void setEncodeThread(QThread * thread);
+    ~BleRtmpSendThread();
 
     virtual void run();
 
@@ -45,7 +48,32 @@ private:
     int service(BleRtmpMuxer & muxer);
 
 private:
-    QThread *m_encodeThread;
+    int sendVideoSh(BleRtmpMuxer & muxer);
+    int sendAudioSh(BleRtmpMuxer & muxer);
+    int sendVideoSei(BleRtmpMuxer & muxer);
+
+private slots:
+    void onTimeout();
+
+private:
+    int m_audioKbps;
+    int m_videoKbps;
+    int m_fps;
+    qint64 m_sendDataCount;
+    QMutex m_mutex;
+    QTimer m_timer;
+
+    struct kbps
+    {
+        int audioKpbs;
+        int videoKpbs;
+        int fps;
+    };
+
+    QList<kbps> m_kbps;
+
+signals:
+    void status(int audioKbps, int videoKbps, int fps, int sendDataCount);
 };
 
 #endif // BLERTMPSENDTHREAD_H

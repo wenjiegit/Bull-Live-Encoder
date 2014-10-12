@@ -76,7 +76,8 @@ MSkinChanger::~MSkinChanger()
 
 void MSkinChanger::onCurrentPixmap(const QString &fileName,const QPixmap &pix,const QColor &averageColor)
 {
-    MOption::instance()->setOption(fileName, "WindowBGPixmap", "theme");
+    QString basePath = QString(fileName).remove(QCoreApplication::applicationDirPath());
+    MOption::instance()->setOption(basePath, "WindowBGPixmap", "theme");
     MOption::instance()->setOption("bitmap", "WindowBGPixmapType", "theme");
     MOption::instance()->setOption(QVariant(averageColor), OPTION_AVERAGE_COLOR, OPTION_GROUP_Theme);
 
@@ -125,16 +126,14 @@ void MSkinChanger::onDefinePixmap()
     skinImage.load(fileName);
     skinImage = skinImage.scaled(1366, 768);
 
-    if(!SkinDialog)
-    {
+    if (!SkinDialog) {
         SkinDialog = new RecSkinDialog(mainPix.toImage(),skinImage);
-        connect(SkinDialog,SIGNAL(sigSavePix(QString,QPixmap,QColor)),
-                SkinWidget,SLOT(onSavePix(QString,QPixmap,QColor)));
-    }
-    else
-    {
+        connect(SkinDialog, SIGNAL(sigSavePix(QString, QPixmap, QColor)),
+                SkinWidget, SLOT(onSavePix(QString, QPixmap, QColor)));
+    } else {
         SkinDialog->setImage(mainPix.toImage(),skinImage);
     }
+
     SkinDialog->showFullScreen();
 }
 

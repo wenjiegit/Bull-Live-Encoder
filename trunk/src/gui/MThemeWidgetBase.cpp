@@ -49,14 +49,15 @@ ThemedWidgetBase::~ThemedWidgetBase()
 {
     removeThemedWidget(this);
 }
-
+#include <QDebug>
 void ThemedWidgetBase::applyNewTheme()
 {
     m_aeroTransparent = MOption::instance()->option("AeroTransparent", "theme").toInt();
     m_widgetTransparent = MOption::instance()->option("WidgetTransparent", "theme").toInt();
 
-    m_cachedPixmap = MOption::instance()->option("WindowBGPixmap", "theme").toString();
+    m_cachedPixmap = QPixmap(QCoreApplication::applicationDirPath() + MOption::instance()->option("WindowBGPixmap", "theme").toString());
     m_cachedPixmap = setAlphaPixmap(m_cachedPixmap, m_aeroTransparent);
+    qDebug() << QCoreApplication::applicationDirPath() + MOption::instance()->option("WindowBGPixmap", "theme").toString();
 
     m_cachedColor = MOption::instance()->option("WindowBGColor", "theme").value<QColor>();
     m_cachedColor.setAlpha(m_aeroTransparent);
@@ -70,7 +71,7 @@ void ThemedWidgetBase::drawThemedStyle(QPainter &p)
     QPoint bottomRight = m_themedWidget->rect().bottomRight();
     QRect pathRect = m_themedWidget->rect();
     pathRect.setBottomRight(QPoint(bottomRight.x()-1, bottomRight.y()-1));
-    path.addRoundedRect(pathRect, 5, 5);
+    path.addRoundedRect(pathRect, 0, 0);
 
     QString themeType = MOption::instance()->option("WindowBGPixmapType", "theme").toString();
     if(themeType == "bitmap")
@@ -164,7 +165,8 @@ void updateTheme()
                    << sheetPath + "/hbar.qss"
                    << sheetPath + "/menu.qss"
                    << sheetPath + "/tabview.qss"
-                   << sheetPath + "/vbar.qss";
+                   << sheetPath + "/vbar.qss"
+                   << sheetPath + "/checkbox.qss";
 
     QString sheetStr;
     for(int i = 0; i < styleSheetList.size(); ++i)

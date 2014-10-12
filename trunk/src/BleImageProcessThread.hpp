@@ -33,7 +33,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QMutex>
 #include <QQueue>
 
+// opecv
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/opencv.hpp"
+
 class BleSourceAbstract;
+struct BleImage;
 
 class BleImageProcessThread : public BleThread
 {
@@ -47,6 +52,7 @@ public:
     void setResolution(int w, int h);
     void updateSources(QList<SourcePair> & sources);
     void setInternal(int internal);
+    BleImage *getImage();
     QQueue<BleImage *> getQueue();
 
 private:
@@ -61,6 +67,8 @@ private:
     int m_internal;
 
     BleTimestampBulider m_timestampBuilder;
+
+    IplImage *m_dstImage;
 };
 
 #endif // BLEIMAGEPROCESSTHREAD_HPP

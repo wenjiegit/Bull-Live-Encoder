@@ -29,27 +29,41 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 qint64 startTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
 
+static BleAVQueue* gs_queue = NULL;
+
 BleAVQueue::BleAVQueue()
 {
-    m_timestampBulider.setAudioCaptureInternal(23);
-    m_timestampBulider.setVideoCaptureInternal(50);
+    m_timestampBulider = new BleTimestampBulider;
+    m_timestampBulider->setAudioCaptureInternal(23);
+    m_timestampBulider->setVideoCaptureInternal(50);
+}
+
+BleAVQueue::~BleAVQueue()
+{
+    BleFree(m_timestampBulider);
 }
 
 BleAVQueue *BleAVQueue::instance()
 {
-    static BleAVQueue* queue = NULL;
-    if (!queue) {
-        queue = new BleAVQueue;
+    if (!gs_queue) {
+        gs_queue = new BleAVQueue;
     }
 
-    return queue;
+    return gs_queue;
+}
+
+void BleAVQueue::destroy()
+{
+    if (gs_queue)
+        gs_queue->fini();
+
+    BleFree(gs_queue);
 }
 
 void BleAVQueue::enqueue(BleAVPacket *pkt)
 {
     BleAutoLocker(m_mutex);
 
-    // just enqueue
     m_queue << pkt;
 }
 
@@ -88,4 +102,14 @@ QQueue<BleAVPacket *> BleAVQueue::dequeue()
     }
 
     return pkts;
+}
+
+void BleAVQueue::fini()
+{
+    BleAutoLocker(m_mutex);
+
+    for (int i = 0; i < m_queue.size(); ++i) {
+        BleAVPacket *pkt = m_queue.at(i);
+        BleFree(pkt);
+    }
 }

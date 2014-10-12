@@ -35,8 +35,12 @@ class BleAVQueue
 {
 public:
     BleAVQueue();
+    ~BleAVQueue();
 
     static BleAVQueue *instance();
+    static void destroy();
+
+    void init();
 
     void enqueue(BleAVPacket * pkt);
 
@@ -46,18 +50,15 @@ public:
 
     QQueue<BleAVPacket *> dequeue();
 
-    inline BleTimestampBulider *timestampBuilder();
+    inline BleTimestampBulider *timestampBuilder() { return m_timestampBulider; }
 
 private:
-    BleTimestampBulider m_timestampBulider;
+    void fini();
+
+private:
+    BleTimestampBulider *m_timestampBulider;
     QMutex m_mutex;
     QList<BleAVPacket *> m_queue;
 };
-
-// inline function
-BleTimestampBulider *BleAVQueue::timestampBuilder()
-{
-    return &m_timestampBulider;
-}
 
 #endif // BLEAVQUEUE_HPP

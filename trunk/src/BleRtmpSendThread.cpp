@@ -42,12 +42,21 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 BleRtmpSendThread::BleRtmpSendThread(QObject * parent)
     : BleThread(parent)
+    , m_audioKbps(0)
+    , m_videoKbps(0)
+    , m_fps(0)
+    , m_sendDataCount(0)
 {
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
+    m_timer.setInterval(1000 * 2);
+    m_timer.start();
 }
 
-void BleRtmpSendThread::setEncodeThread(QThread * thread)
+BleRtmpSendThread::~BleRtmpSendThread()
 {
-    m_encodeThread = thread;
+    if (m_timer.isActive()) {
+        m_timer.stop();
+    }
 }
 
 void BleRtmpSendThread::run()
@@ -67,22 +76,23 @@ void BleRtmpSendThread::run()
             continue;
         }
 
-        BleRtmpMuxer muxer;
-        muxer.setRtmpUrl(url.toStdString());
-        ret = muxer.start();
+        BleRtmpMuxer *muxer = new BleRtmpMuxer;
+        BleAutoFree(BleRtmpMuxer, muxer);
+
+        muxer->setRtmpUrl(url.toStdString());
+        ret = muxer->start();
         if (ret != TRUE) {
             ret = BLE_RTMPCONNECT_ERROR;
             log_error("connect to %s error, after 3s to retry", url.toStdString().c_str());
 
-            muxer.stop();
+            muxer->stop();
             sleep(3);
 
             continue;
         }
-        log_trace("connect to %s success.", url.toStdString().c_str());
 
-        ret = service(muxer);
-        muxer.stop();
+        log_trace("connect to %s success.", url.toStdString().c_str());
+        ret = service(*muxer);
 
         if (ret != BLE_SUCESS) {
             log_error("rtmp send error, ret = %d", ret);
@@ -90,91 +100,173 @@ void BleRtmpSendThread::run()
         }
     }
 
+#ifdef Q_OS_WIN
+    WSACleanup();
+#endif
+
     log_trace("Ble RtmpSendThread exit normally.");
 }
 
 #ifdef Q_OS_WIN
 int BleRtmpSendThread::wsaStart()
 {
-    WORD wVersionRequested;
+    WORD versionRequested;
     WSADATA wsaData;
-    wVersionRequested =MAKEWORD( 1, 1 );
-    int err = WSAStartup( wVersionRequested, &wsaData );
+    versionRequested = MAKEWORD(1, 1);
 
-    return err;
+    return WSAStartup(versionRequested, &wsaData);
 }
+#endif
 
 int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
 {
     int ret = BLE_SUCESS;
 
-    BleEncoderThread *encodeThread = dynamic_cast<BleEncoderThread*>(m_encodeThread);
-    BleAssert(encodeThread);
-
-    // if H264 + AAC
-    // send sequence header
-    // send video sh
-    {
-        BleAVPacket *pkt = appCtx->videoSH;
-        MStream &data = pkt->data;
-        if (muxer.addH264(data, pkt->dts) != TRUE ) {
-            ret = BLE_RTMPSEND_ERROR;
-            return ret;
-        }
+    if ((ret = sendVideoSh(muxer)) != BLE_SUCESS) {
+        return ret;
     }
 
-    // send audio sh
-    {
-        BleAVPacket *pkt = appCtx->audioSH;
-        MStream &data = pkt->data;
-        if (muxer.addAAC(data, pkt->dts) != TRUE ) {
-            ret = BLE_RTMPSEND_ERROR;
-            return ret;
-        }
+    if ((ret = sendAudioSh(muxer)) != BLE_SUCESS) {
+        return ret;
     }
 
-    // send video sei
-    {
-        BleAVPacket *pkt = appCtx->seiPkt;
-        MStream &data = pkt->data;
-        if (muxer.addH264(data, pkt->dts) != TRUE ) {
-            ret = BLE_RTMPSEND_ERROR;
-            return ret;
-        }
+    if ((ret = sendVideoSei(muxer)) != BLE_SUCESS) {
+        return ret;
     }
 
     while (!m_stop) {
-        // get from queue
-        QElapsedTimer timer;
-        timer.start();
         QQueue<BleAVPacket *> pkts = BleAVQueue::instance()->dequeue();
         if (pkts.isEmpty()) {
             msleep(50);
             continue;
         }
-        log_info("get pkts count = %d", pkts.size());
+
+        BleAutoLocker(m_mutex);
 
         while (!pkts.empty()) {
             BleAVPacket *pkt = pkts.dequeue();
+            BleAutoFree(BleAVPacket, pkt);
+
             MStream &data = pkt->data;
 
             if (pkt->pktType == Packet_Type_Video) {
                 if (muxer.addH264(data, pkt->dts) != TRUE ) {
                     ret = BLE_RTMPSEND_ERROR;
-                    return ret;
+                    break;
                 }
+
+                m_videoKbps += (data.size() + 11);
+                m_fps += 1;
             } else if (pkt->pktType == Packet_Type_Audio) {
                 if (muxer.addAAC(data, pkt->dts) != TRUE ) {
                     ret = BLE_RTMPSEND_ERROR;
-                    return ret;
+                    break;
                 }
-            }
-            log_info("send pkt pts = %d  %d", pkt->pts, timer.elapsed());
 
+                m_audioKbps += (data.size() + 11);
+            }
+
+            m_sendDataCount += (data.size() + 11);
+        }
+
+        // if send failed, then pkts may has some pkt
+        // we should delete it.
+        for (int i = 0; i < pkts.size(); ++i) {
+            BleAVPacket *pkt = pkts.at(i);
             BleFree(pkt);
         }
     }
 
     return ret;
 }
-#endif
+
+int BleRtmpSendThread::sendVideoSh(BleRtmpMuxer &muxer)
+{
+    int ret = BLE_SUCESS;
+
+    // if H264 send video sh
+    BleAVPacket *pkt = appCtx->videoSh();
+    if (pkt) {
+        MStream &data = pkt->data;
+        if (muxer.addH264(data, pkt->dts) != TRUE ) {
+            ret = BLE_RTMPSEND_ERROR;
+            return ret;
+        }
+
+        log_trace("H264 send video sh success");
+    }
+
+    return ret;
+}
+
+int BleRtmpSendThread::sendAudioSh(BleRtmpMuxer &muxer)
+{
+    int ret = BLE_SUCESS;
+
+    // if AAC, send audio sh
+    BleAVPacket *pkt = appCtx->audioSh();
+    if (pkt) {
+        MStream &data = pkt->data;
+        if (muxer.addAAC(data, pkt->dts) != TRUE ) {
+            ret = BLE_RTMPSEND_ERROR;
+            return ret;
+        }
+
+        log_trace("AAC send audio sh success");
+    }
+
+    return ret;
+}
+
+int BleRtmpSendThread::sendVideoSei(BleRtmpMuxer &muxer)
+{
+    int ret = BLE_SUCESS;
+
+    // if H264 send video sei
+    BleAVPacket *pkt = appCtx->sei();
+    if (pkt) {
+        MStream &data = pkt->data;
+        if (muxer.addH264(data, pkt->dts) != TRUE ) {
+            ret = BLE_RTMPSEND_ERROR;
+            return ret;
+        }
+
+        log_trace("H264 send video sei success");
+    }
+
+    return ret;
+}
+
+void BleRtmpSendThread::onTimeout()
+{
+    BleAutoLocker(m_mutex);
+    int audioKbps = m_audioKbps * 1000 / m_timer.interval();
+    int videoKbps = m_videoKbps * 1000 / m_timer.interval();
+    int fps = m_fps * 1000 / m_timer.interval();
+
+    kbps bs = {audioKbps, videoKbps, fps};
+    m_kbps.append(bs);
+
+    // average value
+    if (m_kbps.size() > 4) m_kbps.removeFirst();
+
+    m_audioKbps = 0;
+    m_videoKbps = 0;
+    m_fps = 0;
+
+    int audioKbpsAll = 0;
+    int videoKbpsAll = 0;
+    int fpsALl = 0;
+    for (int i = 0; i < m_kbps.size(); ++i) {
+        const kbps &bs = m_kbps.at(i);
+        audioKbpsAll += bs.audioKpbs;
+        videoKbpsAll += bs.videoKpbs;
+        fpsALl += bs.fps;
+    }
+
+    audioKbps = audioKbpsAll / m_kbps.size();
+    videoKbps = videoKbpsAll / m_kbps.size();
+    fps = fpsALl / m_kbps.size();
+
+    emit status(audioKbps, videoKbps, fps, m_sendDataCount);
+}

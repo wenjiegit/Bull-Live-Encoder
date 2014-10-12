@@ -29,6 +29,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QTimer>
 #include <QTimeLine>
 
+enum{
+    STATUS_NORMAL,
+    STATUS_HOVE,
+    STATUS_PRESS,
+    STATUS_DISABLED
+};
+
 class MToolButton : public QToolButton
 {
   Q_OBJECT
@@ -43,12 +50,6 @@ public:
         update();
     }
 
-    enum{
-        STATUS_NORMAL,
-        STATUS_HOVE,
-        STATUS_PRESS,
-        STATUS_DISABLED
-    };
     void setButtonStatus(int status);
 
 protected:

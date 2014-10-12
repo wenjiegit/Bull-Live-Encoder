@@ -64,9 +64,10 @@ int BleX264Encoder::init()
     int maxBitRate = bps;
     int bufferSize = maxBitRate;
     bool bUseCBR = (option->option("BitrateMode", "x264").toString() == "CBR");
-    static const float baseCRF = 10.0f;
     int quality = option->option("quality", "x264").toInt();
     int KeyFrameInterval = option->option("KeyFrameInterval", "x264").toInt();
+    int threadCount = option->option(Key_Thread_Count, Group_X264).toInt();
+    bool enableBFrame = option->option(Key_Enable_B_Frame, Group_X264).toString() == "true" ? true : false;
 
     m_x264Param = new x264_param_t;
 
@@ -101,18 +102,16 @@ int BleX264Encoder::init()
         m_x264Param->rc.i_vbv_max_bitrate  = maxBitRate;  // vbv-maxrate
         m_x264Param->rc.i_vbv_buffer_size  = bufferSize;  // vbv-bufsize
         m_x264Param->rc.i_rc_method        = X264_RC_CRF; // X264_RC_CRF;
-        m_x264Param->rc.f_rf_constant      = baseCRF+float(10-quality);
+        m_x264Param->rc.f_rf_constant      = quality;
+
+        log_trace("libx264 quality set to %d", quality);
     }
-    //m_x264Param->rc.i_qp_constant = 10;
-    //m_x264Param->rc.i_qp_min = 35;
 
     m_x264Param->b_vfr_input           = 1;
-    m_x264Param->i_keyint_max          = fps*KeyFrameInterval;
+    m_x264Param->i_keyint_max          = fps * KeyFrameInterval;
     m_x264Param->i_width               = width;
     m_x264Param->i_height              = height;
     m_x264Param->vui.b_fullrange       = 0;          //specify full range input levels
-    //m_x264Param->i_frame_reference
-    //m_x264Param->b_in
 
     m_x264Param->i_fps_num = fps;
     m_x264Param->i_fps_den = 1;
@@ -120,15 +119,22 @@ int BleX264Encoder::init()
     m_x264Param->i_timebase_num = 1;
     m_x264Param->i_timebase_den = 1000;
 
-    // 00 00 00 01 before NAL
+    // disable start code 00 00 00 01 before NAL
+    // instead of nalu size
     m_x264Param->b_repeat_headers = 0;
     m_x264Param->b_annexb = 0;
 
-    // TODO make it a option
-    m_x264Param->i_bframe = 3;
-    m_x264Param->i_threads = 1;
+    if (enableBFrame)
+        m_x264Param->i_bframe = 3;
+    else
+        m_x264Param->i_bframe = 0;
 
-    // cpu capabilities
+    if (threadCount > 0)
+        m_x264Param->i_threads = threadCount;
+
+    // @note
+    // never use cpu capabilities.
+    // let libx264 to choose.
 #if 0
     m_x264Param->cpu = 0;
     m_x264Param->cpu |=X264_CPU_MMX;
@@ -170,7 +176,7 @@ int BleX264Encoder::init()
     body.write2Bytes(pps.i_payload - 4);
     body.writeString(MString((char*)pps.p_payload + 4, pps.i_payload - 4));
 
-    appCtx->videoSH = pkt;
+    appCtx->setVideoSh(pkt);
 
     // SEI
     x264_nal_t &seiNal = nalOut[2];
@@ -188,7 +194,7 @@ int BleX264Encoder::init()
     seiBody.write4Bytes(newPayloadSize);
     seiBody.writeString((char*)seiNal.p_payload + skipBytes, newPayloadSize);
 
-    appCtx->seiPkt = seiPkt;
+    appCtx->setSei(seiPkt);
 
     m_pictureIn = new x264_picture_t;
     m_pictureIn->i_pts = 0;
@@ -244,10 +250,17 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts)
     BleVideoPacket *pkt = dynamic_cast<BleVideoPacket *> (BleAVQueue::instance()->finPkt());
     BleAssert(pkt != NULL);
 
-    // Current BLE only support one nal per frame
-    BleAssert(nalNum == 1);
+    MStream &body = pkt->data;
+    unsigned char frameType;
+    if (IS_X264_TYPE_I(picOut.i_type)) {
+        frameType = 0x17;
+    } else {
+        frameType = 0x27;
+    }
 
-    // log_trace("-----> pts %lld out_pts %lld out_dts %lld diff %d fixed %lld", pts, picOut.i_pts, picOut.i_dts, timeOffset, pkt->dts);
+    body.write1Bytes(frameType);
+    body.write1Bytes(0x01);
+    body.write3Bytes(timeOffset);
 
     // NALU payload : 4bytes size + payload
     // NALU payload size : 4bytes size + payload size
@@ -257,23 +270,11 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts)
     for (int i = 0; i < nalNum; ++i) {
         x264_nal_t &nal = nalOut[i];
 
-        if(nal.i_type == NAL_SLICE_IDR || nal.i_type == NAL_SLICE) {
+        int skipBytes = 4;
+        int newPayloadSize = (nal.i_payload - skipBytes);
 
-            // 4 bytes is nalu size
-            int skipBytes = 4;
-            int newPayloadSize = (nal.i_payload - skipBytes);
-
-            MStream &body = pkt->data;
-            unsigned char flshFrameType = ((nal.i_type == NAL_SLICE_IDR) ? 0x17 : 0x27);
-
-            body.write1Bytes(flshFrameType);
-            body.write1Bytes(0x01);
-            body.write3Bytes(timeOffset);
-            body.write4Bytes(newPayloadSize);
-            body.writeString((char*)nal.p_payload + skipBytes, newPayloadSize);
-
-        } else
-            continue;
+        body.write4Bytes(newPayloadSize);
+        body.writeString((char*)nal.p_payload + skipBytes, newPayloadSize);
     }
 
     BleAVQueue::instance()->updatePkt(pkt);
@@ -290,7 +291,7 @@ int BleX264Encoder::getFrameDuration()
         return 1000 / fps;
     }
 
-    // 40 : default duration
+    // 40 ms : default duration
     return 40;
 }
 

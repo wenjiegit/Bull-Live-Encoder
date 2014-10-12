@@ -39,24 +39,15 @@ class BleEncoderThread : public BleThread
 {
     Q_OBJECT
 public:
-    struct OutPacket
-    {
-        QByteArray nalu;
-        qint64 captureTime;
-    };
-
-public:
     explicit BleEncoderThread(QObject *parent = 0);
     ~BleEncoderThread();
 
     void init();
+    void fini();
     void run();
-    QList<OutPacket> getNalu();
     void setProcessThread(QThread *thread);
 
 private:
-    QMutex m_getMutex;
-    QList<OutPacket> m_nalus;
     BleX264Encoder *m_x264Encoder;
     QThread * m_imageProcessThread;
 };

@@ -87,21 +87,18 @@ void RecSkinDialog::onSave()
                                         this->height() - y));
     SkinSimulationWidget->show();
 
+    QString basePath = "/theme/saved/" + QDateTime::currentDateTime().toString("yyyyMMddHHmmss") + ".png";
+    QString fileName(QApplication::applicationDirPath() + basePath);
 
-    QString fileName(QApplication::applicationDirPath()
-                     + "/theme/saved/"
-                     + QDateTime::currentDateTime().toString("yyyyMMddHHmmss")
-                     + ".png");
-
-    qDebug() << fileName;
     if(!savePix.save(fileName, "PNG"))
-        QMessageBox::warning(0,tr("����"),tr("����ʧ��"));
+        QMessageBox::warning(0,tr("error"),tr("save pixmap error"));
     else {
-        MOption::instance()->setOption(fileName, OPTION_WindowBGPixmap, OPTION_GROUP_Theme);
+        MOption::instance()->setOption(basePath, OPTION_WindowBGPixmap, OPTION_GROUP_Theme);
         MOption::instance()->setOption("bitmap", OPTION_WindowBGPixmapType, OPTION_GROUP_Theme);
         updateThemedWidgets();
     }
-    emit sigSavePix(fileName,savePix,QColor(red,green,blue));
+
+    emit sigSavePix(basePath, savePix, QColor(red, green, blue));
 }
 
 void RecSkinDialog::onCancel()
@@ -113,7 +110,7 @@ void RecSkinDialog::paintEvent(QPaintEvent *e)
 {
     QDialog::paintEvent(e);
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing,true); //����������  ������������
+    painter.setRenderHint(QPainter::Antialiasing,true);
     if(!skinImage.isNull())
     {
         QPixmap image(QPixmap::fromImage(skinImage));

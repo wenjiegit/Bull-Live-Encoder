@@ -62,6 +62,7 @@ private slots:
     void onLeftBtnClicked();
     void onRightBtnClicked();
     void onRefreshTimeout();
+    void onSettingChanged();
 
 private:
     void updateSources();

@@ -45,7 +45,7 @@ bool BleAudioEncoder_AAC::init(int samplerate, int channel, int bitrate)
 
     m_faacHandle = faacEncOpen(m_samplerate, m_channels, &m_samplesInputSize, &m_maxOutputSize);
 
-    /* check faac version */
+    // check faac version
     aacConfig = faacEncGetCurrentConfiguration(m_faacHandle);
     if (aacConfig->version != FAAC_CFG_VERSION)
     {
@@ -79,7 +79,7 @@ bool BleAudioEncoder_AAC::init(int samplerate, int channel, int bitrate)
     m_nFrameSize = m_samplesInputSize / channel;
     m_pInBuf = new int32_t[m_samplesInputSize];
 
-    /* Set decoder specific info */
+    // set decoder specific info
     unsigned long extradata_size = 0;
     unsigned char *buffer;
     unsigned long decoder_specific_info_size;
@@ -91,24 +91,12 @@ bool BleAudioEncoder_AAC::init(int samplerate, int channel, int bitrate)
 
     m_header.clear();
 
-    static unsigned char af[2] = {0xaf, 0x00};
+    unsigned char af[2] = {0xaf, 0x00};
 
     m_header.append((char *)af, 2);
     m_header.append((char*)buffer, extradata_size);
 
-    BleFree(buffer);
-
-    /*if (flags & CODEC_FLAG_GLOBAL_HEADER) {
-
-        unsigned char *buffer;
-        unsigned long decoder_specific_info_size;
-
-        if (!faacEncGetDecoderSpecificInfo(m_FaacHandle, &buffer,
-            &decoder_specific_info_size)) {
-                extradata = buffer;
-                extradata_size = decoder_specific_info_size;
-        }
-    }*/
+    BleFreeArray(buffer);
 
     return true;
 }

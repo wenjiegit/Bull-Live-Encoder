@@ -97,26 +97,32 @@ void BleWindowsCaptureSource::run()
 #endif
             QImage image = pixmap.toImage();
 
-            if (image.format() != QImage::Format_RGB888) {
-                image = image.convertToFormat(QImage::Format_RGB888);
-            }
-
             m_modifyMutex.lock();           // Start lock
 
             BleImage be;
             be.width = image.width();
             be.height = image.height();
 
-            be.data = new char[image.byteCount()];
-            memcpy(be.data, image.bits(), image.byteCount());
+            int imageSize = be.width * be.height * 3;
+            be.data = new char[imageSize];
 
-            be.dataSize = image.byteCount();
-            be.format = BleImage_Format_RGB888;
+            IplImage *oriImage = cvCreateImageHeader(cvSize(image.width(), image.height()), IPL_DEPTH_8U, 4);
+            cvSetData(oriImage, image.bits(), image.bytesPerLine());
+
+            IplImage *dstImage = cvCreateImageHeader(cvSize(image.width(), image.height()), IPL_DEPTH_8U, 3);
+            cvSetData(dstImage, be.data, be.width * 3);
+
+            cvCvtColor(oriImage, dstImage, CV_BGRA2BGR);
+
+            be.dataSize = imageSize;
+            be.format = BleImage_Format_BGR24;
 
             m_image = be;
 
-            m_modifyMutex.unlock();        // Start unlock
+            cvReleaseImageHeader(&oriImage);
+            cvReleaseImageHeader(&dstImage);
 
+            m_modifyMutex.unlock();        // End unlock
         }
 
         int elapsedMs = elapsedTimer.elapsed();
@@ -137,6 +143,9 @@ void BleWindowsCaptureSource::setGrabInfo(WId window, int x, int y, int w, int h
     m_y = y;
     m_width = w;
     m_height = h;
+
+    // force align to 4 for color cvt performance
+    m_width = m_width / 4 *4;
 }
 
 void BleWindowsCaptureSource::setCaptureInterval(int interval)

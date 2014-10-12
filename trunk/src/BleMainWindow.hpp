@@ -44,6 +44,8 @@ class BleImageProcess;
 class BleAudioCapture;
 class BleFileSource;
 
+class QLabel;
+
 class BleMainWindow : public QMainWindow, public ThemedWidgetBase
 {
     Q_OBJECT
@@ -77,6 +79,8 @@ private slots:
     void onAddPic();
     void onAddFileSource();
 
+    void onStatus(int audioKbps, int videoKbps, int fps, int sendDataCount);
+
 private:
     Ui::BleMainWindow *ui;
     bool m_maxBtn;
@@ -90,7 +94,8 @@ private:
     BleImageProcessThread *m_imageProcessThread;
     BleImageProcess *m_imageProcessWidget;
     BleAudioCapture *m_audioCaptureThread;
-    BleFileSource *m_fileCaptureThread;
+
+    QLabel *m_statusLabel;
 };
 
 #endif // BleMainWindow_H

@@ -151,7 +151,7 @@ int BleAudioCapture::startCapture(int bitrate, int sampleRate, int channels, int
         pkt->ready = true;
         pkt->dts = 0;
 
-        appCtx->audioSH = pkt;
+        appCtx->setAudioSh(pkt);
     }
 
     m_grabEngine = new RtAudio;
@@ -190,6 +190,11 @@ int BleAudioCapture::stopCapture()
         m_grabEngine->closeStream();
 
     BleFree(m_grabEngine);
+
+    if (m_audioEncoder) {
+        m_audioEncoder->fini();
+    }
+    BleFree(m_audioEncoder);
 
     return BLE_SUCESS;
 }

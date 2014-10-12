@@ -42,8 +42,8 @@ public:
 
 private slots:
     void onApplyClicked();
-
     void onAudioBitrateChanged(const QString & text);
+    void onQualityValueChanged(int value);
 
 private:
     void restore();
@@ -51,6 +51,7 @@ private:
 signals:
     void start();
     void stop();
+    void settingChanged();
 
 private:
     Ui::BleSetting *ui;

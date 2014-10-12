@@ -128,8 +128,9 @@ RecSkinWidget::RecSkinWidget(QWidget *parent)
 
 
     QString historyPath = QCoreApplication::applicationDirPath() + "/theme/saved";
-    qDebug() << historyPath;
-    QDir *dir=new QDir(historyPath);
+
+    // TODO MEM leak
+    QDir *dir = new QDir(historyPath);
     QStringList filter;
 
     QList<QFileInfo> *fileInfo=new QList<QFileInfo>(dir->entryInfoList(filter));
@@ -187,6 +188,7 @@ void RecSkinWidget::addItem(const QString &fileName,const QPixmap &pix,
 {
     if(isSkin)
         emit currentPixmap(fileName,pix,averageColor);
+
     RecSkinPushButton *SkinPushButton = new RecSkinPushButton(this);
     connect(SkinPushButton,SIGNAL(currentPixmap(QString,QPixmap,QColor)),
             this,SIGNAL(currentPixmap(QString,QPixmap,QColor)));

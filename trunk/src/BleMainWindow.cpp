@@ -58,6 +58,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleErrno.hpp"
 #include "QjtMessageBox.h"
 #include "BleVersion.hpp"
+#include "BleAVQueue.hpp"
 
 #define BLE_TITLE "Bull Live Encoder"
 
@@ -67,6 +68,10 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
     ui(new Ui::BleMainWindow)
   , m_maxBtn(false)
   , m_skinWidget(0)
+  , m_encoderThread(NULL)
+  , m_sendThread(NULL)
+  , m_imageProcessThread(NULL)
+  , m_audioCaptureThread(NULL)
 {
     ui->setupUi(this);
 
@@ -143,14 +148,8 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
     BleSetting *settings = new BleSetting(this);
     addTabWidget(settings, QPixmap(":/image/ble_setting.png"), tr("Settings"));
 
-    m_encoderThread = new BleEncoderThread(this);
-    m_sendThread = new BleRtmpSendThread(this);
-    m_sendThread->setEncodeThread(m_encoderThread);
-
-    m_imageProcessThread = new BleImageProcessThread(this);
-
-    m_imageProcessWidget->setProcessThread(m_imageProcessThread);
-    m_encoderThread->setProcessThread(m_imageProcessThread);
+    connect(settings, SIGNAL(settingChanged())
+            , m_imageProcessWidget, SLOT(onSettingChanged()));
 
 #ifdef Q_OS_WIN
     QtWin::enableBlurBehindWindow(this);
@@ -159,13 +158,14 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
     setWindowTitle(BLE_TITLE);
     QString versionStr = QString("  version: %1").arg(BLE_VERSION_STR);
     ui->statusBar->addWidget(new QLabel(versionStr));
+
+    m_statusLabel = new QLabel(this);
+    ui->statusBar->addWidget(m_statusLabel);
 }
 
 BleMainWindow::~BleMainWindow()
 {
-    STOP_THREAD(m_sendThread);
-    STOP_THREAD(m_encoderThread);
-    STOP_THREAD(m_imageProcessThread);
+    onEncodeStop();
 
     delete ui;
 }
@@ -285,16 +285,22 @@ void BleMainWindow::activated(QSystemTrayIcon::ActivationReason reason)
 
 void BleMainWindow::onEncodeStart()
 {
-    m_encoderThread->init();
+    m_imageProcessThread = new BleImageProcessThread(this);
+    m_imageProcessWidget->setProcessThread(m_imageProcessThread);
 
     QSize si = MOption::instance()->option("res", "encoder").toSize();
     int fps = MOption::instance()->option("fps", "encoder").toInt();
-
     m_imageProcessThread->setResolution(si.width(), si.height());
     m_imageProcessThread->setInternal(1000 / fps);
 
-    START_THREAD(m_encoderThread);
-    START_THREAD(m_imageProcessThread);
+    m_encoderThread = new BleEncoderThread(this);
+    m_encoderThread->setProcessThread(m_imageProcessThread);
+    m_sendThread = new BleRtmpSendThread(this);
+
+    connect(m_sendThread, SIGNAL(status(int,int,int,int))
+            , this, SLOT(onStatus(int,int,int,int)));
+
+    m_encoderThread->init();
 
     m_audioCaptureThread = new BleAudioCapture;
 
@@ -317,23 +323,41 @@ void BleMainWindow::onEncodeStart()
         QjtMessageBox::critical(this, tr("error"), tr("start audio capture error."));
     }
 
+    START_THREAD(m_encoderThread);
+    START_THREAD(m_imageProcessThread);
     START_THREAD(m_sendThread);
+    START_THREAD(m_audioCaptureThread);
 
     ui->startBtn->setEnabled(false);
+    ui->startBtn->setButtonStatus(STATUS_DISABLED);
 }
 
 void BleMainWindow::onEncodeStop()
 {
-    STOP_THREAD(m_sendThread);
-    STOP_THREAD(m_encoderThread);
-    STOP_THREAD(m_imageProcessThread);
-    STOP_THREAD(m_audioCaptureThread);
+    SAFE_STOP_THREAD(m_sendThread);
+    SAFE_STOP_THREAD(m_encoderThread);
+    SAFE_STOP_THREAD(m_imageProcessThread);
+    SAFE_STOP_THREAD(m_audioCaptureThread);
 
-    m_audioCaptureThread->stopCapture();
+    if (m_audioCaptureThread) {
+        m_audioCaptureThread->stopCapture();
+    }
 
+    if (m_encoderThread) {
+        m_encoderThread->fini();
+    }
+
+    BleFree(m_sendThread);
+    BleFree(m_encoderThread);
+    BleFree(m_imageProcessThread);
     BleFree(m_audioCaptureThread);
 
+    m_imageProcessWidget->setProcessThread(m_imageProcessThread);
+
+    BleAVQueue::destroy();
+
     ui->startBtn->setEnabled(true);
+    ui->startBtn->setButtonStatus(STATUS_NORMAL);
 }
 
 void BleMainWindow::onAddCamera()
@@ -399,4 +423,10 @@ void BleMainWindow::onAddFileSource()
     source->start();
 
     m_imageProcessWidget->addCaptureSource(source, 30, 30, 320, 240);
+}
+
+void BleMainWindow::onStatus(int audioKbps, int videoKbps, int fps, int sendDataCount)
+{
+    QString text = QString().sprintf("  A: %d kbps  V: %d kbps  fps: %d  send: %d  ", audioKbps*8/1000, videoKbps*8/1000, fps, sendDataCount);
+    m_statusLabel->setText(text);
 }

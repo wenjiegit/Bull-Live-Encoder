@@ -57,3 +57,6 @@ history
 [0.1]&nbsp;&nbsp;2014-08-15&nbsp;&nbsp;&nbsp;support AAC Encode<br/>
 [0.1]&nbsp;&nbsp;2014-08-17&nbsp;&nbsp;&nbsp;support file source(without sound supported)<br/>
 [0.1]&nbsp;&nbsp;2014-10-07&nbsp;&nbsp;&nbsp;support type B frame.<br/>
+[0.1]&nbsp;&nbsp;2014-10-12&nbsp;&nbsp;&nbsp;make libx264 thread count and b frame to option.<br/>
+[0.1]&nbsp;&nbsp;2014-10-12&nbsp;&nbsp;&nbsp;make start and stop action more quick.<br/>
+[0.1]&nbsp;&nbsp;2014-10-12&nbsp;&nbsp;&nbsp;support to choose encode quality.<br/>

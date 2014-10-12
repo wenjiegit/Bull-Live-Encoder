@@ -23,10 +23,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "BleImageProcessThread.hpp"
 
-// opecv
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/opencv.hpp"
-
 #include "BleLog.hpp"
 #include "BleSourceAbstract.hpp"
 #include "BleUtil.hpp"
@@ -56,6 +52,7 @@ BleImageProcessThread::BleImageProcessThread(QObject *parent)
     , m_width(ImageProcess_Default_Width)
     , m_height(ImageProcess_Default_Height)
     , m_internal(ImageProcess_Default_Internal)
+    , m_dstImage(NULL)
 {
 }
 
@@ -66,6 +63,7 @@ void BleImageProcessThread::run()
     dstSize.height = m_height;
     IplImage* dstImg = cvCreateImage(dstSize, IPL_DEPTH_8U, 3);
     cvZero(dstImg);
+    m_dstImage = dstImg;
 
     QRect dstRect(0, 0, m_width, m_height);
 
@@ -94,7 +92,7 @@ void BleImageProcessThread::run()
                 cvResize(cvImage, resizedImage, CV_INTER_LINEAR);
             }
 
-            if (bleImage.format == BleImage_Format_RGB888) {
+            if (bleImage.format == BleImage_Format_RGB24) {
                 cvConvertImage(resizedImage, resizedImage, CV_CVTIMG_SWAP_RB);
             }
 
@@ -129,7 +127,7 @@ void BleImageProcessThread::run()
         // if delayed about 1s , then discard some image.
         // TODO make this to option
         // TODO check AVQueue size
-        if (m_outputQueue.size() > 40) {
+        if (m_outputQueue.size() > 5) {
             log_trace("queue has many mang image, maybe your encoder is too slow!");
             goto end;
         }
@@ -171,6 +169,14 @@ end:
         // reset bg image to black
         cvZero(dstImg);
     }
+    m_dstImage = NULL;
+    cvReleaseImage(&dstImg);
+
+    // clean queue
+    for (int i = 0; i < m_outputQueue.size(); ++i) {
+        BleImage *img = m_outputQueue.at(i);
+        BleFree(img);
+    }
 
     log_trace("BleImageProcessThread exit normally.");
 }
@@ -190,6 +196,27 @@ void BleImageProcessThread::updateSources(QList<SourcePair> &sources)
 void BleImageProcessThread::setInternal(int internal)
 {
     m_internal = internal;
+}
+
+BleImage *BleImageProcessThread::getImage()
+{
+    if (!m_dstImage) return NULL;
+
+    BleAutoLocker(m_updateMutex);
+
+    // to BleImage
+    BleImage *be = new BleImage;
+    be->width = m_dstImage->width;
+    be->height = m_dstImage->height;
+
+    be->data = new char[m_dstImage->imageSize];
+    memcpy(be->data, m_dstImage->imageData, m_dstImage->imageSize);
+
+    be->dataSize = m_dstImage->imageSize;
+
+    be->format = BleImage_Format_BGR24;
+
+    return be;
 }
 
 QQueue<BleImage *> BleImageProcessThread::getQueue()

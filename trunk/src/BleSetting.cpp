@@ -120,22 +120,10 @@ BleSetting::BleSetting(QWidget *parent) :
     ui->keyFrameInterval->addItem("9");
     ui->keyFrameInterval->addItem("10");
 
-    // add quality
-    ui->quality->addItem("0");
-    ui->quality->addItem("1");
-    ui->quality->addItem("2");
-    ui->quality->addItem("3");
-    ui->quality->addItem("4");
-    ui->quality->addItem("5");
-    ui->quality->addItem("6");
-    ui->quality->addItem("7");
-    ui->quality->addItem("8");
-    ui->quality->addItem("9");
-    ui->quality->addItem("10");
+    connect(ui->applyBtn, SIGNAL(clicked()), this, SLOT(onApplyClicked()));
+    connect(ui->qualityBar, SIGNAL(valueChanged(int)), this, SLOT(onQualityValueChanged(int)));
 
     restore();
-
-    connect(ui->applyBtn, SIGNAL(clicked()), this, SLOT(onApplyClicked()));
 }
 
 BleSetting::~BleSetting()
@@ -169,8 +157,10 @@ void BleSetting::onApplyClicked()
     QString x264Profile = ui->x264Profile->currentText();
     QString address     = ui->address->text().trimmed();
     QString bitrateMode = ui->bitrateMode->currentText();
-    QString keyFrameInterval    = ui->keyFrameInterval->currentText();
-    QString quality             = ui->quality->currentText();
+    QString keyFrameInterval = ui->keyFrameInterval->currentText();
+    QString threadCount = ui->threadCount->currentText();
+    QString enableBFrame = ui->enableBFrame->isChecked() ? "true" : "false";
+    QString quality             = QString::number(ui->qualityBar->value());
 
     // save
     option->setOption(format, "format", "encoder");
@@ -183,9 +173,13 @@ void BleSetting::onApplyClicked()
     option->setOption(x264Profile, "profile", "x264");
     option->setOption(bitrateMode, "BitrateMode", "x264");
     option->setOption(keyFrameInterval, "KeyFrameInterval", "x264");
+    option->setOption(threadCount, Key_Thread_Count, Group_X264);
+    option->setOption(enableBFrame, Key_Enable_B_Frame, Group_X264);
     option->setOption(quality, "quality", "x264");
 
     option->setOption(address, "address", "network");
+
+    emit settingChanged();
 }
 
 void BleSetting::onAudioBitrateChanged(const QString &text)
@@ -254,6 +248,15 @@ void BleSetting::onAudioBitrateChanged(const QString &text)
     }
 }
 
+void BleSetting::onQualityValueChanged(int value)
+{
+    QString text;
+    int max = ui->qualityBar->maximum();
+    text.sprintf("%3.0f%%", (float)value*100/(float)max);
+
+    ui->qualityLabel->setText(text);
+}
+
 void BleSetting::restore()
 {
     MOption *option = MOption::instance();
@@ -298,6 +301,8 @@ void BleSetting::restore()
     QString x264Profile = option->option("profile", "x264").toString();
     QString bitrateMode = option->option("BitrateMode", "x264").toString();
     QString keyFrameInterval = option->option("KeyFrameInterval", "x264").toString();
+    QString threadCount = option->option(Key_Thread_Count, Group_X264).toString();
+    QString enableBFrame = option->option(Key_Enable_B_Frame, Group_X264).toString();
     QString quality = option->option("quality", "x264").toString();
 
     setIndex(ui->x264Preset, x264Preset);
@@ -305,10 +310,12 @@ void BleSetting::restore()
     setIndex(ui->x264Profile, x264Profile);
     setIndex(ui->bitrateMode, bitrateMode);
     setIndex(ui->keyFrameInterval, keyFrameInterval);
-    setIndex(ui->quality, quality);
+    setIndex(ui->threadCount, threadCount);
+    ui->enableBFrame->setChecked((enableBFrame == "true") ? true: false);
+    ui->qualityBar->setValue(quality.toInt());
 
     // network group
-    QString address     = option->option("address", "network").toString();
+    QString address = option->option("address", "network").toString();
 
     ui->address->setText(address);
 }
