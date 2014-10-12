@@ -253,6 +253,12 @@ void BleMainWindow::onMenu()
     menu.exec(menuButton->mapToGlobal(menu.rect().bottomLeft()));
 }
 
+void BleMainWindow::onShow()
+{
+    showNormal();
+    raise();
+}
+
 void BleMainWindow::onTabBarCurrentChanged(int index)
 {
     ui->stackedWidget->setCurrentIndex(index);
@@ -264,7 +270,7 @@ void BleMainWindow::activated(QSystemTrayIcon::ActivationReason reason)
     case QSystemTrayIcon::Context:
     {
         QMenu menu;
-        menu.addAction(tr("show"), this, SLOT(show()));
+        menu.addAction(tr("show"), this, SLOT(onShow()));
         menu.addAction(tr("hide"), this, SLOT(hide()));
         menu.addAction(tr("quit"), this, SLOT(onClose()));
 

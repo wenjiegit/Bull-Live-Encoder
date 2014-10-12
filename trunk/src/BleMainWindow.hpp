@@ -66,6 +66,7 @@ private slots:
     void onDoubleClicked();
     void onSkin();
     void onMenu();
+    void onShow();
     void onTabBarCurrentChanged(int index);
 
     void activated(QSystemTrayIcon::ActivationReason reason);
