@@ -27,6 +27,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QPainter>
+#include <QtWin>
 
 MCustomDialog::MCustomDialog(QWidget *parent) :
     QDialog(parent)
@@ -52,6 +53,10 @@ MCustomDialog::MCustomDialog(QWidget *parent) :
 
     m_linearHeight= 30;
     m_statusHeight= 0;
+
+#ifdef Q_OS_WIN
+    QtWin::enableBlurBehindWindow(this);
+#endif
 }
 
 MCustomDialog::~MCustomDialog()

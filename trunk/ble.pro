@@ -59,7 +59,6 @@ SOURCES += \
     src/BleDesktopAreaSelector.cpp \
     src/BleTimestampBulider.cpp \
     src/BlePictureSource.cpp \
-    src/gui/BleWinAero.cpp \
     src/gui/MCustomDialog.cpp \
     src/gui/MOption.cpp \
     src/gui/MSkinChanger.cpp \
@@ -110,7 +109,6 @@ HEADERS  += \
     src/BleDesktopAreaSelector.hpp \
     src/BleTimestampBulider.hpp \
     src/BlePictureSource.hpp \
-    src/gui/BleWinAero.hpp \
     src/gui/MCustomDialog.h \
     src/gui/MOption.h \
     src/gui/MSkinChanger.h \

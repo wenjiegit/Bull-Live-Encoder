@@ -29,8 +29,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QPainter>
 #include <QtWin>
 
-#include "BleWinAero.hpp"
-
 QjtCustomWidget::QjtCustomWidget(QWidget *parent) :
     QDialog(parent)
   , ThemedWidgetBase(this)
@@ -57,7 +55,9 @@ QjtCustomWidget::QjtCustomWidget(QWidget *parent) :
     m_linearHeight= 30;
     m_statusHeight= 0;
 
-    BleWin::setWinAero(this);
+#ifdef Q_OS_WIN
+    QtWin::enableBlurBehindWindow(this);
+#endif
 }
 
 QjtCustomWidget::~QjtCustomWidget()
@@ -93,12 +93,9 @@ void QjtCustomWidget::addWidget(QWidget *widget)
 
     vBoxLayout->addWidget(widget);
 }
-#include <QDebug>
+
 void QjtCustomWidget::paintEvent(QPaintEvent *)
 {
-#ifdef Q_OS_WIN
-    BleWin::EnableBlurBehindWindow((HWND)winId(),true, QtWin::toHRGN(QRegion(rect())), true);
-#endif
     QPainter p(this);
 
     ThemedWidgetBase::drawThemedStyle(p);

@@ -49,7 +49,7 @@ ThemedWidgetBase::~ThemedWidgetBase()
 {
     removeThemedWidget(this);
 }
-#include <QDebug>
+
 void ThemedWidgetBase::applyNewTheme()
 {
     m_aeroTransparent = MOption::instance()->option("AeroTransparent", "theme").toInt();
@@ -57,7 +57,6 @@ void ThemedWidgetBase::applyNewTheme()
 
     m_cachedPixmap = QPixmap(QCoreApplication::applicationDirPath() + MOption::instance()->option("WindowBGPixmap", "theme").toString());
     m_cachedPixmap = setAlphaPixmap(m_cachedPixmap, m_aeroTransparent);
-    qDebug() << QCoreApplication::applicationDirPath() + MOption::instance()->option("WindowBGPixmap", "theme").toString();
 
     m_cachedColor = MOption::instance()->option("WindowBGColor", "theme").value<QColor>();
     m_cachedColor.setAlpha(m_aeroTransparent);
@@ -87,13 +86,14 @@ void ThemedWidgetBase::drawThemedStyle(QPainter &p)
             MOption::instance()->setOption("color", "WindowBGPixmapType", "theme");
             MOption::instance()->setOption(QVariant(color), OPTION_AVERAGE_COLOR, OPTION_GROUP_Theme);
 
-            //m_cachedColor.setAlpha(45);
             p.fillPath(path, color);
         }
     } else if(themeType == "color")
     {
-        //m_cachedColor.setAlpha(45);
-        p.fillPath(path, m_cachedColor);
+        QImage image(QSize(100, 100), QImage::Format_ARGB32);
+        image.fill(MOption::instance()->option("WindowBGColor", "theme").value<QColor>());
+        m_cachedPixmap = setAlphaPixmap(QPixmap::fromImage(image), m_aeroTransparent);
+        p.fillPath(path, QBrush(m_cachedPixmap));
     }
 
     QRect linearRect(0, m_titleHeight, m_themedWidget->width(), m_linearHeight);
