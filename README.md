@@ -17,12 +17,18 @@ site: http://wenjiegit.github.io/ble_release/donate.html<br/>
 
 Features
 =================
-1. push video(H.264) and audio(AAC) to rtmp server.<br/>
-2. ingest from camera.<br/>
-3. ingest from grab desktop.<br/>
-4. ingest from picture.<br/>
-5. ingest from video file using ffmpeg SDK.<br/>
-6. support all of sources combination.<br/>
+1.  push video(H.264) and audio(AAC) to rtmp server.<br/>
+2.  ingest from camera.<br/>
+3.  ingest from grab desktop.<br/>
+4.  ingest from picture.<br/>
+5.  ingest from video file using ffmpeg SDK.<br/>
+6.  support all of sources combination.<br/>
+7.  support skin change.<br/>
+8.  start and stop quickly.<br/>
+9.  support B frame with libx264.<br/>
+10. support CBR and VBR mode.
+11. support multi-thread encoding.
+
 
 BLE Download
 =================
@@ -39,10 +45,10 @@ Build Env
     with RtAudio.<br/>
 
 2. Linux with GUI<br/>
-    waiting...<br/>
+    coming soon...<br/>
 
 3. Mac<br/>
-    waiting...<br/>
+    coming soon...<br/>
 
 history
 =================
@@ -60,3 +66,4 @@ history
 [0.1]&nbsp;&nbsp;2014-10-12&nbsp;&nbsp;&nbsp;make libx264 thread count and b frame to option.<br/>
 [0.1]&nbsp;&nbsp;2014-10-12&nbsp;&nbsp;&nbsp;make start and stop action more quick.<br/>
 [0.1]&nbsp;&nbsp;2014-10-12&nbsp;&nbsp;&nbsp;support to choose encode quality.<br/>
+[0.1]&nbsp;&nbsp;2014-10-12&nbsp;&nbsp;&nbsp;support color composition with win7(or above) aero.<br/>
