@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_WIN
     g_logCtx->setEnableColorPrint(false);
 #endif
+    g_logCtx->setLog2File(true);
 
     QTranslator translator;
     if(translator.load(QApplication::applicationDirPath()+"/zh_CN.qm"))

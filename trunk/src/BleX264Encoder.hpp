@@ -45,7 +45,7 @@ public:
     int init();
     int encode(unsigned char *rgbframe, mint64 pts);
 
-    virtual int getFrameDuration();
+    int getFrameDuration();
 
 private:
     void fini();

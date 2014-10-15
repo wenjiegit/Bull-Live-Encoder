@@ -28,6 +28,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <stdarg.h>
 #include <QFile>
+#include <QMutex>
 
 class MLogLevel
 {
@@ -82,6 +83,8 @@ private:
 
     MString m_timeFormat;
     MString m_filePath;
+
+    QMutex m_mutex;
 };
 
 extern BleLog *g_logCtx;

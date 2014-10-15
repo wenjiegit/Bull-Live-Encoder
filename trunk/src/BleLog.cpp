@@ -172,6 +172,8 @@ void BleLog::error(const char *file, muint16 line, const char *function
 
 void BleLog::log(int level, const char *file, muint16 line, const char *function, const char *tag, const char *fmt, va_list ap)
 {
+    BleAutoLocker(m_mutex);
+
     const char *p;
 
     switch (level) {
