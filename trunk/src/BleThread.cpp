@@ -29,6 +29,11 @@ BleThread::BleThread(QObject *parent)
 {
 }
 
+BleThread::~BleThread()
+{
+
+}
+
 void BleThread::stop()
 {
     m_stop = true;
