@@ -1,0 +1,29 @@
+static unsigned char *YUV420SP2YUV420P(unsigned char *src, int width, int height)
+{
+    int dst_len = width * height * 3 /2;
+    unsigned char *dst = new unsigned char[dst_len];
+
+    int Y_len = width * height;
+    memcpy(dst, src, dst_len);
+
+    unsigned char *YUV420SP_U_start = src + Y_len;
+    unsigned char *YUV420SP_V_start = src + Y_len + 1;
+
+
+    unsigned char *YUV420_U_Start = dst + Y_len;
+    unsigned char *YUV420_V_Start = dst + Y_len + Y_len / 4;
+
+    int i = 0;
+    for (unsigned char* p = YUV420SP_U_start; p < src + dst_len; p += 2)
+    {
+        *(YUV420_U_Start + i++) = *p;
+    }
+
+    i = 0;
+    for (unsigned char* p = YUV420SP_V_start; p < src + dst_len; p += 2)
+    {
+        *(YUV420_V_Start + i++) = *p;
+    }
+
+    return dst;
+}
