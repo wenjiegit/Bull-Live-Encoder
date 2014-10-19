@@ -50,7 +50,6 @@ private:
 private:
     int sendVideoSh(BleRtmpMuxer & muxer);
     int sendAudioSh(BleRtmpMuxer & muxer);
-    int sendVideoSei(BleRtmpMuxer & muxer);
 
 private slots:
     void onTimeout();

@@ -91,7 +91,7 @@ void BleAudioCapture::run()
                 return;
             }
 
-            if (outputArray.size() > 0) {
+            if (outputArray.size() > 2) {
                 BleAudioPacket *pkt = new BleAudioPacket(Audio_Type_AAC);
                 pkt->data.writeString(MString(outputArray.data(), outputArray.size()));
                 pkt->dts = BleAVQueue::instance()->timestampBuilder()->addAudioFrame();

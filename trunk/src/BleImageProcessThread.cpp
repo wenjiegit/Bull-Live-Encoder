@@ -120,6 +120,39 @@ void BleImageProcessThread::run()
             }
             cvReleaseImageHeader(&cvImage);
         }
+
+//        IplImage *image=  cvLoadImage("d:\\123.png", CV_LOAD_IMAGE_UNCHANGED);
+//        if (image) {
+//            for (int x = 0; x < image->width; ++x) {
+//                for (int y = 0; y < image->height; ++y) {
+
+//                    //unsigned char *start = image->imageData + y*image->widthStep + x * 4;
+
+//                    unsigned char B = (image->imageData + y*image->widthStep)[x * 4 + 0];
+//                    unsigned char G = (image->imageData + y*image->widthStep)[x * 4 + 1];
+//                    unsigned char R = (image->imageData + y*image->widthStep)[x * 4 + 2];
+//                    unsigned char A = (image->imageData + y*image->widthStep)[x * 4 + 3];
+
+
+//                    if (A == 0) continue;
+
+//                    int newX = x + 400;
+//                    int newY = y + 30;
+
+//                    float A1 = A/255.00;
+
+//                    unsigned char B1 = ((dstImg->imageData + newY*dstImg->widthStep))[newX*3 + 0];
+//                    unsigned char G1 = ((dstImg->imageData + newY*dstImg->widthStep))[newX*3 + 1];
+//                    unsigned char R1 = ((dstImg->imageData + newY*dstImg->widthStep))[newX*3 + 2];
+
+//                    ((dstImg->imageData + newY*dstImg->widthStep))[newX*3 + 0] = (1-A1)*B1 + A1*B;
+//                    ((dstImg->imageData + newY*dstImg->widthStep))[newX*3 + 1] = (1-A1)*G1 + A1*G;
+//                    ((dstImg->imageData + newY*dstImg->widthStep))[newX*3 + 2] = (1-A1)*R1 + A1*R;
+//                }
+//             }
+//        }
+
+
         m_updateMutex.unlock();
 
         m_modifyOutputMutex.lock();

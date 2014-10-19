@@ -79,6 +79,7 @@ private slots:
     void onDesktopSelected(const QRect &rect);
     void onAddPic();
     void onAddFileSource();
+    void onAddTextSource();
 
     void onStatus(int audioKbps, int videoKbps, int fps, int sendDataCount);
 

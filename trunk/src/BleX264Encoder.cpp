@@ -147,54 +147,55 @@ int BleX264Encoder::init()
     // update video sh
     x264_nal_t *nalOut;
     int nalNum;
-
     x264_encoder_headers(m_x264Encoder, &nalOut, &nalNum);
 
-    // nalNUm = 3, SPS PPS SEI
-    // SPS + PPS
-    x264_nal_t &nal = nalOut[0];
-    BleVideoPacket *pkt = new BleVideoPacket(Video_Type_H264);
-    pkt->dts = 0;
+    for (int i = 0; i < nalNum; ++i) {
+        x264_nal_t &nal = nalOut[i];
+        if (nal.i_type == NAL_SPS) {
+            BleVideoPacket *pkt = new BleVideoPacket(Video_Type_H264);
+            pkt->dts = 0;
 
-    MStream &body = pkt->data;
+            MStream &body = pkt->data;
 
-    // SPS Serialize
-    body.write1Bytes(0x17);
-    body.write1Bytes(0x00);
-    body.write3Bytes(0x00);
-    body.write1Bytes(0x01);
-    body.writeString((char*)nal.p_payload + 5, 3);
-    body.write1Bytes(0xff);
-    body.write1Bytes(0xe1);
-    body.write2Bytes(nal.i_payload - 4);
-    body.writeString((char*)nal.p_payload + 4, nal.i_payload - 4);
+            // SPS Serialize
+            body.write1Bytes(0x17);
+            body.write1Bytes(0x00);
+            body.write3Bytes(0x00);
+            body.write1Bytes(0x01);
+            body.writeString((char*)nal.p_payload + 5, 3);
+            body.write1Bytes(0xff);
+            body.write1Bytes(0xe1);
+            body.write2Bytes(nal.i_payload - 4);
+            body.writeString((char*)nal.p_payload + 4, nal.i_payload - 4);
 
-    x264_nal_t &pps = nalOut[1]; //the PPS always comes after the SPS
+            //the PPS always comes after the SPS
+            x264_nal_t &pps = nalOut[++i];
 
-    // PPS Serialize
-    body.write1Bytes(0x01);
-    body.write2Bytes(pps.i_payload - 4);
-    body.writeString(MString((char*)pps.p_payload + 4, pps.i_payload - 4));
+            // PPS Serialize
+            body.write1Bytes(0x01);
+            body.write2Bytes(pps.i_payload - 4);
+            body.writeString(MString((char*)pps.p_payload + 4, pps.i_payload - 4));
 
-    appCtx->setVideoSh(pkt);
+            appCtx->setVideoSh(pkt);
+        } else if (nal.i_type == NAL_SEI) {
+            BleVideoPacket *seiPkt = new BleVideoPacket(Video_Type_H264);
+            seiPkt->dts = 0;
+            seiPkt->ready = true;
 
-    // SEI
-    x264_nal_t &seiNal = nalOut[2];
-    BleVideoPacket *seiPkt = new BleVideoPacket(Video_Type_H264);
-    seiPkt->dts = 0;
+            MStream &seiBody = seiPkt->data;
+            int skipBytes = 4;
+            int newPayloadSize = (nal.i_payload - skipBytes);
 
-    MStream &seiBody = seiPkt->data;
-    int skipBytes = 4;
-    int newPayloadSize = (seiNal.i_payload - skipBytes);
+            unsigned char flshFrameType = 0x17;
+            seiBody.write1Bytes(flshFrameType);
+            seiBody.write1Bytes(0x01);
+            seiBody.write3Bytes(0x00);
+            seiBody.write4Bytes(newPayloadSize);
+            seiBody.writeString((char*)nal.p_payload + skipBytes, newPayloadSize);
 
-    unsigned char flshFrameType = 0x17;
-    seiBody.write1Bytes(flshFrameType);
-    seiBody.write1Bytes(0x01);
-    seiBody.write3Bytes(0x00);
-    seiBody.write4Bytes(newPayloadSize);
-    seiBody.writeString((char*)seiNal.p_payload + skipBytes, newPayloadSize);
-
-    appCtx->setSei(seiPkt);
+            BleAVQueue::instance()->enqueue(seiPkt);
+        }
+    }
 
     m_pictureIn = new x264_picture_t;
     m_pictureIn->i_pts = 0;
@@ -269,12 +270,7 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts)
     // so you must get SPS PPS before encoding any frame.
     for (int i = 0; i < nalNum; ++i) {
         x264_nal_t &nal = nalOut[i];
-
-        int skipBytes = 4;
-        int newPayloadSize = (nal.i_payload - skipBytes);
-
-        body.write4Bytes(newPayloadSize);
-        body.writeString((char*)nal.p_payload + skipBytes, newPayloadSize);
+        body.writeString((char*)nal.p_payload, nal.i_payload);
     }
 
     BleAVQueue::instance()->updatePkt(pkt);

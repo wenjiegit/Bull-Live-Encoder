@@ -52,9 +52,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleCameraSelector.hpp"
 #include "BleDesktopAreaSelector.hpp"
 #include "BlePictureSource.hpp"
-#include "BleWinAero.hpp"
 #include "BleAudioCapture.hpp"
 #include "BleFileSource.hpp"
+#include "BleTextSource.hpp"
 #include "BleErrno.hpp"
 #include "QjtMessageBox.h"
 #include "BleVersion.hpp"
@@ -89,13 +89,18 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
     ui->startBtn->setFixedHeight(48);
     ui->stopBtn->setFixedHeight(48);
     ui->addFileSourceBtn->setFixedHeight(48);
+    ui->addTextBtn->setFixedHeight(48);
 
     ui->addCameraBtn->setToolTip(tr("add a camera source"));
     ui->addWindowGrabBtn->setToolTip(tr("add a desktop grab source"));
     ui->addPicBtn->setToolTip(tr("add a picture source"));
     ui->addFileSourceBtn->setToolTip(tr("add a file source"));
+    ui->addTextBtn->setToolTip(tr("add text source"));
     ui->startBtn->setToolTip(tr("begin rtmp streaming"));
     ui->startBtn->setToolTip(tr("stop rtmp streaming"));
+
+    // TODO temp set false
+    ui->addTextBtn->setVisible(false);
 
     ui->titleWidget->setFixedHeight(32);
     ui->titleWidget->setTitle(BLE_TITLE);
@@ -133,6 +138,8 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
             , this, SLOT(onAddPic()));
     connect(ui->addFileSourceBtn, SIGNAL(clicked())
             , this, SLOT(onAddFileSource()));
+    connect(ui->addTextBtn, SIGNAL(clicked())
+            , this, SLOT(onAddTextSource()));
 
     // tray setting
     m_systemTrayIcon = new QSystemTrayIcon(QIcon(":/image/logo.png"), this);
@@ -427,6 +434,15 @@ void BleMainWindow::onAddFileSource()
     BleFileSource *source = new BleFileSource();
     source->setFileName(fileName);
     source->start();
+
+    m_imageProcessWidget->addCaptureSource(source, 30, 30, 320, 240);
+}
+
+void BleMainWindow::onAddTextSource()
+{
+    QString text= "this is a text";
+    BleTextSource *source = new BleTextSource;
+    source->setText(text);
 
     m_imageProcessWidget->addCaptureSource(source, 30, 30, 320, 240);
 }

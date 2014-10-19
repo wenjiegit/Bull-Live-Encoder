@@ -131,10 +131,6 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
         return ret;
     }
 
-    if ((ret = sendVideoSei(muxer)) != BLE_SUCESS) {
-        return ret;
-    }
-
     while (!m_stop) {
         QQueue<BleAVPacket *> pkts = BleAVQueue::instance()->dequeue();
         if (pkts.isEmpty()) {
@@ -214,25 +210,6 @@ int BleRtmpSendThread::sendAudioSh(BleRtmpMuxer &muxer)
         }
 
         log_trace("AAC send audio sh success");
-    }
-
-    return ret;
-}
-
-int BleRtmpSendThread::sendVideoSei(BleRtmpMuxer &muxer)
-{
-    int ret = BLE_SUCESS;
-
-    // if H264 send video sei
-    BleAVPacket *pkt = appCtx->sei();
-    if (pkt) {
-        MStream &data = pkt->data;
-        if (muxer.addH264(data, pkt->dts) != TRUE ) {
-            ret = BLE_RTMPSEND_ERROR;
-            return ret;
-        }
-
-        log_trace("H264 send video sei success");
     }
 
     return ret;

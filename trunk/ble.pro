@@ -83,7 +83,8 @@ SOURCES += \
     src/BleAudioEncoderAbstract.cpp \
     src/BleFileSource.cpp \
     src/core/mstream.cpp \
-    src/BleContext.cpp
+    src/BleContext.cpp \
+    src/BleTextSource.cpp
 
 HEADERS  += \
     src/BleMainWindow.hpp \
@@ -135,7 +136,8 @@ HEADERS  += \
     src/BleVersion.hpp \
     src/BleFileSource.hpp \
     src/core/mstream.hpp \
-    src/BleContext.hpp
+    src/BleContext.hpp \
+    src/BleTextSource.hpp
 
 FORMS    += \
     src/BleMainWindow.ui \
