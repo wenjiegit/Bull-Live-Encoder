@@ -298,14 +298,6 @@ void BleMainWindow::activated(QSystemTrayIcon::ActivationReason reason)
 
 void BleMainWindow::onEncodeStart()
 {
-    if (!m_sendThread) {
-        m_sendThread = new BleRtmpSendThread(this);
-        START_THREAD(m_sendThread);
-
-        connect(m_sendThread, SIGNAL(status(int,int,int,int))
-                , this, SLOT(onStatus(int,int,int,int)));
-    }
-
     m_imageProcessThread = new BleImageProcessThread(this);
     m_imageProcessWidget->setProcessThread(m_imageProcessThread);
 
@@ -338,6 +330,14 @@ void BleMainWindow::onEncodeStart()
     int ret = m_audioCaptureThread->startCapture(audioBitrate, audioSampleRate, audioChannels, devID);
     if (ret != BLE_SUCESS) {
         QjtMessageBox::critical(this, tr("error"), tr("start audio capture error."));
+    }
+
+    if (!m_sendThread) {
+        m_sendThread = new BleRtmpSendThread(this);
+        START_THREAD(m_sendThread);
+
+        connect(m_sendThread, SIGNAL(status(int,int,int,int))
+                , this, SLOT(onStatus(int,int,int,int)));
     }
 
     START_THREAD(m_encoderThread);
