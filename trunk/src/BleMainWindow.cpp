@@ -298,6 +298,14 @@ void BleMainWindow::activated(QSystemTrayIcon::ActivationReason reason)
 
 void BleMainWindow::onEncodeStart()
 {
+    if (!m_sendThread) {
+        m_sendThread = new BleRtmpSendThread(this);
+        START_THREAD(m_sendThread);
+
+        connect(m_sendThread, SIGNAL(status(int,int,int,int))
+                , this, SLOT(onStatus(int,int,int,int)));
+    }
+
     m_imageProcessThread = new BleImageProcessThread(this);
     m_imageProcessWidget->setProcessThread(m_imageProcessThread);
 
@@ -308,10 +316,6 @@ void BleMainWindow::onEncodeStart()
 
     m_encoderThread = new BleEncoderThread(this);
     m_encoderThread->setProcessThread(m_imageProcessThread);
-    m_sendThread = new BleRtmpSendThread(this);
-
-    connect(m_sendThread, SIGNAL(status(int,int,int,int))
-            , this, SLOT(onStatus(int,int,int,int)));
 
     m_encoderThread->init();
 
@@ -338,7 +342,6 @@ void BleMainWindow::onEncodeStart()
 
     START_THREAD(m_encoderThread);
     START_THREAD(m_imageProcessThread);
-    START_THREAD(m_sendThread);
     START_THREAD(m_audioCaptureThread);
 
     ui->startBtn->setEnabled(false);

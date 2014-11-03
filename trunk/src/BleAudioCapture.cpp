@@ -76,8 +76,11 @@ void BleAudioCapture::run()
         int frameSize = m_audioEncoder->getFrameSize();
 
         m_mutex.lock();
-        while (m_bytesCache.size() < frameSize) {
-            m_waitCondtion.wait(&m_mutex);
+
+        if (m_bytesCache.size() < frameSize) {
+            m_mutex.unlock();
+            msleep(50);
+            continue;
         }
 
         while (m_bytesCache.size() >= frameSize) {
