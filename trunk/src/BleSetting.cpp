@@ -72,7 +72,9 @@ BleSetting::BleSetting(QWidget *parent) :
     }
 
     ui->audioFormat->addItem("AAC");
-    ui->audioFormat->addItem("MP3");
+
+    // not support yet.
+    // ui->audioFormat->addItem("MP3");
 
     ui->audioChannels->addItem("Stereo");
     ui->audioChannels->addItem("Mono");

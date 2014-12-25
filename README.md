@@ -28,7 +28,7 @@ Features
 9.  support B frame with libx264.<br/>
 10. support CBR and VBR mode.
 11. support multi-thread encoding.
-
+12. support skin change, with color or image.
 
 BLE Download
 =================
@@ -50,6 +50,14 @@ Build Env
 3. Mac<br/>
     coming soon...<br/>
 
+plan
+=================
+1.  support multi-scene, and change scene quickly.
+2.  support ingest from process, eg, from game on windows platform.
+3.  support push htpp + flv stream to Bull-Live-Server ,which support this stream pushing.\
+4.  support record to flv file.
+5.	support play rtmp stream on windows platform using flash tech.
+
 history
 =================
 [0.1]&nbsp;&nbsp;2014-07-05&nbsp;&nbsp;&nbsp;init project.<br/>
@@ -67,3 +75,4 @@ history
 [0.1]&nbsp;&nbsp;2014-10-12&nbsp;&nbsp;&nbsp;make start and stop action more quick.<br/>
 [0.1]&nbsp;&nbsp;2014-10-12&nbsp;&nbsp;&nbsp;support to choose encode quality.<br/>
 [0.1]&nbsp;&nbsp;2014-10-12&nbsp;&nbsp;&nbsp;support color composition with win7(or above) aero.<br/>
+[0.1]&nbsp;&nbsp;2014-12-25&nbsp;&nbsp;&nbsp;fix timestamp from qint64 to double.<br/>
