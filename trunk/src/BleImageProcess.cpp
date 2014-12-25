@@ -47,7 +47,7 @@ BleImageProcess::BleImageProcess(QWidget *parent)
     ui->setupUi(this);
 
     connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(onRefreshTimeout()));
-    m_refreshTimer.start(100);
+    m_refreshTimer.start(60);
 
     setMouseTracking(true);
     setFocusPolicy(Qt::ClickFocus);
@@ -84,6 +84,8 @@ void BleImageProcess::addCaptureSource(BleSourceAbstract *source, int x, int y, 
 
 void BleImageProcess::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
+
     QPainter p(this);
 
     p.setRenderHint(QPainter::SmoothPixmapTransform);
@@ -116,7 +118,8 @@ void BleImageProcess::paintEvent(QPaintEvent *event)
         }
         qimage = QImage((uchar*)image.data, image.width, image.height, QImage::Format_RGB888);
 
-        p.drawImage(pair.rect, qimage);
+        p.drawPixmap(pair.rect, QPixmap::fromImage(qimage));
+        // p.drawImage(pair.rect, qimage);
     }
 
     if (m_activePair && m_activePair->rect.isValid()) {
@@ -274,6 +277,8 @@ void BleImageProcess::keyPressEvent(QKeyEvent *e)
 
 void BleImageProcess::focusOutEvent(QFocusEvent *e)
 {
+    Q_UNUSED(e);
+
     m_activePair = NULL;
 }
 
@@ -313,7 +318,6 @@ void BleImageProcess::onUpBtnClicked()
 
     QRect &r = m_activePair->rect;
     if (r.isValid()) {
-        int x =  r.x();
         int y = r.y();
         r.moveTop(y - 1);
     }

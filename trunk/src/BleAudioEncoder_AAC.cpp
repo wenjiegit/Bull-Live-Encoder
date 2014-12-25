@@ -124,6 +124,9 @@ bool BleAudioEncoder_AAC::encode(const QByteArray &data, QByteArray &outputArray
     if (encodedBytes < 0) {
         log_error("faacEncEncode failed, aac ori data %d , encode data %d", data.size(), encodedBytes);
         return false;
+    } else if (encodedBytes == 0) {
+        log_trace("audio frame delayed in encoder.");
+        return true;
     }
 
     static unsigned char af[2] = {0xaf, 0x01};
@@ -139,9 +142,9 @@ int BleAudioEncoder_AAC::getFrameSize()
     return m_samplesInputSize * 16 / 8;
 }
 
-int BleAudioEncoder_AAC::getFrameDuration()
+float BleAudioEncoder_AAC::getFrameDuration()
 {
-    return getFrameSize() * 1000 / (m_samplerate * 16 / 8 * 2);
+    return (float)getFrameSize() * 1000.00 / ((float)m_samplerate * 16.0 / 8.0 * 2.0);
 }
 
 QByteArray BleAudioEncoder_AAC::getHeader()

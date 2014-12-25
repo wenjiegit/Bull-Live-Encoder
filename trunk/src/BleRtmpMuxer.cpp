@@ -366,7 +366,8 @@ RtmpAU::RtmpAU(const string &url)
     RTMP_Init(m_pRtmp);
     m_pRtmp->m_bUseNagle = TRUE;
 
-    m_pRtmp->Link.flashVer.av_val = "FMLE/3.0 (compatible; FMSc/1.0)";
+    const char *av_val = "FMLE/3.0 (compatible; FMSc/1.0)";
+    m_pRtmp->Link.flashVer.av_val = const_cast<char *> (av_val);
     m_pRtmp->Link.flashVer.av_len = (int)strlen(m_pRtmp->Link.flashVer.av_val);
 
     m_pRtmp->m_outChunkSize = 4096;//RTMP_DEFAULT_CHUNKSIZE;//

@@ -38,7 +38,7 @@ public:
     virtual void fini();
     virtual bool encode(const QByteArray &data, QByteArray &output);\
     virtual int getFrameSize();
-    virtual int getFrameDuration();
+    virtual float getFrameDuration();
 
     QByteArray getHeader();
 

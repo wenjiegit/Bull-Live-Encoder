@@ -5002,7 +5002,7 @@ static std::string convertTChar( LPCTSTR name )
 
 static BOOL CALLBACK deviceQueryCallback( LPGUID lpguid,
                                           LPCTSTR description,
-                                          LPCTSTR module,
+                                          LPCTSTR /*module*/,
                                           LPVOID lpContext )
 {
   struct DsProbeData& probeInfo = *(struct DsProbeData*) lpContext;

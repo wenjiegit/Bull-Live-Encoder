@@ -34,17 +34,17 @@ public:
     void setVideoCaptureInternal(int internal);
     void setAudioCaptureInternal(int internal);
 
-    qint64 addVideoFrame();
-    qint64 addAudioFrame();
+    double addVideoFrame();
+    double addAudioFrame();
 
 private:
     QMutex m_mutex;
 
-    int m_videoInternal;
-    int m_audiInternal;
+    float m_videoInternal;
+    float m_audiInternal;
 
-    qint64 m_videoTimestamp;
-    qint64 m_audioTimestamp;
+    double m_videoTimestamp;
+    double m_audioTimestamp;
 };
 
 #endif // BLETIMESTAMPBULIDER_HPP

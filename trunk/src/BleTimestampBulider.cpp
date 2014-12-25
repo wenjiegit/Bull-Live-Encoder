@@ -25,10 +25,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "BleUtil.hpp"
 
-static qint64 growTimestamp(qint64 & timestamp, int internal, qint64 & otherTimestamp)
+static double growTimestamp(double & timestamp, float internal, double & otherTimestamp)
 {
-    if (timestamp <= otherTimestamp) {
-        while (timestamp <= otherTimestamp) {
+    if (timestamp < otherTimestamp) {
+        while (timestamp < otherTimestamp) {
             timestamp += internal;
         }
     } else {
@@ -39,10 +39,10 @@ static qint64 growTimestamp(qint64 & timestamp, int internal, qint64 & otherTime
 }
 
 BleTimestampBulider::BleTimestampBulider()
-    : m_videoInternal(50)
-    , m_audiInternal(23)
-    , m_videoTimestamp(0)
-    , m_audioTimestamp(0)
+    : m_videoInternal(66.66666666666667)        // default 15fps
+    , m_audiInternal(23.2199546485261)          // default aac 44100Hz
+    , m_videoTimestamp(0.00)
+    , m_audioTimestamp(0.00)
 {
 }
 
@@ -56,14 +56,14 @@ void BleTimestampBulider::setAudioCaptureInternal(int internal)
     m_audiInternal = internal;
 }
 
-qint64 BleTimestampBulider::addVideoFrame()
+double BleTimestampBulider::addVideoFrame()
 {
     BleAutoLocker(m_mutex);
 
     return growTimestamp(m_videoTimestamp, m_videoInternal, m_audioTimestamp);;
 }
 
-qint64 BleTimestampBulider::addAudioFrame()
+double BleTimestampBulider::addAudioFrame()
 {
     BleAutoLocker(m_mutex);
 

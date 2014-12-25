@@ -34,9 +34,6 @@
 //typedef size_t off_t;
 #endif
 
-#pragma warning(disable:4996) //depricated warnings
-#pragma warning(disable:4244) //64bit defensive mechanism, fixed the ones that mattered
-
 #ifdef __cplusplus
 extern "C"
 {

@@ -239,7 +239,7 @@ void RecSkinWidget::onCloseNum(int num,const QString &fileName)
     {
         return;
     }
-    RecSkinPushButton *tmpButton;
+    RecSkinPushButton *tmpButton = NULL;
     if(nowPixNum == num)
         emit currentPixmap(oneFileName,onePix,oneColor);
     else

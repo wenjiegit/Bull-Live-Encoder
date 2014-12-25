@@ -100,7 +100,7 @@ void MStream::writeString(const char *data, int size)
 int MStream::read1Bytes(mint8 &var)
 {
     int ret = E_SUCCESS;
-    if (left() < sizeof(var)) {
+    if (left() < (int)sizeof(var)) {
         return E_SPACE_NOT_ENOUGH;
     }
 
@@ -159,7 +159,7 @@ int MStream::read4Bytes(mint32 &var)
 int MStream::read8Bytes(double &var)
 {
     int ret = E_SUCCESS;
-    if (left() < sizeof(var)) {
+    if (left() < (int)sizeof(var)) {
         return E_SPACE_NOT_ENOUGH;
     }
 
@@ -179,7 +179,7 @@ int MStream::read8Bytes(double &var)
 int MStream::readString(mint16 len, MString &var)
 {
     int ret = E_SUCCESS;
-    if (left() < (muint32)len) {
+    if (left() < (int)len) {
         return E_SPACE_NOT_ENOUGH;
     }
 
@@ -198,7 +198,7 @@ int MStream::skip(int len)
 {
     int temp = m_pos;
     temp += len;
-    if (temp >= size() || temp < 0) {
+    if (temp >= (int)size() || temp < 0) {
         return E_STREAM_SKIP_ERROR;
     }
     m_pos = temp;
@@ -213,7 +213,7 @@ void MStream::reset()
 
 bool MStream::end()
 {
-    return m_pos == size();
+    return m_pos == (int)size();
 }
 
 int MStream::pos()

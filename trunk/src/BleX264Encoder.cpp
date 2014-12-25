@@ -55,13 +55,13 @@ int BleX264Encoder::init()
     QString tuneName    = option->option("tune", "x264").toString();
     QString profileName = option->option("profile", "x264").toString();
     int fps = option->option("fps", "encoder").toInt();
-    int bps = option->option("bitrate", "encoder").toInt();
+    int kbps = option->option("bitrate", "encoder").toInt();
 
     QSize wh = option->option("res", "encoder").toSize();
     int width = wh.width();
     int height = wh.height();
 
-    int maxBitRate = bps;
+    int maxBitRate = kbps;
     int bufferSize = maxBitRate;
     bool bUseCBR = (option->option("BitrateMode", "x264").toString() == "CBR");
     int quality = option->option("quality", "x264").toInt();
