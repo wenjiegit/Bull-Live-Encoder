@@ -30,6 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "rtmp.h"
 #include "mstring.hpp"
 #include "mstringlist.hpp"
+#include "BleVersion.hpp"
 
 #define NALU_TYPE_SLICE     1
 #define NALU_TYPE_DPA       2
@@ -47,9 +48,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define StreamChannel_Metadata  0x03
 #define StreamChannel_Video     0x04
 #define StreamChannel_Audio     0x05
-
-#define CODECID_H264    0x07
-#define CODECID_AAC     0x0a;
 
 static char * put_byte(char *output, uint8_t nVal)
 {
@@ -179,9 +177,13 @@ int BleRtmpMuxer::setMetaData(const FlvMetaData &metaData)
     p = put_byte(p, AMF_STRING);
     p = put_amf_string(p, "onMetaData");
     p = put_byte(p, AMF_OBJECT);
-    p = put_amf_string(p, "copyright");
+    p = put_amf_string(p, "encoder");
     p = put_byte(p, AMF_STRING);
-    p = put_amf_string(p, "17173 video group");
+    p = put_amf_string(p, BLE_NAME);
+
+    p = put_amf_string(p, "authors");
+    p = put_byte(p, AMF_STRING);
+    p = put_amf_string(p, BLE_AUTHORS);
 
     p = put_amf_string(p, "width");
     p = put_amf_double(p, metaData.width);
@@ -204,14 +206,19 @@ int BleRtmpMuxer::setMetaData(const FlvMetaData &metaData)
     p = put_amf_string(p, "audiosamplesize");
     p = put_amf_double(p, metaData.audiosamplesize);
 
-    p = put_amf_string(p, "stereo");
-    p = put_amf_double(p, 1);
-
     p = put_amf_string(p, "audiocodecid");
     p = put_amf_double(p, metaData.audiocodecid);
 
     p = put_amf_string(p, "audiochannels");
-    p = put_amf_double(p, 2);
+    p = put_amf_double(p, metaData.stereo ? 2 : 1);
+
+    p = put_amf_string(p, "creationdate");
+    p = put_byte(p, AMF_STRING);
+    p = put_amf_string(p, metaData.creationdate.c_str());
+
+    p = put_amf_string(p, "canSeekToEnd");
+    p = put_byte(p, AMF_STRING);
+    p = put_amf_string(p, "false");
 
     p = put_amf_string(p, "");
     p = put_byte(p, AMF_OBJECT_END);

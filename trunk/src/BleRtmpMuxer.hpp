@@ -30,6 +30,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using namespace std;
 
+#define CODECID_H264    (0x07)
+#define CODECID_AAC     (0x0a)
+
 /*!
     @brief the flv metadata
 */

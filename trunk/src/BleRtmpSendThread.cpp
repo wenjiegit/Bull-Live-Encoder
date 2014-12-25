@@ -25,6 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <QElapsedTimer>
 #include <QDebug>
+#include <QDateTime>
 
 #include "BleRtmpMuxer.hpp"
 #include "BleEncoderThread.hpp"
@@ -122,6 +123,10 @@ int BleRtmpSendThread::wsaStart()
 int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
 {
     int ret = BLE_SUCESS;
+
+    if ((ret = sendMetadata(muxer)) != BLE_SUCESS) {
+        return ret;
+    }
 
     if ((ret = sendVideoSh(muxer)) != BLE_SUCESS) {
         return ret;
@@ -250,4 +255,53 @@ void BleRtmpSendThread::onTimeout()
     fps = fpsALl / m_kbps.size();
 
     emit status(audioKbps, videoKbps, fps, m_sendDataCount);
+}
+
+int BleRtmpSendThread::sendMetadata(BleRtmpMuxer & muxer)
+{
+    int ret = BLE_SUCESS;
+
+    MOption *option = MOption::instance();
+
+    QSize wh = option->option("res", "encoder").toSize();
+
+    int audiocodecid = CODECID_AAC;
+    int audiodatarate = option->option("bitrate", "audio").toInt();
+    int audiodelay = 0;
+    int audiosamplerate = option->option("sample_rate", "audio").toInt();
+    int audiosamplesize = 1024;
+    bool canSeekToEnd = false;
+
+    int duration = 0;
+    int filesize = 0;
+    int framerate = option->option("fps", "encoder").toInt();
+    int height = wh.height();
+    bool stereo = option->option("channels", "audio").toString() == "Stereo" ? true : false;
+    int videocodecid = CODECID_H264;
+    int videodatarate = option->option("bitrate", "encoder").toInt();
+    int width = wh.width();;
+
+    FlvMetaData *meta = new FlvMetaData;
+    BleAutoFree(FlvMetaData, meta);
+    meta->audiocodecid = audiocodecid;
+    meta->audiodatarate = audiodatarate;
+    meta->audiodelay = audiodelay;
+    meta->audiosamplerate = audiosamplerate;
+    meta->audiosamplesize = audiosamplesize;
+    meta->canSeekToEnd = canSeekToEnd;
+    meta->duration = duration;
+    meta->filesize = filesize;
+    meta->framerate = framerate;
+    meta->height = height;
+    meta->stereo = stereo;
+    meta->videocodecid = videocodecid;
+    meta->videodatarate = videodatarate;
+    meta->width = width;
+    meta->creationdate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toStdString();
+
+    if ((ret = muxer.setMetaData(*meta)) != TRUE) {
+        return BLE_RTMPSEND_ERROR;
+    }
+
+    return BLE_SUCESS;
 }
