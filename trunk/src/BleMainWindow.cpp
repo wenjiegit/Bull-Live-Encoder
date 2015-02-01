@@ -59,6 +59,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "QjtMessageBox.h"
 #include "BleVersion.hpp"
 #include "BleAVQueue.hpp"
+#include "BleImageCaptureThread.hpp"
+#include "BleAVContext.hpp"
 
 #define BLE_TITLE "Bull Live Encoder"
 
@@ -341,6 +343,11 @@ void BleMainWindow::onEncodeStart()
         connect(m_sendThread, SIGNAL(status(int,int,int,int))
                 , this, SLOT(onStatus(int,int,int,int)));
     }
+
+    BleImageCaptureThread *captureThread = new BleImageCaptureThread;
+    BleAVContext::instance()->captureThread = captureThread;
+    captureThread->setImageProcessThread(m_imageProcessThread);
+    START_THREAD(captureThread);
 
     START_THREAD(m_encoderThread);
     START_THREAD(m_imageProcessThread);

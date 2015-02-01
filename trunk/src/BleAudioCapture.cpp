@@ -33,6 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleAudioEncoder_MP3.hpp"
 #include "BleErrno.hpp"
 #include "BleContext.hpp"
+#include "BleAVContext.hpp"
 
 #include "MOption.h"
 
@@ -98,9 +99,20 @@ void BleAudioCapture::run()
             if (outputArray.size() > 2) {
                 BleAudioPacket *pkt = new BleAudioPacket(Audio_Type_AAC);
                 pkt->data.writeString(MString(outputArray.data(), outputArray.size()));
-                pkt->dts = BleAVQueue::instance()->timestampBuilder()->addAudioFrame();
+
+                bool need_capture_video = false;
+                double video_pts = -1;
+                pkt->dts = BleAVQueue::instance()->timestampBuilder()->addAudioFrame(need_capture_video, video_pts);
                 pkt->ready = true;
                 BleAVQueue::instance()->enqueue(pkt);
+
+                if (need_capture_video) {
+                    BleVideoPacket *pkt = new BleVideoPacket(Video_Type_H264);
+                    pkt->ready = false;
+                    pkt->dts = video_pts;
+                    BleAVQueue::instance()->enqueue(pkt);
+                    BleAVContext::instance()->captureThread->capture(video_pts);
+                }
             }
         }
 

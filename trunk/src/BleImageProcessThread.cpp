@@ -72,6 +72,9 @@ void BleImageProcessThread::run()
         elapsedTimer.start();
 
         m_updateMutex.lock();
+        // reset bg image to black
+        cvZero(dstImg);
+
         for (int i = 0; i < m_sources.size(); ++i) {
             SourcePair & pair = m_sources[i];
 
@@ -155,42 +158,42 @@ void BleImageProcessThread::run()
 
         m_updateMutex.unlock();
 
-        m_modifyOutputMutex.lock();
+//        m_modifyOutputMutex.lock();
 
-        // if delayed about 1s , then discard some image.
-        // TODO make this to option
-        // TODO check AVQueue size
-        if (m_outputQueue.size() > 5) {
-            log_trace("queue has many mang image, maybe your encoder is too slow!");
-            goto end;
-        }
+//        // if delayed about 1s , then discard some image.
+//        // TODO make this to option
+//        // TODO check AVQueue size
+//        if (m_outputQueue.size() > 5) {
+//            log_trace("queue has many mang image, maybe your encoder is too slow!");
+//            goto end;
+//        }
 
-        if (true) {
-            // to BleImage
-            BleImage *be = new BleImage;
-            be->width = dstImg->width;
-            be->height = dstImg->height;
+//        if (true) {
+//            // to BleImage
+//            BleImage *be = new BleImage;
+//            be->width = dstImg->width;
+//            be->height = dstImg->height;
 
-            be->data = new char[dstImg->imageSize];
-            memcpy(be->data, dstImg->imageData, dstImg->imageSize);
+//            be->data = new char[dstImg->imageSize];
+//            memcpy(be->data, dstImg->imageData, dstImg->imageSize);
 
-            be->dataSize = dstImg->imageSize;
+//            be->dataSize = dstImg->imageSize;
 
-            be->format = BleImage_Format_BGR24;
+//            be->format = BleImage_Format_BGR24;
 
-            // m_timestampBuilder.setVideoCaptureInternal(m_internal);
-            // be->pts = m_timestampBuilder.addVideoFrame();
+//            // m_timestampBuilder.setVideoCaptureInternal(m_internal);
+//            // be->pts = m_timestampBuilder.addVideoFrame();
 
-            BleVideoPacket *pkt = new BleVideoPacket(Video_Type_H264);
-            pkt->ready = false;
-            pkt->dts = be->pts = BleAVQueue::instance()->timestampBuilder()->addVideoFrame();
-            BleAVQueue::instance()->enqueue(pkt);
+//            BleVideoPacket *pkt = new BleVideoPacket(Video_Type_H264);
+//            pkt->ready = false;
+//            pkt->dts = be->pts = BleAVQueue::instance()->timestampBuilder()->addVideoFrame();
+//            BleAVQueue::instance()->enqueue(pkt);
 
-            m_outputQueue.enqueue(be);
-        }
+//            m_outputQueue.enqueue(be);
+//        }
 
-end:
-        m_modifyOutputMutex.unlock();
+//end:
+//        m_modifyOutputMutex.unlock();
 
         int elapsedMs = elapsedTimer.elapsed();
         int needSleepMs = m_internal - elapsedMs;
@@ -198,10 +201,8 @@ end:
             needSleepMs = 0;
         }
         msleep(needSleepMs);
-
-        // reset bg image to black
-        cvZero(dstImg);
     }
+
     m_dstImage = NULL;
     cvReleaseImage(&dstImg);
 

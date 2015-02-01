@@ -64,12 +64,12 @@ void BleAVQueue::enqueue(BleAVPacket *pkt)
 {
     BleAutoLocker(m_mutex);
 
-    if (pkt->pktType == Packet_Type_Audio) {
-        m_audioQueue << pkt;
-    } else {
-        m_queue << pkt;
-    }
-    // m_queue << pkt;
+//    if (pkt->pktType == Packet_Type_Audio) {
+//        m_audioQueue << pkt;
+//    } else {
+//        m_queue << pkt;
+//    }
+    m_queue << pkt;
 }
 
 BleAVPacket *BleAVQueue::finPkt()
@@ -94,29 +94,31 @@ QQueue<BleAVPacket *> BleAVQueue::dequeue()
 {
     BleAutoLocker(m_mutex);
 
-//    QQueue<BleAVPacket *> pkts;
-//    while (!m_queue.empty()) {
-//        BleAVPacket *pkt = m_queue.first();
-//        if (pkt->ready) {
-//            pkts << pkt;
-
-//            // erase from m_queue
-//            m_queue.removeFirst();
-//        } else
-//            break;
-//    }
-
     QQueue<BleAVPacket *> pkts;
-    while (true) {
-        BleAVPacket *pkt = findPktByTimetamp();
-        if (!pkt) break;
+    while (!m_queue.empty()) {
+        BleAVPacket *pkt = m_queue.first();
+        if (pkt->ready) {
+            pkts << pkt;
 
-        pkts << pkt;
+            // erase from m_queue
+            m_queue.removeFirst();
+        } else
+            break;
     }
 
     return pkts;
 
-    return pkts;
+//    QQueue<BleAVPacket *> pkts;
+//    while (true) {
+//        BleAVPacket *pkt = findPktByTimetamp();
+//        if (!pkt) break;
+
+//        pkts << pkt;
+//    }
+
+//    return pkts;
+
+//    return pkts;
 }
 
 void BleAVQueue::fini()
@@ -131,41 +133,41 @@ void BleAVQueue::fini()
 
 BleAVPacket *BleAVQueue::findPktByTimetamp()
 {
-    if (!m_queue.isEmpty() && !m_audioQueue.isEmpty()) {
-        BleAVPacket *audioPkt = m_audioQueue.first();
-        BleAVPacket *videoPkt = m_queue.first();
+//    if (!m_queue.isEmpty() && !m_audioQueue.isEmpty()) {
+//        BleAVPacket *audioPkt = m_audioQueue.first();
+//        BleAVPacket *videoPkt = m_queue.first();
 
-        qint64 audioDts = m_audioQueue.first()->dts;
-        qint64 videoSts = m_queue.first()->dts;
+//        qint64 audioDts = m_audioQueue.first()->dts;
+//        qint64 videoSts = m_queue.first()->dts;
 
-        if (audioDts <= videoSts) {
-            m_audioQueue.removeFirst();
-            return audioPkt;
-        } else {
-            if (videoPkt->ready) {
-                m_queue.removeFirst();
-                return videoPkt;
-            } else {
-                return NULL;
-            }
-        }
-    }
+//        if (audioDts <= videoSts) {
+//            m_audioQueue.removeFirst();
+//            return audioPkt;
+//        } else {
+//            if (videoPkt->ready) {
+//                m_queue.removeFirst();
+//                return videoPkt;
+//            } else {
+//                return NULL;
+//            }
+//        }
+//    }
 
-    if (!m_queue.isEmpty() && m_audioQueue.isEmpty()) {
-        BleAVPacket *videoPkt = m_queue.first();
-        if (videoPkt->ready) {
-            m_queue.removeFirst();
-            return videoPkt;
-        } else {
-            return NULL;
-        }
-    }
+//    if (!m_queue.isEmpty() && m_audioQueue.isEmpty()) {
+//        BleAVPacket *videoPkt = m_queue.first();
+//        if (videoPkt->ready) {
+//            m_queue.removeFirst();
+//            return videoPkt;
+//        } else {
+//            return NULL;
+//        }
+//    }
 
-    if (m_queue.isEmpty() && !m_audioQueue.isEmpty()) {
-        BleAVPacket *audioPkt = m_audioQueue.first();
-        m_audioQueue.removeFirst();
-        return audioPkt;
-    }
+//    if (m_queue.isEmpty() && !m_audioQueue.isEmpty()) {
+//        BleAVPacket *audioPkt = m_audioQueue.first();
+//        m_audioQueue.removeFirst();
+//        return audioPkt;
+//    }
 
-    return NULL;
+//    return NULL;
 }

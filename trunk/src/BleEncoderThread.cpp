@@ -42,6 +42,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "opencv2/opencv.hpp"
 
 #include "BleAVQueue.hpp"
+#include "BleAVContext.hpp"
 
 #define Max_Queue_Size     (20)
 
@@ -76,7 +77,7 @@ void BleEncoderThread::run()
     BleAssert(imageProcessThread);
 
     while (!m_stop) {
-        QQueue<BleImage*> images = imageProcessThread->getQueue();
+        QQueue<BleImage*> images = BleAVContext::instance()->captureThread->getQueue();
 
         // if can't get image, then sleep 50 ms.
         if (images.isEmpty()) {

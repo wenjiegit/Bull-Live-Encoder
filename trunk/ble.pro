@@ -88,7 +88,9 @@ SOURCES += \
     src/core/mstream.cpp \
     src/BleContext.cpp \
     src/BleTextSource.cpp \
-    src/BleAudioEncoder_MP3.cpp
+    src/BleAudioEncoder_MP3.cpp \
+    src/BleImageCaptureThread.cpp \
+    src/BleAVContext.cpp
 
 HEADERS  += \
     src/BleMainWindow.hpp \
@@ -142,7 +144,9 @@ HEADERS  += \
     src/core/mstream.hpp \
     src/BleContext.hpp \
     src/BleTextSource.hpp \
-    src/BleAudioEncoder_MP3.hpp
+    src/BleAudioEncoder_MP3.hpp \
+    src/BleImageCaptureThread.hpp \
+    src/BleAVContext.hpp
 
 FORMS    += \
     src/BleMainWindow.ui \

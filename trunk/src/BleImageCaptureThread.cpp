@@ -21,46 +21,50 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef BLEAVQUEUE_HPP
-#define BLEAVQUEUE_HPP
+#include "BleImageCaptureThread.hpp"
+#include "BleImageProcessThread.hpp"
 
-#include <QMutex>
-#include <QQueue>
-#include <QHash>
-
-#include "BleTimestampBulider.hpp"
-#include "BleAVUtil.hpp"
-
-class BleAVQueue
+BleImageCaptureThread::BleImageCaptureThread(QObject *parent) :
+    BleThread(parent)
 {
-public:
-    BleAVQueue();
-    ~BleAVQueue();
+}
 
-    static BleAVQueue *instance();
-    static void destroy();
+void BleImageCaptureThread::capture(double pts)
+{
+    m_mutex.lock();
+    m_pts = pts;
+    m_mutex.unlock();
+    m_cond.wakeOne();
+}
 
-    void init();
+void BleImageCaptureThread::run()
+{
+    while (!m_stop) {
+        m_mutex.lock();
+        m_cond.wait(&m_mutex);
 
-    void enqueue(BleAVPacket * pkt);
+        // capture
+        BleImage *image = m_thread->getImage();
+        image->pts = m_pts;
+        m_queue.append(image);
 
-    BleAVPacket * finPkt();
+        m_mutex.unlock();
+    }
+}
 
-    void updatePkt(BleAVPacket * pkt);
+void BleImageCaptureThread::setImageProcessThread(BleImageProcessThread *thread)
+{
+    m_thread = thread;
+}
 
-    QQueue<BleAVPacket *> dequeue();
+QQueue<BleImage *> BleImageCaptureThread::getQueue()
+{
+    m_mutex.lock();
 
-    inline BleTimestampBulider *timestampBuilder() { return m_timestampBulider; }
+    QQueue<BleImage *> ret = m_queue;
+    m_queue.clear();
 
-private:
-    void fini();
-    BleAVPacket *findPktByTimetamp();
+    m_mutex.unlock();
 
-private:
-    BleTimestampBulider *m_timestampBulider;
-    QMutex m_mutex;
-    QList<BleAVPacket *> m_queue;
-    //QList<BleAVPacket *> m_audioQueue;
-};
-
-#endif // BLEAVQUEUE_HPP
+    return ret;
+}

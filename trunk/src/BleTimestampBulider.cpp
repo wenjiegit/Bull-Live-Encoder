@@ -61,7 +61,10 @@ double BleTimestampBulider::addVideoFrame()
     BleAutoLocker(m_mutex);
 
     if ((qint64)m_videoTimestamp <= (qint64)m_audioTimestamp) {
-        m_videoTimestamp += (int)m_videoInternal;
+        while ((qint64)m_videoTimestamp <= (qint64)m_audioTimestamp) {
+            m_videoTimestamp += (int)m_videoInternal;
+        }
+
         return m_videoTimestamp;
     }
 
@@ -71,11 +74,27 @@ double BleTimestampBulider::addVideoFrame()
     }
 }
 
-double BleTimestampBulider::addAudioFrame()
+double BleTimestampBulider::addAudioFrame(bool &need_capture_video, double &video_pts)
 {
     BleAutoLocker(m_mutex);
     m_audioTimestamp += m_audioInternal;
 
+    if (next_video_pts() - m_audioTimestamp < m_audioInternal) {
+        need_capture_video = true;
+        m_videoTimestamp = next_video_pts();
+        video_pts = m_videoTimestamp;
+
+        //log_trace("----->  V %lld  -----A %lld", (qint64)m_videoTimestamp, (qint64)m_audioTimestamp);
+    } else {
+        need_capture_video = false;
+        video_pts = -1;
+    }
+
     return m_audioTimestamp;
     // return growTimestamp(m_audioTimestamp, m_audioInternal, m_videoTimestamp);;
+}
+
+double BleTimestampBulider::next_video_pts()
+{
+    return m_videoTimestamp + m_videoInternal;
 }

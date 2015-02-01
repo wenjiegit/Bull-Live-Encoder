@@ -21,46 +21,45 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef BLEAVQUEUE_HPP
-#define BLEAVQUEUE_HPP
+#ifndef BLEIMAGECAPTURETHREAD_HPP
+#define BLEIMAGECAPTURETHREAD_HPP
 
+#include "BleThread.hpp"
+
+#include <QWaitCondition>
 #include <QMutex>
 #include <QQueue>
-#include <QHash>
 
-#include "BleTimestampBulider.hpp"
-#include "BleAVUtil.hpp"
+#include "BleAVQueue.hpp"
+#include "BleSourceAbstract.hpp"
 
-class BleAVQueue
+class BleImageProcessThread;
+
+class BleImageCaptureThread : public BleThread
 {
+    Q_OBJECT
 public:
-    BleAVQueue();
-    ~BleAVQueue();
+    explicit BleImageCaptureThread(QObject *parent = 0);
 
-    static BleAVQueue *instance();
-    static void destroy();
+    void capture(double pts);
 
-    void init();
+    void run();
 
-    void enqueue(BleAVPacket * pkt);
+    void setImageProcessThread(BleImageProcessThread *thread);
 
-    BleAVPacket * finPkt();
+    QQueue<BleImage *> getQueue();
 
-    void updatePkt(BleAVPacket * pkt);
+signals:
 
-    QQueue<BleAVPacket *> dequeue();
-
-    inline BleTimestampBulider *timestampBuilder() { return m_timestampBulider; }
+public slots:
 
 private:
-    void fini();
-    BleAVPacket *findPktByTimetamp();
-
-private:
-    BleTimestampBulider *m_timestampBulider;
+    QWaitCondition m_cond;
     QMutex m_mutex;
-    QList<BleAVPacket *> m_queue;
-    //QList<BleAVPacket *> m_audioQueue;
+    BleImageProcessThread *m_thread;
+
+    double m_pts;
+    QQueue<BleImage *> m_queue;
 };
 
-#endif // BLEAVQUEUE_HPP
+#endif // BLEIMAGECAPTURETHREAD_HPP
