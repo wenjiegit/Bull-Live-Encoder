@@ -283,15 +283,17 @@ void BleMainWindow::activated(QSystemTrayIcon::ActivationReason reason)
 
         QPoint globalPoint = QCursor::pos();
         menu.exec(globalPoint);
-    }
+
         break;
+    }
     case QSystemTrayIcon::DoubleClick:
     case QSystemTrayIcon::Trigger:
     default:
-    {
-        show();
-        raise();
-    }
+        if (!isVisible()) {
+            onShow();
+        } else {
+            hide();
+        }
         break;
     }
 }
@@ -386,7 +388,7 @@ void BleMainWindow::onAddCamera()
 
     int fps = MOption::instance()->option("fps", "encoder").toInt();
 
-    BleCameraSource *source = new BleCameraSource(this);
+    StcCameraSource *source = new StcCameraSource(this);
     source->setCameraInfo(dialog.selectedCameraIndex(), dialog.selectedCameraName());
     source->setCaptureInterval(1000 / fps / 1.5);
     source->start();

@@ -178,8 +178,8 @@ void BleImageProcessThread::run()
 
             be->format = BleImage_Format_BGR24;
 
-            m_timestampBuilder.setVideoCaptureInternal(m_internal);
-            //be->pts = m_timestampBuilder.addVideoFrame();
+            // m_timestampBuilder.setVideoCaptureInternal(m_internal);
+            // be->pts = m_timestampBuilder.addVideoFrame();
 
             BleVideoPacket *pkt = new BleVideoPacket(Video_Type_H264);
             pkt->ready = false;

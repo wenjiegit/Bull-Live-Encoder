@@ -19,14 +19,17 @@ INCLUDEPATH +=  src/core \
                 3rdparty/libx264 \
                 3rdparty/libopencv/include \
                 3rdparty/libRtAudio/ \
-                3rdparty/libfaac/include
+                3rdparty/libfaac/include \
+                3rdparty/libmp3lame/include
 
 LIBS += -L$$PWD/3rdparty/librtmp/ -lrtmp \
         -L$$PWD/3rdparty/libx264/ -lx264 \
         -L$$PWD/3rdparty/libopenssl/ -lssl \
         -L$$PWD/3rdparty/libopenssl/ -lcrypto \
         -L$$PWD/3rdparty/libopencv/lib/ -lopencv_core248 -lopencv_highgui248 -lopencv_imgproc248 \
-        -L$$PWD/3rdparty/libfaac/lib/ -lfaac
+        -L$$PWD/3rdparty/libfaac/lib/ -lfaac \
+        -L$$PWD/3rdparty/libmp3lame/lib/ -lmp3lame
+
 LIBS += -ldsound -lole32 -lwinmm -lgdi32 -lws2_32 -lz
 
 DESTDIR = $$BLE_BINDIR
@@ -84,7 +87,8 @@ SOURCES += \
     src/BleFileSource.cpp \
     src/core/mstream.cpp \
     src/BleContext.cpp \
-    src/BleTextSource.cpp
+    src/BleTextSource.cpp \
+    src/BleAudioEncoder_MP3.cpp
 
 HEADERS  += \
     src/BleMainWindow.hpp \
@@ -137,7 +141,8 @@ HEADERS  += \
     src/BleFileSource.hpp \
     src/core/mstream.hpp \
     src/BleContext.hpp \
-    src/BleTextSource.hpp
+    src/BleTextSource.hpp \
+    src/BleAudioEncoder_MP3.hpp
 
 FORMS    += \
     src/BleMainWindow.ui \

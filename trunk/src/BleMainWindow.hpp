@@ -38,7 +38,7 @@ class MSkinChangerWidget;
 class BleEncoderThread;
 class BleCaptureAbstract;
 class BleRtmpSendThread;
-class BleCameraSource;
+class StcCameraSource;
 class BleImageProcessThread;
 class BleImageProcess;
 class BleAudioCapture;

@@ -54,11 +54,13 @@ public:
 
 private:
     void fini();
+    BleAVPacket *findPktByTimetamp();
 
 private:
     BleTimestampBulider *m_timestampBulider;
     QMutex m_mutex;
     QList<BleAVPacket *> m_queue;
+    QList<BleAVPacket *> m_audioQueue;
 };
 
 #endif // BLEAVQUEUE_HPP

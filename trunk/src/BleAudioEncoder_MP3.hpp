@@ -21,30 +21,25 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef BLETIMESTAMPBULIDER_HPP
-#define BLETIMESTAMPBULIDER_HPP
+#ifndef BLEAUDIOENCODER_MP3_HPP
+#define BLEAUDIOENCODER_MP3_HPP
 
-#include <QMutex>
+#include "BleAudioEncoderAbstract.hpp"
+#include "lame.h"
 
-class BleTimestampBulider
+class BleAudioEncoder_MP3 : public BleAudioEncoderAbstract
 {
 public:
-    BleTimestampBulider();
+    BleAudioEncoder_MP3();
 
-    void setVideoCaptureInternal(float internal);
-    void setAudioCaptureInternal(float internal);
-
-    double addVideoFrame();
-    double addAudioFrame();
+    virtual bool init(int samplerate, int channel, int bitrate);
+    virtual void fini();
+    virtual bool encode(const QByteArray &data, QByteArray &output);
+    virtual int getFrameSize();
+    virtual float getFrameDuration();
 
 private:
-    QMutex m_mutex;
-
-    float m_videoInternal;
-    float m_audioInternal;
-
-    double m_videoTimestamp;
-    double m_audioTimestamp;
+    lame_global_flags *m_lame_global_flags;
 };
 
-#endif // BLETIMESTAMPBULIDER_HPP
+#endif // BLEAUDIOENCODER_MP3_HPP

@@ -156,6 +156,7 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
                     ret = BLE_RTMPSEND_ERROR;
                     break;
                 }
+                log_trace("------------------>  V  %lld", pkt->dts);
 
                 m_videoKbps += (data.size() + 11);
                 m_fps += 1;
@@ -164,6 +165,8 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
                     ret = BLE_RTMPSEND_ERROR;
                     break;
                 }
+                log_trace("------------------>  A  %lld", pkt->dts);
+
 
                 m_audioKbps += (data.size() + 11);
             }

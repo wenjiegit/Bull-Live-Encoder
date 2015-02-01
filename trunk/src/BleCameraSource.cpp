@@ -36,27 +36,27 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 static const int Ble_Camera_Capture_Interval = 50;         // 20fps
 
-BleCameraSource::BleCameraSource(QObject *parent)
+StcCameraSource::StcCameraSource(QObject *parent)
     : BleThread(parent)
     , m_interval(Ble_Camera_Capture_Interval)
     , m_cameraIndex(-1)
 {
 }
 
-BleImage BleCameraSource::getImage()
+BleImage StcCameraSource::getImage()
 {
     BleAutoLocker(m_modifyMutex);
     return m_image.clone();
 }
 
-void BleCameraSource::stopCapture()
+void StcCameraSource::stopCapture()
 {
     this->stop();
     this->wait();
     this->deleteLater();
 }
 
-void BleCameraSource::run()
+void StcCameraSource::run()
 {
     IplImage *pImg = NULL;
     CvCapture *cap = cvCreateCameraCapture(m_cameraIndex);
@@ -64,6 +64,7 @@ void BleCameraSource::run()
         log_error("open camera failed.");
         return;
     }
+
     log_trace("open camera %d success, name = %s", m_cameraIndex, m_cameraName.toStdString().c_str());
 
     while (!m_stop) {
@@ -102,12 +103,12 @@ void BleCameraSource::run()
     log_trace("BleCameraCapture exit normally.");
 }
 
-void BleCameraSource::setCaptureInterval(int interval)
+void StcCameraSource::setCaptureInterval(int interval)
 {
     m_interval = interval;
 }
 
-void BleCameraSource::setCameraInfo(int index, const QString &name)
+void StcCameraSource::setCameraInfo(int index, const QString &name)
 {
     m_cameraIndex = index;
     m_cameraName = name;

@@ -30,6 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleLog.hpp"
 #include "BleAVQueue.hpp"
 #include "BleAudioEncoder_AAC.hpp"
+#include "BleAudioEncoder_MP3.hpp"
 #include "BleErrno.hpp"
 #include "BleContext.hpp"
 
@@ -137,7 +138,7 @@ int BleAudioCapture::startCapture(int bitrate, int sampleRate, int channels, int
     if (audioFormat == "AAC") {
         m_audioEncoder = new BleAudioEncoder_AAC;
     } else if (audioFormat == "MP3") {
-        // TODO impl
+        m_audioEncoder = new BleAudioEncoder_MP3;
     }
     BleAssert(m_audioEncoder);
 
@@ -159,7 +160,7 @@ int BleAudioCapture::startCapture(int bitrate, int sampleRate, int channels, int
 
     m_grabEngine = new RtAudio;
 
-    unsigned int bufferFrames = 2048;
+    unsigned int bufferFrames = 1152;
     RtAudio::StreamParameters params;
 
     if (deviceID == -1) {
@@ -179,8 +180,8 @@ int BleAudioCapture::startCapture(int bitrate, int sampleRate, int channels, int
         return BLE_AUDIO_DEVICE_OPEN_ERROR;
     }
 
-    BleAVQueue::instance()->timestampBuilder()->
-            setAudioCaptureInternal(m_audioEncoder->getFrameDuration());
+    float frameDuration = m_audioEncoder->getFrameDuration();
+    BleAVQueue::instance()->timestampBuilder()->setAudioCaptureInternal(frameDuration);
 
     start();
 

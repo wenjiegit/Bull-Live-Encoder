@@ -29,11 +29,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <QMutex>
 
-class BleCameraSource : public BleThread, public BleSourceAbstract
+class StcCameraSource : public BleThread, public BleSourceAbstract
 {
     Q_OBJECT
 public:
-    explicit BleCameraSource(QObject *parent = 0);
+    explicit StcCameraSource(QObject *parent = 0);
 
     virtual BleImage getImage();
     virtual void stopCapture();

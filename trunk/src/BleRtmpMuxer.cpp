@@ -181,7 +181,7 @@ int BleRtmpMuxer::setMetaData(const FlvMetaData &metaData)
     p = put_byte(p, AMF_STRING);
     p = put_amf_string(p, BLE_NAME);
 
-    p = put_amf_string(p, "authors");
+    p = put_amf_string(p, "encoder_authors");
     p = put_byte(p, AMF_STRING);
     p = put_amf_string(p, BLE_AUTHORS);
 

@@ -40,32 +40,42 @@ static double growTimestamp(double & timestamp, float internal, double & otherTi
 
 BleTimestampBulider::BleTimestampBulider()
     : m_videoInternal(66.66666666666667)        // default 15fps
-    , m_audiInternal(23.2199546485261)          // default aac 44100Hz
+    , m_audioInternal(23.2199546485261)          // default aac 44100Hz
     , m_videoTimestamp(0.00)
     , m_audioTimestamp(0.00)
 {
 }
 
-void BleTimestampBulider::setVideoCaptureInternal(int internal)
+void BleTimestampBulider::setVideoCaptureInternal(float internal)
 {
     m_videoInternal = internal;
 }
 
-void BleTimestampBulider::setAudioCaptureInternal(int internal)
+void BleTimestampBulider::setAudioCaptureInternal(float internal)
 {
-    m_audiInternal = internal;
+    m_audioInternal = internal;
 }
 
 double BleTimestampBulider::addVideoFrame()
 {
     BleAutoLocker(m_mutex);
 
-    return growTimestamp(m_videoTimestamp, m_videoInternal, m_audioTimestamp);;
+    if ((qint64)m_videoTimestamp <= (qint64)m_audioTimestamp) {
+        m_videoTimestamp += (int)m_videoInternal;
+        return m_videoTimestamp;
+    }
+
+    if ((qint64)m_videoTimestamp > (qint64)m_audioTimestamp) {
+        log_trace("video is too fast!");
+        return m_videoTimestamp;
+    }
 }
 
 double BleTimestampBulider::addAudioFrame()
 {
     BleAutoLocker(m_mutex);
+    m_audioTimestamp += m_audioInternal;
 
-    return growTimestamp(m_audioTimestamp, m_audiInternal, m_videoTimestamp);;
+    return m_audioTimestamp;
+    // return growTimestamp(m_audioTimestamp, m_audioInternal, m_videoTimestamp);;
 }
