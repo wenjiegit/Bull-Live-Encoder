@@ -45,7 +45,7 @@ public:
     int init();
     int encode(unsigned char *rgbframe, mint64 pts);
 
-    int getFrameDuration();
+    float getFrameDuration();
 
 private:
     void fini();

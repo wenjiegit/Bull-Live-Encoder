@@ -113,11 +113,17 @@ int BleX264Encoder::init()
     m_x264Param->i_height              = height;
     m_x264Param->vui.b_fullrange       = 0;          //specify full range input levels
 
-    m_x264Param->i_fps_num = fps;
-    m_x264Param->i_fps_den = 1;
-
+    // For some codecs, the time base is closer to the field rate than the frame rate.
+    // Most notably, H.264 and MPEG-2 specify time_base as half of frame duration
+    // if no telecine is used ...
+    // Set to time_base ticks per frame. Default 1, e.g., H.264/MPEG-2 set it to 2.
+    // @see ffmpeg: AVodecContex::ticks_per_frame
+    int ticks_per_frame = 2;
     m_x264Param->i_timebase_num = 1;
-    m_x264Param->i_timebase_den = 1000;
+    m_x264Param->i_timebase_den = fps;
+
+    m_x264Param->i_fps_num = m_x264Param->i_timebase_den;
+    m_x264Param->i_fps_den = m_x264Param->i_timebase_num * ticks_per_frame;
 
     // disable start code 00 00 00 01 before NAL
     // instead of nalu size
@@ -278,13 +284,13 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts)
     return 0;
 }
 
-int BleX264Encoder::getFrameDuration()
+float BleX264Encoder::getFrameDuration()
 {
     MOption *option = MOption::instance();
     int fps = option->option("fps", "encoder").toInt();
 
     if (fps > 0) {
-        return 1000 / fps;
+        return 1000.0000 / (float)fps;
     }
 
     // 40 ms : default duration

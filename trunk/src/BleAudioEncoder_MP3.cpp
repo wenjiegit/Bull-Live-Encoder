@@ -63,6 +63,8 @@ bool BleAudioEncoder_MP3::init(int samplerate, int channel, int bitrate)
     // init params
     lame_init_params(m_lame_global_flags);
 
+    log_trace("--------------------------> %d", lame_get_framesize(m_lame_global_flags));
+
     return true;
 }
 
@@ -80,10 +82,17 @@ bool BleAudioEncoder_MP3::encode(const QByteArray &data, QByteArray &output)
 
     unsigned char MP3OutputBuffer[1152*2];
 
-    // @note
-    // number of samples per channel,
-    // _not_ number of samples in pcm[]
-    int encode_bytes = lame_encode_buffer_interleaved(m_lame_global_flags, (short int*)data.data(), 1152, MP3OutputBuffer, 1152*2);
+    int encode_bytes = -1;
+    if (m_channels == 2) {
+        // @note
+        // number of samples per channel,
+        // _not_ number of samples in pcm[]
+        encode_bytes = lame_encode_buffer_interleaved(m_lame_global_flags, (short int*)data.data(), lame_get_framesize(m_lame_global_flags), MP3OutputBuffer, 1152*2);
+    } else if (m_channels == 1) {
+        const short int *_data = (const short int*)data.data();
+        encode_bytes = lame_encode_buffer(m_lame_global_flags, _data, NULL, lame_get_framesize(m_lame_global_flags), MP3OutputBuffer, 1152*2);
+    }
+
     if (encode_bytes < 0) {
         log_error("lame_encode_buffer_interleaved_ieee_float failed.");
         return false;
@@ -92,7 +101,26 @@ bool BleAudioEncoder_MP3::encode(const QByteArray &data, QByteArray &output)
         return true;
     }
 
-    output.append(0x2f);
+    if (m_samplerate == 44100) {
+        if (m_channels == 2) {
+            output.append(0x2f);
+        } else if (m_channels == 1) {
+            output.append(0x2e);
+        }
+    } else if (m_samplerate == 22050) {
+        if (m_channels == 2) {
+            output.append(0x2b);
+        } else if (m_channels == 1) {
+            output.append(0x2a);
+        }
+    } else if (m_samplerate == 11025) {
+        if (m_channels == 2) {
+            output.append(0x27);
+        } else if (m_channels == 1) {
+            output.append(0x26);
+        }
+    }
+
     output.append((char*)MP3OutputBuffer, encode_bytes);
 
     return true;

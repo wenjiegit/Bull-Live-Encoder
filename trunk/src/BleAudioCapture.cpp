@@ -172,7 +172,7 @@ int BleAudioCapture::startCapture(int bitrate, int sampleRate, int channels, int
 
     m_grabEngine = new RtAudio;
 
-    unsigned int bufferFrames = 1152;
+    unsigned int bufferFrames = m_audioEncoder->getFrameSize() / 2 / m_channels;
     RtAudio::StreamParameters params;
 
     if (deviceID == -1) {
