@@ -27,19 +27,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleAVQueue.hpp"
 #include "BleAVUtil.hpp"
 
-static double growTimestamp(double & timestamp, float internal, double & otherTimestamp)
-{
-    if (timestamp < otherTimestamp) {
-        while (timestamp < otherTimestamp) {
-            timestamp += internal;
-        }
-    } else {
-       timestamp += internal;
-    }
-
-    return timestamp;
-}
-
 BleTimestampBulider::BleTimestampBulider()
     : m_videoInternal(66.66666666666667)        // default 15fps
     , m_audioInternal(23.2199546485261)          // default aac 44100Hz
@@ -60,20 +47,8 @@ void BleTimestampBulider::setAudioCaptureInternal(float internal)
 
 double BleTimestampBulider::addVideoFrame()
 {
-    BleAutoLocker(m_mutex);
-
-    if ((qint64)m_videoTimestamp <= (qint64)m_audioTimestamp) {
-        while ((qint64)m_videoTimestamp <= (qint64)m_audioTimestamp) {
-            m_videoTimestamp += (int)m_videoInternal;
-        }
-
-        return m_videoTimestamp;
-    }
-
-    if ((qint64)m_videoTimestamp > (qint64)m_audioTimestamp) {
-        log_trace("video is too fast!");
-        return m_videoTimestamp;
-    }
+    // never go to here.
+    BleAssert(false);
 }
 
 double BleTimestampBulider::addAudioFrame()
