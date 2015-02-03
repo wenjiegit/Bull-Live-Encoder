@@ -45,6 +45,8 @@ struct BleImage
     char *data;
     int *ref;
 
+    void *opaque;
+
     BleImage();
     ~BleImage();
 

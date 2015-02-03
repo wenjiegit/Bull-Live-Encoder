@@ -49,6 +49,7 @@ void BleImageCaptureThread::run()
         Q_ASSERT(image);
         image->pts = pkt->dts;
         pkt->has_captured = true;
+        image->opaque = pkt;
 
         m_mutex.lock();
         m_queue.append(image);

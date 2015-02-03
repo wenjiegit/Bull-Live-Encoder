@@ -43,7 +43,7 @@ public:
     ~BleX264Encoder();
 
     int init();
-    int encode(unsigned char *rgbframe, mint64 pts);
+    int encode(unsigned char *rgbframe, mint64 pts, void *opaque);
 
     float getFrameDuration();
 

@@ -110,6 +110,7 @@ void BleImage::init()
     dataSize = 0;
     data = NULL;
     pts = 0;
+    opaque = NULL;
 
     ref = new int(0);
 

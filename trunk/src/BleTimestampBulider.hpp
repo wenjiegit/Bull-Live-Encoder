@@ -34,6 +34,8 @@ public:
     void setVideoCaptureInternal(float internal);
     void setAudioCaptureInternal(float internal);
 
+    inline float videoInternal() { return m_videoInternal; }
+
     double addVideoFrame();
     double addAudioFrame();
 

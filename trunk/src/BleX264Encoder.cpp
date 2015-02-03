@@ -211,7 +211,7 @@ int BleX264Encoder::init()
     return BLE_SUCESS;
 }
 
-int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts)
+int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts, void *opaque)
 {
     Q_UNUSED(pts);
     unsigned char *src_buf = rgbframe;
@@ -225,6 +225,7 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts)
     // @note why i_pts plus 1 everytime
     // because the timebase set as above.
     m_pictureIn->i_pts = ++m_encoded_frames;
+    m_pictureIn->opaque = opaque;
 
     m_pictureIn->img.plane[0] = src_buf;
     m_pictureIn->img.plane[1] = src_buf + m_x264Param->i_height * m_x264Param->i_width;
@@ -255,9 +256,7 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts)
         bFirstFrameProcessed = true;
     }
 
-    // @see OBS Encoder_x264.cpp
-    //
-    int timeOffset = int(picOut.i_pts - picOut.i_dts);
+    float timeOffset = float(picOut.i_pts - picOut.i_dts) * BleAVQueue::instance()->timestampBuilder()->videoInternal();
 
     BleVideoPacket *pkt = dynamic_cast<BleVideoPacket *> (BleAVQueue::instance()->find_unencoded_video());
     BleAssert(pkt != NULL);
@@ -272,7 +271,7 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts)
 
     body.write1Bytes(frameType);
     body.write1Bytes(0x01);
-    body.write3Bytes(timeOffset);
+    body.write3Bytes((int)timeOffset);
 
     // NALU payload : 4bytes size + payload
     // NALU payload size : 4bytes size + payload size
