@@ -51,7 +51,6 @@ private:
     RtAudio *m_grabEngine;
     BleAudioEncoderAbstract *m_audioEncoder;
     QMutex m_mutex;
-    QWaitCondition m_waitCondtion;
 
     QByteArray m_bytesCache;
     bool m_hasSendHeader;

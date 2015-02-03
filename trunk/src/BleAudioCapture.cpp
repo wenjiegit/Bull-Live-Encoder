@@ -24,6 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleAudioCapture.hpp"
 
 #include <QString>
+#include <QElapsedTimer>
 
 #include "RtAudio.h"
 #include "BleUtil.hpp"
@@ -81,7 +82,7 @@ void BleAudioCapture::run()
 
         if (m_bytesCache.size() < frameSize) {
             m_mutex.unlock();
-            msleep(50);
+            msleep(20);
             continue;
         }
 
@@ -96,24 +97,12 @@ void BleAudioCapture::run()
                 return;
             }
 
-            if (outputArray.size() > 2) {
-                BleAudioPacket *pkt = new BleAudioPacket(Audio_Type_AAC);
-                pkt->data.writeString(MString(outputArray.data(), outputArray.size()));
+            BleAudioPacket *pkt = new BleAudioPacket(Audio_Type_AAC);
+            pkt->data.writeString(MString(outputArray.data(), outputArray.size()));
 
-                bool need_capture_video = false;
-                double video_pts = -1;
-                pkt->dts = BleAVQueue::instance()->timestampBuilder()->addAudioFrame(need_capture_video, video_pts);
-                pkt->ready = true;
-                BleAVQueue::instance()->enqueue(pkt);
-
-                if (need_capture_video) {
-                    BleVideoPacket *pkt = new BleVideoPacket(Video_Type_H264);
-                    pkt->ready = false;
-                    pkt->dts = video_pts;
-                    BleAVQueue::instance()->enqueue(pkt);
-                    BleAVContext::instance()->captureThread->capture(video_pts);
-                }
-            }
+            pkt->dts = BleAVQueue::instance()->timestampBuilder()->addAudioFrame();
+            pkt->has_encoded = true;
+            BleAVQueue::instance()->enqueue(pkt);
         }
 
         m_mutex.unlock();
@@ -164,7 +153,7 @@ int BleAudioCapture::startCapture(int bitrate, int sampleRate, int channels, int
         BleAudioPacket *pkt = new BleAudioPacket(Audio_Type_AAC);
         QByteArray arr = dynamic_cast<BleAudioEncoder_AAC*>(m_audioEncoder)->getHeader();
         pkt->data.writeString(arr.data(), arr.size());
-        pkt->ready = true;
+        pkt->has_encoded = true;
         pkt->dts = 0;
 
         appCtx->setAudioSh(pkt);
@@ -217,14 +206,6 @@ int BleAudioCapture::stopCapture()
 
 void BleAudioCapture::onDataCaptured(char *data, int size)
 {
-    m_mutex.lock();
+    BleAutoLocker(m_mutex);
     m_bytesCache.append(data, size);
-
-    if (m_bytesCache.size() >= m_audioEncoder->getFrameSize()) {
-        m_mutex.unlock();
-
-        m_waitCondtion.wakeOne();
-    } else {
-        m_mutex.unlock();
-    }
 }

@@ -23,31 +23,35 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "BleImageCaptureThread.hpp"
 #include "BleImageProcessThread.hpp"
+#include "BleLog.hpp"
+#include "BleAVQueue.hpp"
+#include "BleUtil.hpp"
 
 BleImageCaptureThread::BleImageCaptureThread(QObject *parent) :
     BleThread(parent)
 {
 }
 
-void BleImageCaptureThread::capture(double pts)
-{
-    m_mutex.lock();
-    m_pts = pts;
-    m_mutex.unlock();
-    m_cond.wakeOne();
-}
-
 void BleImageCaptureThread::run()
 {
+    while (!m_thread->isRunning() && !m_stop) {
+        msleep(10);
+    }
     while (!m_stop) {
-        m_mutex.lock();
-        m_cond.wait(&m_mutex);
+        BleAVPacket *pkt = BleAVQueue::instance()->find_uncaptured_video();
+        if (!pkt) {
+            msleep(5);
+            continue;
+        }
 
         // capture
         BleImage *image = m_thread->getImage();
-        image->pts = m_pts;
-        m_queue.append(image);
+        Q_ASSERT(image);
+        image->pts = pkt->dts;
+        pkt->has_captured = true;
 
+        m_mutex.lock();
+        m_queue.append(image);
         m_mutex.unlock();
     }
 }
@@ -59,12 +63,19 @@ void BleImageCaptureThread::setImageProcessThread(BleImageProcessThread *thread)
 
 QQueue<BleImage *> BleImageCaptureThread::getQueue()
 {
-    m_mutex.lock();
+    BleAutoLocker(m_mutex);
 
     QQueue<BleImage *> ret = m_queue;
     m_queue.clear();
 
-    m_mutex.unlock();
-
     return ret;
+}
+
+void BleImageCaptureThread::fini()
+{
+    BleAutoLocker(m_mutex);
+    while (!m_queue.isEmpty()) {
+        BleImage *image = m_queue.dequeue();
+        BleFree(image);
+    }
 }

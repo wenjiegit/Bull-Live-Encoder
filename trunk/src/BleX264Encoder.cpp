@@ -186,7 +186,7 @@ int BleX264Encoder::init()
         } else if (nal.i_type == NAL_SEI) {
             BleVideoPacket *seiPkt = new BleVideoPacket(Video_Type_H264);
             seiPkt->dts = 0;
-            seiPkt->ready = true;
+            seiPkt->has_encoded = true;
 
             MStream &seiBody = seiPkt->data;
             int skipBytes = 4;
@@ -254,7 +254,7 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts)
     //
     int timeOffset = int(picOut.i_pts - picOut.i_dts);
 
-    BleVideoPacket *pkt = dynamic_cast<BleVideoPacket *> (BleAVQueue::instance()->finPkt());
+    BleVideoPacket *pkt = dynamic_cast<BleVideoPacket *> (BleAVQueue::instance()->find_unencoded_video());
     BleAssert(pkt != NULL);
 
     MStream &body = pkt->data;

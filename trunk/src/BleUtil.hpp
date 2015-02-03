@@ -83,4 +83,6 @@ public:
         if (!thread->isRunning()) { thread->start(); } \
     } while (0)
 
+QString formatS_size(qint64 bytes);
+
 #endif // BLEUTIL_H

@@ -72,12 +72,25 @@ void BleAVQueue::enqueue(BleAVPacket *pkt)
     m_queue << pkt;
 }
 
-BleAVPacket *BleAVQueue::finPkt()
+BleAVPacket *BleAVQueue::find_unencoded_video()
 {
+    BleAutoLocker(m_mutex);
     // find first un-ready video
     for (int i = 0; i < m_queue.size(); ++i) {
         BleAVPacket *pkt = m_queue.at(i);
-        if (pkt->pktType == Packet_Type_Video && !pkt->ready) return pkt;
+        if (pkt->pktType == Packet_Type_Video && !pkt->has_encoded) return pkt;
+    }
+
+    return NULL;
+}
+
+BleAVPacket *BleAVQueue::find_uncaptured_video()
+{
+    BleAutoLocker(m_mutex);
+    // find first un-ready video
+    for (int i = 0; i < m_queue.size(); ++i) {
+        BleAVPacket *pkt = m_queue.at(i);
+        if (pkt->pktType == Packet_Type_Video && !pkt->has_captured && !pkt->has_encoded) return pkt;
     }
 
     return NULL;
@@ -87,7 +100,7 @@ void BleAVQueue::updatePkt(BleAVPacket *pkt)
 {
     BleAutoLocker(m_mutex);
 
-    pkt->ready = true;
+    pkt->has_encoded = true;
 }
 
 QQueue<BleAVPacket *> BleAVQueue::dequeue()
@@ -97,7 +110,7 @@ QQueue<BleAVPacket *> BleAVQueue::dequeue()
     QQueue<BleAVPacket *> pkts;
     while (!m_queue.empty()) {
         BleAVPacket *pkt = m_queue.first();
-        if (pkt->ready) {
+        if (pkt->has_encoded) {
             pkts << pkt;
 
             // erase from m_queue

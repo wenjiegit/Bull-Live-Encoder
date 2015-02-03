@@ -35,10 +35,13 @@ public:
     void setAudioCaptureInternal(float internal);
 
     double addVideoFrame();
-    double addAudioFrame(bool &need_capture_video, double &video_pts);
+    double addAudioFrame();
 
 private:
     double next_video_pts();
+    double next_audio_pts();
+
+    void place_hold_video(double pts);
 
 private:
     QMutex m_mutex;

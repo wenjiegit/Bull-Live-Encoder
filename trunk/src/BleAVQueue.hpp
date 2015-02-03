@@ -44,7 +44,8 @@ public:
 
     void enqueue(BleAVPacket * pkt);
 
-    BleAVPacket * finPkt();
+    BleAVPacket * find_unencoded_video();
+    BleAVPacket *find_uncaptured_video();
 
     void updatePkt(BleAVPacket * pkt);
 

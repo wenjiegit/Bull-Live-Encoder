@@ -338,20 +338,20 @@ void BleMainWindow::onEncodeStart()
 
     if (!m_sendThread) {
         m_sendThread = new BleRtmpSendThread(this);
-        START_THREAD(m_sendThread);
+        connect(m_sendThread, SIGNAL(status(int,int,int,qint64))
+                , this, SLOT(onStatus(int,int,int,qint64)));
 
-        connect(m_sendThread, SIGNAL(status(int,int,int,int))
-                , this, SLOT(onStatus(int,int,int,int)));
+        START_THREAD(m_sendThread);
     }
 
     BleImageCaptureThread *captureThread = new BleImageCaptureThread;
     BleAVContext::instance()->captureThread = captureThread;
     captureThread->setImageProcessThread(m_imageProcessThread);
-    START_THREAD(captureThread);
 
     START_THREAD(m_encoderThread);
     START_THREAD(m_imageProcessThread);
     START_THREAD(m_audioCaptureThread);
+    START_THREAD(captureThread);
 
     ui->startBtn->setEnabled(false);
     ui->startBtn->setButtonStatus(STATUS_DISABLED);
@@ -363,6 +363,7 @@ void BleMainWindow::onEncodeStop()
     SAFE_STOP_THREAD(m_encoderThread);
     SAFE_STOP_THREAD(m_imageProcessThread);
     SAFE_STOP_THREAD(m_audioCaptureThread);
+    SAFE_STOP_THREAD(BleAVContext::instance()->captureThread);
 
     if (m_audioCaptureThread) {
         m_audioCaptureThread->stopCapture();
@@ -372,10 +373,15 @@ void BleMainWindow::onEncodeStop()
         m_encoderThread->fini();
     }
 
+    if (BleAVContext::instance()->captureThread) {
+        BleAVContext::instance()->captureThread->fini();
+    }
+
     BleFree(m_sendThread);
     BleFree(m_encoderThread);
     BleFree(m_imageProcessThread);
     BleFree(m_audioCaptureThread);
+    BleFree(BleAVContext::instance()->captureThread);
 
     m_imageProcessWidget->setProcessThread(m_imageProcessThread);
 
@@ -459,8 +465,9 @@ void BleMainWindow::onAddTextSource()
     m_imageProcessWidget->addCaptureSource(source, 30, 30, 320, 240);
 }
 
-void BleMainWindow::onStatus(int audioKbps, int videoKbps, int fps, int sendDataCount)
+void BleMainWindow::onStatus(int audioKbps, int videoKbps, int fps, qint64 sendDataCount)
 {
-    QString text = QString().sprintf("  A: %d kbps  V: %d kbps  fps: %d  send: %d  ", audioKbps*8/1000, videoKbps*8/1000, fps, sendDataCount);
+    QString text = QString("  A: %1 kbps  V: %2 kbps  fps: %3  send: %4  ")
+            .arg(audioKbps*8/1000).arg(videoKbps*8/1000).arg(fps).arg(formatS_size(sendDataCount));
     m_statusLabel->setText(text);
 }

@@ -43,14 +43,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 BleRtmpSendThread::BleRtmpSendThread(QObject * parent)
     : BleThread(parent)
-    , m_audioKbps(0)
-    , m_videoKbps(0)
+    , m_audio_send_bytes(0)
+    , m_video_send_bytes(0)
     , m_fps(0)
-    , m_sendDataCount(0)
+    , m_data_send_bytes(0)
 {
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
-    m_timer.setInterval(1000 * 2);
+    m_timer.setInterval(1000 * 1);
     m_timer.start();
+    m_elapsed_timer.start();
 }
 
 BleRtmpSendThread::~BleRtmpSendThread()
@@ -156,22 +157,21 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
                     ret = BLE_RTMPSEND_ERROR;
                     break;
                 }
-                log_trace("------------------>  V  %lld", pkt->dts);
+                // log_trace("------------------>  V  %lld", pkt->dts);
 
-                m_videoKbps += (data.size() + 11);
+                m_video_send_bytes += data.size();
                 m_fps += 1;
             } else if (pkt->pktType == Packet_Type_Audio) {
                 if (muxer.addAAC(data, pkt->dts) != TRUE ) {
                     ret = BLE_RTMPSEND_ERROR;
                     break;
                 }
-                log_trace("------------------>  A  %lld", pkt->dts);
+                //log_trace("------------------>  A  %lld", pkt->dts);
 
-
-                m_audioKbps += (data.size() + 11);
+                m_audio_send_bytes += data.size();
             }
 
-            m_sendDataCount += (data.size() + 11);
+            m_data_send_bytes += data.size();
         }
 
         // if send failed, then pkts may has some pkt
@@ -227,29 +227,35 @@ void BleRtmpSendThread::onTimeout()
 {
     if (!m_mutex.tryLock()) return;
 
-    int audioKbps = m_audioKbps * 1000 / m_timer.interval();
-    int videoKbps = m_videoKbps * 1000 / m_timer.interval();
-    int fps = m_fps * 1000 / m_timer.interval();
+    int elapsed_ms = m_elapsed_timer.elapsed();
 
-    m_audioKbps = 0;
-    m_videoKbps = 0;
+    float audioKbps = m_audio_send_bytes * 1000 / elapsed_ms;
+    float videoKbps = m_video_send_bytes * 1000 / elapsed_ms;
+    float fps = (float)m_fps * 1000.00 / (float)elapsed_ms;
+
+    m_audio_send_bytes = 0;
+    m_video_send_bytes = 0;
     m_fps = 0;
 
+    m_elapsed_timer.restart();
     m_mutex.unlock();
 
-    kbps bs = {audioKbps, videoKbps, fps};
+    log_trace("----------> %f  %f  %f %d %d", audioKbps, audioKbps, fps, m_fps, elapsed_ms);
+
+
+    kbps bs = {audioKbps, audioKbps, fps};
     m_kbps.append(bs);
 
     // average value
     if (m_kbps.size() > 4) m_kbps.removeFirst();
 
-    int audioKbpsAll = 0;
-    int videoKbpsAll = 0;
-    int fpsALl = 0;
+    float audioKbpsAll = 0;
+    float videoKbpsAll = 0;
+    float fpsALl = 0;
     for (int i = 0; i < m_kbps.size(); ++i) {
         const kbps &bs = m_kbps.at(i);
-        audioKbpsAll += bs.audioKpbs;
-        videoKbpsAll += bs.videoKpbs;
+        audioKbpsAll += bs.audio_avg;
+        videoKbpsAll += bs.video_avg;
         fpsALl += bs.fps;
     }
 
@@ -257,7 +263,9 @@ void BleRtmpSendThread::onTimeout()
     videoKbps = videoKbpsAll / m_kbps.size();
     fps = fpsALl / m_kbps.size();
 
-    emit status(audioKbps, videoKbps, fps, m_sendDataCount);
+    log_trace("%d %d %d", audioKbps, videoKbps, fps);
+
+    emit status(audioKbps, videoKbps, fps, m_data_send_bytes);
 }
 
 int BleRtmpSendThread::sendMetadata(BleRtmpMuxer & muxer)

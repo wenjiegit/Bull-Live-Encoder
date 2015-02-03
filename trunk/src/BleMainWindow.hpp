@@ -81,7 +81,7 @@ private slots:
     void onAddFileSource();
     void onAddTextSource();
 
-    void onStatus(int audioKbps, int videoKbps, int fps, int sendDataCount);
+    void onStatus(int audioKbps, int videoKbps, int fps, qint64 sendDataCount);
 
 private:
     Ui::BleMainWindow *ui;

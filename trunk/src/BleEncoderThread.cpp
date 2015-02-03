@@ -81,7 +81,7 @@ void BleEncoderThread::run()
 
         // if can't get image, then sleep 50 ms.
         if (images.isEmpty()) {
-            msleep(50);
+            msleep(5);
             continue;
         }
 

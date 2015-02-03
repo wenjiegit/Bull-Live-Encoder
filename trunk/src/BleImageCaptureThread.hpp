@@ -41,13 +41,13 @@ class BleImageCaptureThread : public BleThread
 public:
     explicit BleImageCaptureThread(QObject *parent = 0);
 
-    void capture(double pts);
-
     void run();
 
     void setImageProcessThread(BleImageProcessThread *thread);
 
     QQueue<BleImage *> getQueue();
+
+    void fini();
 
 signals:
 

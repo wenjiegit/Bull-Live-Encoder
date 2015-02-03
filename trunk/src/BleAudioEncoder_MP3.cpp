@@ -131,6 +131,7 @@ int BleAudioEncoder_MP3::getFrameSize()
     BleAssert(m_lame_global_flags);
     // 2 byte per sample
     int frameSize = lame_get_framesize(m_lame_global_flags) * (16 / 8) * m_channels;
+
     return frameSize;
 }
 

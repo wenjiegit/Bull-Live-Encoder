@@ -29,6 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QMutex>
 #include <QTimer>
 #include <QList>
+#include <QElapsedTimer>
 
 class BleRtmpMuxer;
 
@@ -56,24 +57,25 @@ private slots:
     void onTimeout();
 
 private:
-    int m_audioKbps;
-    int m_videoKbps;
+    int m_audio_send_bytes;
+    int m_video_send_bytes;
     int m_fps;
-    qint64 m_sendDataCount;
+    qint64 m_data_send_bytes;
     QMutex m_mutex;
     QTimer m_timer;
 
     struct kbps
     {
-        int audioKpbs;
-        int videoKpbs;
-        int fps;
+        float audio_avg;
+        float video_avg;
+        float fps;
     };
 
     QList<kbps> m_kbps;
+    QElapsedTimer m_elapsed_timer;
 
 signals:
-    void status(int audioKbps, int videoKbps, int fps, int sendDataCount);
+    void status(int audioKbps, int videoKbps, int fps, qint64 sendDataCount);
 };
 
 #endif // BLERTMPSENDTHREAD_H

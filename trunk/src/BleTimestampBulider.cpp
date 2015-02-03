@@ -24,6 +24,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleTimestampBulider.hpp"
 
 #include "BleUtil.hpp"
+#include "BleAVQueue.hpp"
+#include "BleAVUtil.hpp"
 
 static double growTimestamp(double & timestamp, float internal, double & otherTimestamp)
 {
@@ -74,27 +76,33 @@ double BleTimestampBulider::addVideoFrame()
     }
 }
 
-double BleTimestampBulider::addAudioFrame(bool &need_capture_video, double &video_pts)
+double BleTimestampBulider::addAudioFrame()
 {
     BleAutoLocker(m_mutex);
-    m_audioTimestamp += m_audioInternal;
 
-    if (next_video_pts() - m_audioTimestamp < m_audioInternal) {
-        need_capture_video = true;
+    while (next_audio_pts() >= next_video_pts()) {
         m_videoTimestamp = next_video_pts();
-        video_pts = m_videoTimestamp;
-
-        //log_trace("----->  V %lld  -----A %lld", (qint64)m_videoTimestamp, (qint64)m_audioTimestamp);
-    } else {
-        need_capture_video = false;
-        video_pts = -1;
+        place_hold_video(m_videoTimestamp);
     }
 
+    m_audioTimestamp = next_audio_pts();
     return m_audioTimestamp;
-    // return growTimestamp(m_audioTimestamp, m_audioInternal, m_videoTimestamp);;
 }
 
 double BleTimestampBulider::next_video_pts()
 {
     return m_videoTimestamp + m_videoInternal;
+}
+
+double BleTimestampBulider::next_audio_pts()
+{
+    return m_audioTimestamp + m_audioInternal;
+}
+
+void BleTimestampBulider::place_hold_video(double pts)
+{
+    BleVideoPacket *pkt = new BleVideoPacket(Video_Type_H264);
+    pkt->has_encoded = false;
+    pkt->dts = pts;
+    BleAVQueue::instance()->enqueue(pkt);
 }

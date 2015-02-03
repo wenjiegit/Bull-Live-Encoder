@@ -42,7 +42,8 @@ public:
         : pktType(type)
         , pts(0)
         , dts(0)
-        , ready(false)
+        , has_encoded(false)
+        , has_captured(false)
     {
 
     }
@@ -52,7 +53,8 @@ public:
     char pktType;
     qint64 pts;
     qint64 dts;
-    bool ready;
+    bool has_encoded;
+    bool has_captured;
 };
 
 class BleAudioPacket : public BleAVPacket
