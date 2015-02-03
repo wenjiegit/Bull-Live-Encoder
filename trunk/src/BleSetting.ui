@@ -373,32 +373,21 @@ color: rgb(0, 85, 0);</string>
          <item row="19" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
-            <widget class="QLabel" name="label_18">
-             <property name="text">
-              <string>(best)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QSlider" name="qualityBar">
              <property name="minimum">
               <number>1</number>
              </property>
              <property name="maximum">
-              <number>50</number>
+              <number>20</number>
+             </property>
+             <property name="pageStep">
+              <number>1</number>
              </property>
              <property name="value">
-              <number>20</number>
+              <number>5</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_24">
-             <property name="text">
-              <string>(worst)</string>
              </property>
             </widget>
            </item>

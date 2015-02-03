@@ -39,6 +39,7 @@ BleX264Encoder::BleX264Encoder()
     , m_x264Encoder(NULL)
     , bFirstFrameProcessed(false)
     , frameShift(0)
+    , m_encoded_frames(0)
 {
 }
 
@@ -102,7 +103,7 @@ int BleX264Encoder::init()
         m_x264Param->rc.i_vbv_max_bitrate  = maxBitRate;  // vbv-maxrate
         m_x264Param->rc.i_vbv_buffer_size  = bufferSize;  // vbv-bufsize
         m_x264Param->rc.i_rc_method        = X264_RC_CRF; // X264_RC_CRF;
-        m_x264Param->rc.f_rf_constant      = quality;
+        m_x264Param->rc.f_rf_constant      = 20.0f + float(20 - quality);
 
         log_trace("libx264 quality set to %d", quality);
     }
@@ -118,6 +119,7 @@ int BleX264Encoder::init()
     // if no telecine is used ...
     // Set to time_base ticks per frame. Default 1, e.g., H.264/MPEG-2 set it to 2.
     // @see ffmpeg: AVodecContex::ticks_per_frame
+    // never use timebase = 1000, because vlc will show 1000 fps !!
     int ticks_per_frame = 2;
     m_x264Param->i_timebase_num = 1;
     m_x264Param->i_timebase_den = fps;
@@ -211,6 +213,7 @@ int BleX264Encoder::init()
 
 int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts)
 {
+    Q_UNUSED(pts);
     unsigned char *src_buf = rgbframe;
     x264_picture_init(m_pictureIn);
 
@@ -219,7 +222,9 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts)
     m_pictureIn->i_type = X264_TYPE_AUTO;
     m_pictureIn->i_qpplus1 = 0;
 
-    m_pictureIn->i_pts = pts;
+    // @note why i_pts plus 1 everytime
+    // because the timebase set as above.
+    m_pictureIn->i_pts = ++m_encoded_frames;
 
     m_pictureIn->img.plane[0] = src_buf;
     m_pictureIn->img.plane[1] = src_buf + m_x264Param->i_height * m_x264Param->i_width;
@@ -294,7 +299,7 @@ float BleX264Encoder::getFrameDuration()
     }
 
     // 40 ms : default duration
-    return 40;
+    return 40.0f;
 }
 
 void BleX264Encoder::fini()

@@ -57,6 +57,7 @@ private:
     int delayOffset;
     bool bFirstFrameProcessed;
     int frameShift;
+    int m_encoded_frames;
 };
 
 #endif // BLEX264ENCODER_H
