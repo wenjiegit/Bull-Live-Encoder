@@ -1,7 +1,8 @@
 Bull-Live-Encoder
 =================
 Bull Live Encoder is a tool for pushing rtmp to server,<br/>
-which supports H264 + AAC and supports ingest from camer or desktop or some windows.<br/>
+which supports H264 + AAC or H264 + MP3 and supports ingest from camera or desktop or some windows.<br/>
+similar tools : obs or flash media live encoder.<br/>
 <br/>
 Blog: BLE(http://wenjiegit.github.io/Bull-Live-Encoder/)<br/>
 <br/>
@@ -29,6 +30,7 @@ Features
 10. support CBR and VBR mode.
 11. support multi-thread encoding.
 12. support skin change, with color or image.
+13. support MP3 encode with 11K 22K  44K sample rate.
 
 BLE Download
 =================
@@ -43,6 +45,7 @@ Build Env
     with libx264.<br/>
     with libfaac.<br/>
     with RtAudio.<br/>
+	with libmp3lame.
 
 2. Linux with GUI<br/>
     coming soon...<br/>
@@ -54,7 +57,7 @@ plan
 =================
 1.  support multi-scene, and change scene quickly.
 2.  support ingest from process, eg, from game on windows platform.
-3.  support push htpp + flv stream to Bull-Live-Server ,which support this stream pushing.\
+3.  support push htpp + flv stream to Bull-Live-Server ,which support this stream pushing.
 4.  support record to flv file.
 5.	support play rtmp stream on windows platform using flash tech.
 
@@ -76,3 +79,5 @@ history
 [0.1]&nbsp;&nbsp;2014-10-12&nbsp;&nbsp;&nbsp;support to choose encode quality.<br/>
 [0.1]&nbsp;&nbsp;2014-10-12&nbsp;&nbsp;&nbsp;support color composition with win7(or above) aero.<br/>
 [0.1]&nbsp;&nbsp;2014-12-25&nbsp;&nbsp;&nbsp;fix timestamp from qint64 to double.<br/>
+[0.9]&nbsp;&nbsp;2015-02-03&nbsp;&nbsp;&nbsp;support mp3 encode.<br/>
+[0.9]&nbsp;&nbsp;2015-02-03&nbsp;&nbsp;&nbsp;using a perfect method to build timestamp to make vlc play well.<br/>
