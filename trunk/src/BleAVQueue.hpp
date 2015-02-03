@@ -55,7 +55,6 @@ public:
 
 private:
     void fini();
-    BleAVPacket *findPktByTimetamp();
 
 private:
     BleTimestampBulider *m_timestampBulider;

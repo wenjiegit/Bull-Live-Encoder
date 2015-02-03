@@ -63,8 +63,6 @@ bool BleAudioEncoder_MP3::init(int samplerate, int channel, int bitrate)
     // init params
     lame_init_params(m_lame_global_flags);
 
-    log_trace("--------------------------> %d", lame_get_framesize(m_lame_global_flags));
-
     return true;
 }
 

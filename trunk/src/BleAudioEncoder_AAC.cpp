@@ -45,8 +45,6 @@ bool BleAudioEncoder_AAC::init(int samplerate, int channel, int bitrate)
 
     m_faacHandle = faacEncOpen(m_samplerate, m_channels, &m_samplesInputSize, &m_maxOutputSize);
 
-    log_trace("------------------>  m_samplesInputSize = %d", m_samplesInputSize);
-
     // check faac version
     aacConfig = faacEncGetCurrentConfiguration(m_faacHandle);
     if (aacConfig->version != FAAC_CFG_VERSION)

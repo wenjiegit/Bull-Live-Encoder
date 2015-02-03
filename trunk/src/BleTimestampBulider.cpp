@@ -49,6 +49,7 @@ double BleTimestampBulider::addVideoFrame()
 {
     // never go to here.
     BleAssert(false);
+    return 0.0;
 }
 
 double BleTimestampBulider::addAudioFrame()
