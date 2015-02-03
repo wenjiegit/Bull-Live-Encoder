@@ -107,7 +107,7 @@ BleSetting::BleSetting(QWidget *parent) :
 
     // add bitrate mode list
     ui->bitrateMode->addItem("CBR");
-    ui->bitrateMode->addItem("ABR");
+    ui->bitrateMode->addItem("VBR");
 
     // add keyframe interval
     ui->keyFrameInterval->addItem("1");
@@ -126,6 +126,8 @@ BleSetting::BleSetting(QWidget *parent) :
     connect(ui->qualityBar, SIGNAL(valueChanged(int)), this, SLOT(onQualityValueChanged(int)));
 
     restore();
+
+    onQualityValueChanged(ui->qualityBar->value());
 }
 
 BleSetting::~BleSetting()

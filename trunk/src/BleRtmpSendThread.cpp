@@ -240,14 +240,11 @@ void BleRtmpSendThread::onTimeout()
     m_elapsed_timer.restart();
     m_mutex.unlock();
 
-    log_trace("----------> %f  %f  %f %d %d", audioKbps, audioKbps, fps, m_fps, elapsed_ms);
-
-
-    kbps bs = {audioKbps, audioKbps, fps};
+    kbps bs = {audioKbps, videoKbps, fps};
     m_kbps.append(bs);
 
     // average value
-    if (m_kbps.size() > 4) m_kbps.removeFirst();
+    if (m_kbps.size() > 10) m_kbps.removeFirst();
 
     float audioKbpsAll = 0;
     float videoKbpsAll = 0;
@@ -262,8 +259,6 @@ void BleRtmpSendThread::onTimeout()
     audioKbps = audioKbpsAll / m_kbps.size();
     videoKbps = videoKbpsAll / m_kbps.size();
     fps = fpsALl / m_kbps.size();
-
-    log_trace("%d %d %d", audioKbps, videoKbps, fps);
 
     emit status(audioKbps, videoKbps, fps, m_data_send_bytes);
 }

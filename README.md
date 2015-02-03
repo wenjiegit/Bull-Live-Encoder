@@ -81,3 +81,4 @@ history
 [0.1]&nbsp;&nbsp;2014-12-25&nbsp;&nbsp;&nbsp;fix timestamp from qint64 to double.<br/>
 [0.9]&nbsp;&nbsp;2015-02-03&nbsp;&nbsp;&nbsp;support mp3 encode.<br/>
 [0.9]&nbsp;&nbsp;2015-02-03&nbsp;&nbsp;&nbsp;using a perfect method to build timestamp to make vlc play well.<br/>
+[0.9]&nbsp;&nbsp;2015-02-03&nbsp;&nbsp;&nbsp;fix fps show problems in vlc.<br/>

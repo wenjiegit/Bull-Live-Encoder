@@ -359,11 +359,11 @@ void BleMainWindow::onEncodeStart()
 
 void BleMainWindow::onEncodeStop()
 {
+    SAFE_STOP_THREAD(BleAVContext::instance()->captureThread);
     SAFE_STOP_THREAD(m_sendThread);
     SAFE_STOP_THREAD(m_encoderThread);
     SAFE_STOP_THREAD(m_imageProcessThread);
     SAFE_STOP_THREAD(m_audioCaptureThread);
-    SAFE_STOP_THREAD(BleAVContext::instance()->captureThread);
 
     if (m_audioCaptureThread) {
         m_audioCaptureThread->stopCapture();
