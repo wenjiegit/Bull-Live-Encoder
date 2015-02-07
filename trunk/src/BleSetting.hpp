@@ -44,6 +44,8 @@ private slots:
     void onApplyClicked();
     void onAudioBitrateChanged(const QString & text);
     void onQualityValueChanged(int value);
+    void onBrowseClicked();
+    void onEnableSaveStateChanged(int state);
 
 private:
     void restore();

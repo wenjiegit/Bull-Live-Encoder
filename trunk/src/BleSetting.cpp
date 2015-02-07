@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <QCameraInfo>
 #include <QSettings>
+#include <QFileDialog>
 
 #include <stdint.h>
 #include "x264.h"
@@ -124,10 +125,13 @@ BleSetting::BleSetting(QWidget *parent) :
 
     connect(ui->applyBtn, SIGNAL(clicked()), this, SLOT(onApplyClicked()));
     connect(ui->qualityBar, SIGNAL(valueChanged(int)), this, SLOT(onQualityValueChanged(int)));
+    connect(ui->browse, SIGNAL(clicked()), this, SLOT(onBrowseClicked()));
+    connect(ui->enable_record, SIGNAL(stateChanged(int)), this, SLOT(onEnableSaveStateChanged(int)));
 
     restore();
 
     onQualityValueChanged(ui->qualityBar->value());
+    onEnableSaveStateChanged(ui->enable_record->checkState());
 }
 
 BleSetting::~BleSetting()
@@ -180,6 +184,11 @@ void BleSetting::onApplyClicked()
     option->setOption(threadCount, Key_Thread_Count, Group_X264);
     option->setOption(enableBFrame, Key_Enable_B_Frame, Group_X264);
     option->setOption(quality, "quality", "x264");
+
+    // video save
+    option->setOption(ui->save_path->text(), "save_path", "Video_Save");
+    QString enabled_record = ui->enable_record->isChecked() ? "true" : "false";
+    option->setOption(enabled_record, "save_enabled", "Video_Save");
 
     option->setOption(address, "address", "network");
 
@@ -261,6 +270,21 @@ void BleSetting::onQualityValueChanged(int value)
     ui->qualityLabel->setText(text);
 }
 
+void BleSetting::onBrowseClicked()
+{
+    QString dir_name = QFileDialog::getExistingDirectory(0, tr("please select a directory"));
+    if (dir_name.isEmpty()) return;
+
+    ui->save_path->setText(dir_name);
+}
+
+void BleSetting::onEnableSaveStateChanged(int state)
+{
+    bool enabled = (state == Qt::Checked);
+    ui->save_path->setEnabled(enabled);
+    ui->browse->setEnabled(enabled);
+}
+
 void BleSetting::restore()
 {
     MOption *option = MOption::instance();
@@ -317,6 +341,18 @@ void BleSetting::restore()
     setIndex(ui->threadCount, threadCount);
     ui->enableBFrame->setChecked((enableBFrame == "true") ? true: false);
     ui->qualityBar->setValue(quality.toInt());
+
+    // video save
+    QString save_path = option->option("save_path", "Video_Save").toString();
+    if (save_path.isEmpty()) {
+        // set default to $app/record
+        save_path = QCoreApplication::applicationDirPath() + "/record";
+    }
+    ui->save_path->setText(save_path);
+
+    QString enabled_record_str = option->option("save_enabled", "Video_Save").toString();
+    bool enabled_record = (enabled_record_str == "true") ? true : false;
+    ui->enable_record->setChecked(enabled_record);
 
     // network group
     QString address = option->option("address", "network").toString();
