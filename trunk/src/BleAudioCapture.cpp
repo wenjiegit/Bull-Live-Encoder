@@ -97,12 +97,15 @@ void BleAudioCapture::run()
                 return;
             }
 
-            BleAudioPacket *pkt = new BleAudioPacket(Audio_Type_AAC);
-            pkt->data.writeString(MString(outputArray.data(), outputArray.size()));
+            // the output should > 0
+            if (!outputArray.isEmpty()) {
+                BleAudioPacket *pkt = new BleAudioPacket(Audio_Type_AAC);
+                pkt->data.writeString(MString(outputArray.data(), outputArray.size()));
 
-            pkt->dts = BleAVQueue::instance()->timestampBuilder()->addAudioFrame();
-            pkt->has_encoded = true;
-            BleAVQueue::instance()->enqueue(pkt);
+                pkt->dts = BleAVQueue::instance()->timestampBuilder()->addAudioFrame();
+                pkt->has_encoded = true;
+                BleAVQueue::instance()->enqueue(pkt);
+            }
         }
 
         m_mutex.unlock();

@@ -55,6 +55,7 @@ void BleFileSource::run()
 {
     BleAssert(!m_fileName.isEmpty());
 
+    // m_fileName = "rtsp://218.204.223.237:554/live/1/0547424F573B085C/gsfp90ef4k0a6iap.sdp";
     CvCapture* capture = cvCreateFileCapture(m_fileName.toStdString().c_str());
     BleAssert(capture);
 
@@ -66,6 +67,8 @@ void BleFileSource::run()
 
         frame = cvQueryFrame(capture);
         if(!frame) break ;
+        log_trace("------------> fps = %d", cvGetCaptureProperty(capture, CV_CAP_PROP_FPS));
+
 
         m_modifyMutex.lock();           // Start lock
 

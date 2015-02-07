@@ -379,6 +379,29 @@ color: rgb(0, 85, 0);</string>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
             <widget class="QSlider" name="qualityBar">
+             <property name="styleSheet">
+              <string notr="true"> QSlider::groove:horizontal {
+     border: 1px solid #999999;
+     height: 3px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
+     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #B1B1B1, stop:1 #c4c4c4);
+ }
+
+ QSlider::handle:horizontal {
+     background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #6d6d6d, stop:1 #5e5e5e);;
+     border: 1px solid #5c5c5c;
+     width: 8px;
+     margin: -4px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
+     border-radius: 2px;
+ }
+
+ QSlider::add-page:horizontal {
+     background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #6d6d6d, stop:1 #5e5e5e);;
+ }
+
+ QSlider::sub-page:horizontal {
+     background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff9933, stop:1 #df8d3c);;
+ }</string>
+             </property>
              <property name="minimum">
               <number>1</number>
              </property>
