@@ -32,6 +32,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QElapsedTimer>
 
 class BleRtmpMuxer;
+class BleAVPacket;
+class QFile;
+class MStream;
 
 class BleRtmpSendThread : public BleThread
 {
@@ -51,10 +54,22 @@ private:
 private:
     int sendVideoSh(BleRtmpMuxer & muxer);
     int sendAudioSh(BleRtmpMuxer & muxer);
-    int sendMetadata(BleRtmpMuxer &muxer);
+    int sendMetadata(BleRtmpMuxer &muxer, MStream &body);
 
 private slots:
     void onTimeout();
+
+private:
+    enum {
+        FLV_TAG_METADATA = 0x12,
+        FLV_TAG_VIDEO = 0x09,
+        FLV_TAG_AUDIO = 0x08
+    };
+
+private:
+    int on_record();
+    int record(MStream &data, qint64 dts, int flv_tag_type);
+    int on_un_record();
 
 private:
     int m_audio_send_bytes;
@@ -73,6 +88,8 @@ private:
 
     QList<kbps> m_kbps;
     QElapsedTimer m_elapsed_timer;
+    bool m_record_error;
+    QFile *m_record_file;
 
 signals:
     void status(int audioKbps, int videoKbps, int fps, qint64 sendDataCount);

@@ -31,6 +31,7 @@ Features
 11. support multi-thread encoding.
 12. support skin change, with color or image.
 13. support MP3 encode with 11K 22K  44K sample rate.
+14. support record to flv file.
 
 BLE Download
 =================
@@ -58,8 +59,7 @@ plan
 1.  support multi-scene, and change scene quickly.
 2.  support ingest from process, eg, from game on windows platform.
 3.  support push htpp + flv stream to Bull-Live-Server ,which support this stream pushing.
-4.  support record to flv file.
-5.	support play rtmp stream on windows platform using flash tech.
+4.	support play rtmp stream on windows platform using flash tech.
 
 history
 =================
@@ -83,3 +83,5 @@ history
 [0.9.5]&nbsp;&nbsp;2015-02-03&nbsp;&nbsp;&nbsp;using a perfect method to build timestamp to make vlc play well.<br/>
 [0.9.5]&nbsp;&nbsp;2015-02-03&nbsp;&nbsp;&nbsp;fix fps show problems in vlc.<br/>
 [0.9.6]&nbsp;&nbsp;2015-02-08&nbsp;&nbsp;&nbsp;ensure the audio pkt to be not empty.<br/>
+[0.9.6]&nbsp;&nbsp;2015-02-08&nbsp;&nbsp;&nbsp;add record UI.<br/>
+[0.9.8]&nbsp;&nbsp;2015-02-09&nbsp;&nbsp;&nbsp;support flv record now.<br/>

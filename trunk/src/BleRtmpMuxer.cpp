@@ -165,7 +165,7 @@ int BleRtmpMuxer::addAAC(const MStream &data, unsigned long long dts)
     return m_rtmpAU->sendPacket(data, dts, RTMP_PACKET_TYPE_AUDIO, StreamChannel_Audio);
 }
 
-int BleRtmpMuxer::setMetaData(const FlvMetaData &metaData)
+int BleRtmpMuxer::setMetaData(const FlvMetaData &metaData, MStream &body_data)
 {
     m_metaData.clear();
 
@@ -224,6 +224,8 @@ int BleRtmpMuxer::setMetaData(const FlvMetaData &metaData)
     p = put_byte(p, AMF_OBJECT_END);
 
     m_metaData = string(body, p - body);
+    body_data.append(m_metaData);
+
     return m_rtmpAU->sendPacket(m_metaData, 0, RTMP_PACKET_TYPE_INFO, StreamChannel_Metadata);
 }
 

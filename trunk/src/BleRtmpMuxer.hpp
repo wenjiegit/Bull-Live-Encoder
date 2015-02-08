@@ -77,7 +77,7 @@ public:
     */
     int addAAC(const MStream &data, unsigned long long dts);
 
-    int setMetaData(const FlvMetaData &metaData);
+    int setMetaData(const FlvMetaData &metaData, MStream &body_data);
 
     /*!
         @param url a complete RTMP URL

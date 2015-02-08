@@ -47,7 +47,7 @@ public:
     BleAVPacket * find_unencoded_video();
     BleAVPacket *find_uncaptured_video();
 
-    void updatePkt(BleAVPacket * pkt);
+    void update_packet(BleAVPacket * pkt);
 
     QQueue<BleAVPacket *> dequeue();
 
@@ -60,7 +60,6 @@ private:
     BleTimestampBulider *m_timestampBulider;
     QMutex m_mutex;
     QList<BleAVPacket *> m_queue;
-    //QList<BleAVPacket *> m_audioQueue;
 };
 
 #endif // BLEAVQUEUE_HPP

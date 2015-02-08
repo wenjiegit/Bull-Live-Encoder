@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QElapsedTimer>
 #include <QDebug>
 #include <QDateTime>
+#include <QDir>
 
 #include "BleRtmpMuxer.hpp"
 #include "BleEncoderThread.hpp"
@@ -34,12 +35,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleErrno.hpp"
 #include "MOption.h"
 #include "BleContext.hpp"
+#include "mstream.hpp"
 
 #ifdef Q_OS_WIN
 #include "windows.h"
 #endif
 
 #include "BleAVQueue.hpp"
+
+static char flv_header[] = {'F', 'L', 'V',
+                            0x01, 0x05, 0x00, 0x00, 0x00, 0x09,
+                            0x00, 0x00, 0x00, 0x00};
 
 BleRtmpSendThread::BleRtmpSendThread(QObject * parent)
     : BleThread(parent)
@@ -125,7 +131,12 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
 {
     int ret = BLE_SUCESS;
 
-    if ((ret = sendMetadata(muxer)) != BLE_SUCESS) {
+    if (on_record() != BLE_SUCESS) {
+        log_trace("flv on_record error");
+    }
+
+    MStream metadata_body;
+    if ((ret = sendMetadata(muxer, metadata_body)) != BLE_SUCESS) {
         return ret;
     }
 
@@ -136,6 +147,23 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
     if ((ret = sendAudioSh(muxer)) != BLE_SUCESS) {
         return ret;
     }
+
+    // write metadata
+    record(metadata_body, 0, FLV_TAG_METADATA);
+
+    // write video sh
+    BleAVPacket *vs = appCtx->videoSh();
+    if (vs) {
+        record(vs->data, 0, FLV_TAG_VIDEO);
+    }
+
+    // write audio sh
+    BleAVPacket *as = appCtx->audioSh();
+    if (as) {
+        record(as->data, 0, FLV_TAG_AUDIO);
+    }
+
+    BleAVPacket *pkt = appCtx->audioSh();
 
     while (!m_stop) {
         QQueue<BleAVPacket *> pkts = BleAVQueue::instance()->dequeue();
@@ -157,7 +185,7 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
                     ret = BLE_RTMPSEND_ERROR;
                     break;
                 }
-                // log_trace("------------------>  V  %lld", pkt->dts);
+                record(data, pkt->dts, FLV_TAG_VIDEO);
 
                 m_video_send_bytes += data.size();
                 m_fps += 1;
@@ -166,7 +194,7 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
                     ret = BLE_RTMPSEND_ERROR;
                     break;
                 }
-                //log_trace("------------------>  A  %lld", pkt->dts);
+                record(data, pkt->dts, FLV_TAG_AUDIO);
 
                 m_audio_send_bytes += data.size();
             }
@@ -181,6 +209,7 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
             BleFree(pkt);
         }
     }
+    on_un_record();
 
     return ret;
 }
@@ -263,7 +292,95 @@ void BleRtmpSendThread::onTimeout()
     emit status(audioKbps, videoKbps, fps, m_data_send_bytes);
 }
 
-int BleRtmpSendThread::sendMetadata(BleRtmpMuxer & muxer)
+int BleRtmpSendThread::on_record()
+{
+    m_record_error = false;
+
+    // video save
+    QString dir = MOption::instance()->option("save_path", "Video_Save").toString();
+    if (dir.isEmpty()) {
+        m_record_error = true;
+        log_error("record dir is not set.");
+        return -1;
+    }
+
+    QDir temp;
+    if (!temp.mkpath(dir)) {
+        log_error("mkdir error, dir=%s", dir.toStdString().c_str());
+        m_record_error = true;
+        return -1;
+    }
+
+    QString current_time = QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss");
+    QString flv_name = dir + "/" + current_time + ".flv";
+    m_record_file = new QFile(flv_name);
+    if (!m_record_file->open(QIODevice::WriteOnly)) {
+        log_error("open flv file error, file=%s", flv_name.toStdString().c_str());
+        m_record_error = true;
+        BleFree(m_record_file);
+        return -1;
+    }
+
+    // write flv header
+    if (m_record_file->write(flv_header, 13) < 0) {
+        m_record_error = true;
+        m_record_file->close();
+        BleFree(m_record_file);
+        return -1;
+    }
+
+    return BLE_SUCESS;
+}
+
+int BleRtmpSendThread::record(MStream &data, qint64 dts, int flv_tag_type)
+{
+    if (m_record_error) return BLE_SUCESS;
+
+    MStream stream;
+
+    // tag header
+    mint8 type = flv_tag_type;
+
+    int payload_size = data.length();
+
+    stream.write1Bytes(type);
+    stream.write3Bytes(payload_size);
+    stream.write3Bytes(dts);
+    stream.write1Bytes(dts >> 24 & 0xFF);
+    stream.write3Bytes(0);
+    stream.writeString(data);
+
+    // pre tag size
+    int preTagSize = payload_size + 11;
+    stream.write4Bytes(preTagSize);
+
+    // write flv tag
+    if (m_record_file->write(stream.data(), stream.length()) < 0) {
+        log_error("write flv tag error, disable record.");
+        m_record_error = true;
+        m_record_file->close();
+        BleFree(m_record_file);
+        return -1;
+    }
+    m_record_file->flush();
+
+    return BLE_SUCESS;
+}
+
+int BleRtmpSendThread::on_un_record()
+{
+    if (m_record_file && m_record_file->isOpen()) {
+        log_trace("record finished. file save to %s"
+                  , m_record_file->fileName().toStdString().c_str());
+
+        m_record_file->close();
+        BleFree(m_record_file);
+    }
+
+    m_record_error = false;
+}
+
+int BleRtmpSendThread::sendMetadata(BleRtmpMuxer & muxer, MStream &body)
 {
     int ret = BLE_SUCESS;
 
@@ -305,7 +422,7 @@ int BleRtmpSendThread::sendMetadata(BleRtmpMuxer & muxer)
     meta->width = width;
     meta->creationdate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toStdString();
 
-    if ((ret = muxer.setMetaData(*meta)) != TRUE) {
+    if ((ret = muxer.setMetaData(*meta, body)) != TRUE) {
         return BLE_RTMPSEND_ERROR;
     }
 

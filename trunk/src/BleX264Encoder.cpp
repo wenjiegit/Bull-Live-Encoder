@@ -283,7 +283,7 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts, void *opaque)
         body.writeString((char*)nal.p_payload, nal.i_payload);
     }
 
-    BleAVQueue::instance()->updatePkt(pkt);
+    BleAVQueue::instance()->update_packet(pkt);
 
     return 0;
 }

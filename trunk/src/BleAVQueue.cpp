@@ -27,8 +27,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <QDateTime>
 
-qint64 startTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
-
 static BleAVQueue* gs_queue = NULL;
 
 BleAVQueue::BleAVQueue()
@@ -64,11 +62,6 @@ void BleAVQueue::enqueue(BleAVPacket *pkt)
 {
     BleAutoLocker(m_mutex);
 
-//    if (pkt->pktType == Packet_Type_Audio) {
-//        m_audioQueue << pkt;
-//    } else {
-//        m_queue << pkt;
-//    }
     m_queue << pkt;
 }
 
@@ -87,7 +80,6 @@ BleAVPacket *BleAVQueue::find_unencoded_video()
 BleAVPacket *BleAVQueue::find_uncaptured_video()
 {
     BleAutoLocker(m_mutex);
-    // find first un-ready video
     for (int i = 0; i < m_queue.size(); ++i) {
         BleAVPacket *pkt = m_queue.at(i);
         if (pkt->pktType == Packet_Type_Video && !pkt->has_captured && !pkt->has_encoded) return pkt;
@@ -96,7 +88,7 @@ BleAVPacket *BleAVQueue::find_uncaptured_video()
     return NULL;
 }
 
-void BleAVQueue::updatePkt(BleAVPacket *pkt)
+void BleAVQueue::update_packet(BleAVPacket *pkt)
 {
     BleAutoLocker(m_mutex);
 
@@ -112,26 +104,12 @@ QQueue<BleAVPacket *> BleAVQueue::dequeue()
         BleAVPacket *pkt = m_queue.first();
         if (pkt->has_encoded) {
             pkts << pkt;
-
-            // erase from m_queue
             m_queue.removeFirst();
         } else
             break;
     }
 
     return pkts;
-
-//    QQueue<BleAVPacket *> pkts;
-//    while (true) {
-//        BleAVPacket *pkt = findPktByTimetamp();
-//        if (!pkt) break;
-
-//        pkts << pkt;
-//    }
-
-//    return pkts;
-
-//    return pkts;
 }
 
 void BleAVQueue::fini()
