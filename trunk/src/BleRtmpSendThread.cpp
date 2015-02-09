@@ -163,8 +163,6 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
         record(as->data, 0, FLV_TAG_AUDIO);
     }
 
-    BleAVPacket *pkt = appCtx->audioSh();
-
     while (!m_stop) {
         QQueue<BleAVPacket *> pkts = BleAVQueue::instance()->dequeue();
         if (pkts.isEmpty()) {
@@ -378,6 +376,8 @@ int BleRtmpSendThread::on_un_record()
     }
 
     m_record_error = false;
+
+    return BLE_SUCESS;
 }
 
 int BleRtmpSendThread::sendMetadata(BleRtmpMuxer & muxer, MStream &body)

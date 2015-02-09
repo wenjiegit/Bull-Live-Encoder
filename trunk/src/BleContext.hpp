@@ -39,6 +39,8 @@ public:
     inline BleAVPacket *audioSh()   { return audioSH; }
     inline BleAVPacket *sei()       { return seiPkt; }
 
+    void fini();
+
 private:
     BleAVPacket *videoSH;
     BleAVPacket *audioSH;

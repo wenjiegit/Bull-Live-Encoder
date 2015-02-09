@@ -61,6 +61,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleAVQueue.hpp"
 #include "BleImageCaptureThread.hpp"
 #include "BleAVContext.hpp"
+#include "BleContext.hpp"
 
 #define BLE_TITLE "Bull Live Encoder"
 
@@ -386,6 +387,7 @@ void BleMainWindow::onEncodeStop()
     m_imageProcessWidget->setProcessThread(m_imageProcessThread);
 
     BleAVQueue::destroy();
+    appCtx->fini();
 
     ui->startBtn->setEnabled(true);
     ui->startBtn->setButtonStatus(STATUS_NORMAL);

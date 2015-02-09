@@ -49,4 +49,11 @@ void BleContext::setSei(BleAVPacket *pkt)
     seiPkt = pkt;
 }
 
+void BleContext::fini()
+{
+    BleFree(videoSH);
+    BleFree(audioSH);
+    BleFree(seiPkt);
+}
+
 BleContext *appCtx = new BleContext;
