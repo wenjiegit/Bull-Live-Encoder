@@ -1,7 +1,7 @@
 Bull-Live-Encoder
 =================
 Bull Live Encoder is a tool for pushing rtmp to server,<br/>
-which supports H264 + AAC or H264 + MP3 and supports ingest from camera or desktop or some windows.<br/>
+which supports H264 + AAC or H264 + MP3 and supports ingest from camera or desktop or some windows or other.<br/>
 similar tools : obs or flash media live encoder.<br/>
 <br/>
 Blog: BLE(http://wenjiegit.github.io/Bull-Live-Encoder/)<br/>
@@ -32,6 +32,10 @@ Features
 12. support skin change, with color or image.
 13. support MP3 encode with 11K 22K  44K sample rate.
 14. support record to flv file.
+15. support ingest from RTSP with opencv.
+16. support ingest from RTMP with opencv.
+17. support ingest from RTP with opencv.
+18. support ingest from HLS with opencv.
 
 BLE Download
 =================
@@ -85,3 +89,8 @@ history
 [0.9.6]&nbsp;&nbsp;2015-02-08&nbsp;&nbsp;&nbsp;ensure the audio pkt to be not empty.<br/>
 [0.9.6]&nbsp;&nbsp;2015-02-08&nbsp;&nbsp;&nbsp;add record UI.<br/>
 [0.9.8]&nbsp;&nbsp;2015-02-09&nbsp;&nbsp;&nbsp;support flv record now.<br/>
+[0.9.9]&nbsp;&nbsp;2015-02-11&nbsp;&nbsp;&nbsp;support specfy B frame count in settings file .<br/>
+[0.9.9]&nbsp;&nbsp;2015-02-11&nbsp;&nbsp;&nbsp;support ingest from RTSP  with opencv.<br/>
+[0.9.9]&nbsp;&nbsp;2015-02-11&nbsp;&nbsp;&nbsp;support ingest from RTP  with opencv.<br/>
+[0.9.9]&nbsp;&nbsp;2015-02-11&nbsp;&nbsp;&nbsp;support ingest from RTMP  with opencv.<br/>
+[0.9.9]&nbsp;&nbsp;2015-02-11&nbsp;&nbsp;&nbsp;support ingest from HLS  with opencv.<br/>
