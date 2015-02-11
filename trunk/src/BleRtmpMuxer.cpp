@@ -144,6 +144,7 @@ public:
 
     int connect();
     int close();
+    void close_socket();
     int sendPacket(const string &data, unsigned long long timestamp, unsigned int pktType, int channel);
 
 private:
@@ -244,6 +245,11 @@ int BleRtmpMuxer::start()
 int BleRtmpMuxer::stop()
 {
     return m_rtmpAU->close();
+}
+
+void BleRtmpMuxer::close_socket()
+{
+    m_rtmpAU->close_socket();
 }
 
 string BleRtmpMuxer::genSequenceHeader()
@@ -429,6 +435,22 @@ int RtmpAU::close()
     }
 
     return 0;
+}
+#include <winsock.h>
+#include "BleLog.hpp"
+void RtmpAU::close_socket()
+{
+    if (m_pRtmp) {
+        SOCKET so = m_pRtmp->m_sb.sb_socket;
+        if (so > 0) {
+            ::shutdown(so, 2);
+#if defined (Q_OS_WIN)
+            ::closesocket(so);
+#elif defined (Q_OS_LINUX)
+            ::close(so);
+#endif
+        }
+    }
 }
 
 int RtmpAU::sendPacket(const string &data, unsigned long long timestamp, unsigned int pktType, int channel)

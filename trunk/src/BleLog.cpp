@@ -38,7 +38,7 @@ BleLog::BleLog()
     , m_file(NULL)
     , m_buffer(NULL)
     , m_bufferLength(4096)
-    , m_timeFormat("MM-dd hh:mm")
+    , m_timeFormat("MM-dd hh:mm:ss")
 {
     m_filePath.sprintf("ble_%s.log"
                        , QDateTime::currentDateTime().toString("MM_dd_hh_mm_ss").toStdString().c_str());

@@ -69,6 +69,7 @@ int BleX264Encoder::init()
     int KeyFrameInterval = option->option("KeyFrameInterval", "x264").toInt();
     int threadCount = option->option(Key_Thread_Count, Group_X264).toInt();
     bool enableBFrame = option->option(Key_Enable_B_Frame, Group_X264).toString() == "true" ? true : false;
+    int B_frame_count = option->option(Key_B_Frame_Count, Group_X264).toInt();
 
     m_x264Param = new x264_param_t;
 
@@ -103,7 +104,7 @@ int BleX264Encoder::init()
         m_x264Param->rc.i_vbv_max_bitrate  = maxBitRate;  // vbv-maxrate
         m_x264Param->rc.i_vbv_buffer_size  = bufferSize;  // vbv-bufsize
         m_x264Param->rc.i_rc_method        = X264_RC_CRF; // X264_RC_CRF;
-        m_x264Param->rc.f_rf_constant      = 20.0f + float(20 - quality);
+        m_x264Param->rc.f_rf_constant      = 10.0f + float(20 - quality);
 
         log_trace("libx264 quality set to %d", quality);
     }
@@ -132,8 +133,14 @@ int BleX264Encoder::init()
     m_x264Param->b_repeat_headers = 0;
     m_x264Param->b_annexb = 0;
 
-    if (enableBFrame)
-        m_x264Param->i_bframe = 3;
+    m_x264Param->i_frame_reference = 5;
+    if (enableBFrame) {
+        m_x264Param->i_bframe = B_frame_count;
+        m_x264Param->i_bframe_bias = 100;
+        m_x264Param->i_bframe_adaptive = 1;
+        if (B_frame_count >= 2)
+            m_x264Param->i_bframe_pyramid = 1;
+    }
     else
         m_x264Param->i_bframe = 0;
 
@@ -281,6 +288,14 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts, void *opaque)
     for (int i = 0; i < nalNum; ++i) {
         x264_nal_t &nal = nalOut[i];
         body.writeString((char*)nal.p_payload, nal.i_payload);
+    }
+
+    if (IS_X264_TYPE_I(picOut.i_type)) {
+        log_trace("I");
+    } else if (IS_X264_TYPE_B(picOut.i_type)) {
+        log_trace("B");
+    } else {
+        log_trace("P");
     }
 
     BleAVQueue::instance()->update_packet(pkt);

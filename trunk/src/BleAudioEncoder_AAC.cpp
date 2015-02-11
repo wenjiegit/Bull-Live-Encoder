@@ -112,7 +112,7 @@ void BleAudioEncoder_AAC::fini()
 bool BleAudioEncoder_AAC::encode(const QByteArray &data, QByteArray &outputArray)
 {
     if (data.size() != getFrameSize()) {
-        log_error("aac data is too not equa to %d", getFrameSize());
+        log_error("aac data is too not equal to %d", getFrameSize());
         return false;
     }
 

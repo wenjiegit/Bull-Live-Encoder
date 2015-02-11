@@ -64,6 +64,7 @@ enum interfaceOptions_Group
 
 #define Key_Thread_Count    "ThreadCount"
 #define Key_Enable_B_Frame  "EnableBFrame"
+#define Key_B_Frame_Count  "b_frame_count"
 
 #define Group_X264          "x264"
 

@@ -67,10 +67,8 @@ void BleFileSource::run()
 
         frame = cvQueryFrame(capture);
         if(!frame) break ;
-        log_trace("------------> fps = %d", cvGetCaptureProperty(capture, CV_CAP_PROP_FPS));
 
-
-        m_modifyMutex.lock();           // Start lock
+        m_modifyMutex.lock();           // start lock
 
         BleImage be;
         be.width = frame->width;
@@ -84,7 +82,7 @@ void BleFileSource::run()
 
         m_image = be;
 
-        m_modifyMutex.unlock();        // End unlock
+        m_modifyMutex.unlock();        // end unlock
 
         int elapsedMs = elapsedTimer.elapsed();
         int needSleepMs = m_interval - elapsedMs;

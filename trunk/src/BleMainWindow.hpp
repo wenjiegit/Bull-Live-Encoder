@@ -80,6 +80,7 @@ private slots:
     void onAddPic();
     void onAddFileSource();
     void onAddTextSource();
+    void onAddMedia();
 
     void onStatus(int audioKbps, int videoKbps, int fps, qint64 sendDataCount);
 

@@ -62,6 +62,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleImageCaptureThread.hpp"
 #include "BleAVContext.hpp"
 #include "BleContext.hpp"
+#include "BleMediaSelector.hpp"
 
 #define BLE_TITLE "Bull Live Encoder"
 
@@ -85,6 +86,7 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
     ui->startBtn->setPixmap(QPixmap(":/image/ble_start.png"));
     ui->stopBtn->setPixmap(QPixmap(":/image/ble_stop.png"));
     ui->addFileSourceBtn->setPixmap(QPixmap(":/image/add_file.png"));
+    ui->add_media->setPixmap(QPixmap(":/image/ble_media.png"));
 
     ui->addCameraBtn->setFixedHeight(48);
     ui->addWindowGrabBtn->setFixedHeight(48);
@@ -92,6 +94,7 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
     ui->startBtn->setFixedHeight(48);
     ui->stopBtn->setFixedHeight(48);
     ui->addFileSourceBtn->setFixedHeight(48);
+    ui->add_media->setFixedHeight(48);
     ui->addTextBtn->setFixedHeight(48);
 
     ui->addCameraBtn->setToolTip(tr("add a camera source"));
@@ -143,6 +146,8 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
             , this, SLOT(onAddFileSource()));
     connect(ui->addTextBtn, SIGNAL(clicked())
             , this, SLOT(onAddTextSource()));
+    connect(ui->add_media, SIGNAL(clicked())
+            , this, SLOT(onAddMedia()));
 
     // tray setting
     m_systemTrayIcon = new QSystemTrayIcon(QIcon(":/image/logo.png"), this);
@@ -463,6 +468,26 @@ void BleMainWindow::onAddTextSource()
     QString text= "this is a text";
     BleTextSource *source = new BleTextSource;
     source->setText(text);
+
+    m_imageProcessWidget->addCaptureSource(source, 30, 30, 320, 240);
+}
+
+void BleMainWindow::onAddMedia()
+{
+    BleMediaSelectorDialog dialog;
+    int ret = dialog.exec();
+    if (ret == QDialog::Rejected) return;
+
+    QString addr = dialog.addr();
+    if (addr.isEmpty()) {
+        QjtMessageBox::critical(NULL, "", tr("url can not be empty."));
+        return;
+    }
+
+    // rtsp://218.204.223.237:554/live/1/0547424F573B085C/gsfp90ef4k0a6iap.sdp
+    BleFileSource *source = new BleFileSource();
+    source->setFileName(addr.trimmed());
+    source->start();
 
     m_imageProcessWidget->addCaptureSource(source, 30, 30, 320, 240);
 }

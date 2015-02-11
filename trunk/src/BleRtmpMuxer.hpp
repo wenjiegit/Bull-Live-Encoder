@@ -98,6 +98,11 @@ public:
       */
     int stop();
 
+    /*!
+        close under-layer socket.
+    */
+    void close_socket();
+
 private:
     string genSequenceHeader();
     string genSPS();

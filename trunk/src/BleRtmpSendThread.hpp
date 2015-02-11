@@ -45,6 +45,8 @@ public:
 
     virtual void run();
 
+    void stop();
+
 private:
 #ifdef Q_OS_WIN
     int wsaStart();
@@ -90,6 +92,7 @@ private:
     QElapsedTimer m_elapsed_timer;
     bool m_record_error;
     QFile *m_record_file;
+    BleRtmpMuxer *m_rtmp_muxer;
 
 signals:
     void status(int audioKbps, int videoKbps, int fps, qint64 sendDataCount);

@@ -90,7 +90,8 @@ SOURCES += \
     src/BleTextSource.cpp \
     src/BleAudioEncoder_MP3.cpp \
     src/BleImageCaptureThread.cpp \
-    src/BleAVContext.cpp
+    src/BleAVContext.cpp \
+    src/BleMediaSelector.cpp
 
 HEADERS  += \
     src/BleMainWindow.hpp \
@@ -146,7 +147,8 @@ HEADERS  += \
     src/BleTextSource.hpp \
     src/BleAudioEncoder_MP3.hpp \
     src/BleImageCaptureThread.hpp \
-    src/BleAVContext.hpp
+    src/BleAVContext.hpp \
+    src/BleMediaSelector.hpp
 
 FORMS    += \
     src/BleMainWindow.ui \
@@ -161,7 +163,8 @@ FORMS    += \
     src/gui/RecSkinDialog.ui \
     src/gui/RecSkinPickerWidget.ui \
     src/gui/RecSkinWidget.ui \
-    src/gui/TitleWidget.ui
+    src/gui/TitleWidget.ui \
+    src/BleMediaSelector.ui
 
 win32:RC_FILE = src/ble.rc
 

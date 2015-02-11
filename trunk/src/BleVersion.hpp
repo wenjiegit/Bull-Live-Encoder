@@ -24,9 +24,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef BLEVERSION_HPP
 #define BLEVERSION_HPP
 
-#define BLE_VERSION_STR     "0.9.80"
+#define BLE_VERSION_STR     "0.9.90"
 
-#define BLE_VERSION         (0x000980)
+#define BLE_VERSION         (0x000990)
 
 #define BLE_AUTHORS         "wenjie.zhao(740936897@qq.com)"
 #define BLE_NAME            "BLE "BLE_VERSION_STR"(https://github.com/wenjiegit/Bull-Live-Encoder)"

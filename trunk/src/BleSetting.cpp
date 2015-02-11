@@ -168,6 +168,7 @@ void BleSetting::onApplyClicked()
     QString keyFrameInterval = ui->keyFrameInterval->currentText();
     QString threadCount = ui->threadCount->currentText();
     QString enableBFrame = ui->enableBFrame->isChecked() ? "true" : "false";
+    QString B_frame_count = QString::number(ui->B_frame_count->value());
     QString quality             = QString::number(ui->qualityBar->value());
 
     // save
@@ -183,6 +184,7 @@ void BleSetting::onApplyClicked()
     option->setOption(keyFrameInterval, "KeyFrameInterval", "x264");
     option->setOption(threadCount, Key_Thread_Count, Group_X264);
     option->setOption(enableBFrame, Key_Enable_B_Frame, Group_X264);
+    option->setOption(B_frame_count, Key_B_Frame_Count, Group_X264);
     option->setOption(quality, "quality", "x264");
 
     // video save
@@ -331,6 +333,7 @@ void BleSetting::restore()
     QString keyFrameInterval = option->option("KeyFrameInterval", "x264").toString();
     QString threadCount = option->option(Key_Thread_Count, Group_X264).toString();
     QString enableBFrame = option->option(Key_Enable_B_Frame, Group_X264).toString();
+    QString B_frame_count = option->option(Key_B_Frame_Count, Group_X264).toString();
     QString quality = option->option("quality", "x264").toString();
 
     setIndex(ui->x264Preset, x264Preset);
@@ -340,6 +343,7 @@ void BleSetting::restore()
     setIndex(ui->keyFrameInterval, keyFrameInterval);
     setIndex(ui->threadCount, threadCount);
     ui->enableBFrame->setChecked((enableBFrame == "true") ? true: false);
+    ui->B_frame_count->setValue(B_frame_count.toInt());
     ui->qualityBar->setValue(quality.toInt());
 
     // video save

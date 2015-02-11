@@ -75,33 +75,36 @@ void BleRtmpSendThread::run()
     }
 #endif
 
+    m_rtmp_muxer = NULL;
     int ret = BLE_SUCESS;
+
     while (!m_stop) {
         QString url = MOption::instance()->option("address", "network").toString();
         if (url.isEmpty()) {
             log_error("no url was set, please input your rtmp url !");
-            sleep(5);
+            sleep(1);
             continue;
         }
 
-        BleRtmpMuxer *muxer = new BleRtmpMuxer;
-        BleAutoFree(BleRtmpMuxer, muxer);
+        m_rtmp_muxer = new BleRtmpMuxer;
+        BleAutoFree(BleRtmpMuxer, m_rtmp_muxer);
 
-        muxer->setRtmpUrl(url.toStdString());
-        ret = muxer->start();
+        m_rtmp_muxer->setRtmpUrl(url.toStdString());
+        ret = m_rtmp_muxer->start();
         if (ret != TRUE) {
             ret = BLE_RTMPCONNECT_ERROR;
-            log_error("connect to %s error, after 3s to retry", url.toStdString().c_str());
+            int sleep_s = 1;
+            log_error("connect to %s error, after %ds to retry", url.toStdString().c_str(), sleep_s);
 
-            muxer->stop();
-            sleep(3);
+            m_rtmp_muxer->stop();
+            sleep(sleep_s);
 
             continue;
         }
 
         log_trace("connect to %s success.", url.toStdString().c_str());
-        ret = service(*muxer);
-        muxer->stop();
+        ret = service(*m_rtmp_muxer);
+        m_rtmp_muxer->stop();
 
         if (ret != BLE_SUCESS) {
             log_error("rtmp send error, ret = %d", ret);
@@ -114,6 +117,12 @@ void BleRtmpSendThread::run()
 #endif
 
     log_trace("Ble RtmpSendThread exit normally.");
+}
+
+void BleRtmpSendThread::stop()
+{
+    m_rtmp_muxer->close_socket();
+    BleThread::stop();
 }
 
 #ifdef Q_OS_WIN
