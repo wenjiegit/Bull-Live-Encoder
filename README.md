@@ -6,9 +6,9 @@ similar tools : obs or flash media live encoder.<br/>
 <br/>
 Blog: BLE(http://wenjiegit.github.io/Bull-Live-Encoder/)<br/>
 <br/>
-![preview](https://github.com/wenjiegit/Bull-Live-Encoder/blob/master/trunk/images/ble_001.jpg)<br/>
-![preview](https://github.com/wenjiegit/Bull-Live-Encoder/blob/master/trunk/images/ble_002.jpg)<br/>
-![preview](https://github.com/wenjiegit/Bull-Live-Encoder/blob/master/trunk/images/ble_003.jpg)<br/>
+![preview](https://github.com/wenjiegit/Bull-Live-Encoder/blob/master/trunk/images/ble_001.png)<br/>
+![preview](https://github.com/wenjiegit/Bull-Live-Encoder/blob/master/trunk/images/ble_002.png)<br/>
+![preview](https://github.com/wenjiegit/Bull-Live-Encoder/blob/master/trunk/images/ble_003.png)<br/>
 <br/>
 
 donate
@@ -22,7 +22,7 @@ Features
 2.  ingest from camera.<br/>
 3.  ingest from grab desktop.<br/>
 4.  ingest from picture.<br/>
-5.  ingest from video file using ffmpeg SDK.<br/>
+5.  ingest from video file using VLC SDK.<br/>
 6.  support all of sources combination.<br/>
 7.  support skin change.<br/>
 8.  start and stop quickly.<br/>
@@ -32,10 +32,12 @@ Features
 12. support skin change, with color or image.
 13. support MP3 encode with 11K 22K  44K sample rate.
 14. support record to flv file.
-15. support ingest from RTSP with opencv.
-16. support ingest from RTMP with opencv.
-17. support ingest from RTP with opencv.
-18. support ingest from HLS with opencv.
+15. support ingest from RTSP with libvlc.
+16. support ingest from RTMP with libvlc.
+17. support ingest from RTP with libvlc.
+18. support ingest from HLS with libvlc.
+19. support paint rgba to rgb24.
+20. support gif movie.
 
 BLE Download
 =================
@@ -50,7 +52,8 @@ Build Env
     with libx264.<br/>
     with libfaac.<br/>
     with RtAudio.<br/>
-	with libmp3lame.
+	with libmp3lame.<br/>
+	with libvlc.<br/>
 
 2. Linux with GUI<br/>
     coming soon...<br/>
@@ -94,3 +97,10 @@ history
 [0.9.9]&nbsp;&nbsp;2015-02-11&nbsp;&nbsp;&nbsp;support ingest from RTP  with opencv.<br/>
 [0.9.9]&nbsp;&nbsp;2015-02-11&nbsp;&nbsp;&nbsp;support ingest from RTMP  with opencv.<br/>
 [0.9.9]&nbsp;&nbsp;2015-02-11&nbsp;&nbsp;&nbsp;support ingest from HLS  with opencv.<br/>
+[0.1.0]&nbsp;&nbsp;2015-03-28&nbsp;&nbsp;&nbsp;support ingest from RTSP  with libvlc.<br/>
+[0.1.0]&nbsp;&nbsp;2015-03-28&nbsp;&nbsp;&nbsp;support ingest from RTP  with libvlc.<br/>
+[0.1.0]&nbsp;&nbsp;2015-03-28&nbsp;&nbsp;&nbsp;support ingest from RTMP  with libvlc.<br/>
+[0.1.0]&nbsp;&nbsp;2015-03-28&nbsp;&nbsp;&nbsp;support ingest from HLS  with libvlc.<br/>
+[0.1.0]&nbsp;&nbsp;2015-03-28&nbsp;&nbsp;&nbsp;support ingest from GIF movie.<br/>
+[0.1.0]&nbsp;&nbsp;2015-03-28&nbsp;&nbsp;&nbsp;support combine rgba to rgb24.<br/>
+[0.1.0]&nbsp;&nbsp;2015-03-28&nbsp;&nbsp;&nbsp;add player with libvlc.<br/>
