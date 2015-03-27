@@ -36,27 +36,32 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 static const int Ble_Camera_Capture_Interval = 50;         // 20fps
 
-StcCameraSource::StcCameraSource(QObject *parent)
+BleCameraSource::BleCameraSource(QObject *parent)
     : BleThread(parent)
     , m_interval(Ble_Camera_Capture_Interval)
     , m_cameraIndex(-1)
 {
 }
 
-BleImage StcCameraSource::getImage()
+QString BleCameraSource::getSourceName()
 {
-    BleAutoLocker(m_modifyMutex);
-    return m_image.clone();
+    return "BleCameraSource";
 }
 
-void StcCameraSource::stopCapture()
+QImage BleCameraSource::getImage()
+{
+    BleAutoLocker(m_modifyMutex);
+    return m_image.rgbSwapped();
+}
+
+void BleCameraSource::stopCapture()
 {
     this->stop();
     this->wait();
     this->deleteLater();
 }
 
-void StcCameraSource::run()
+void BleCameraSource::run()
 {
     IplImage *pImg = NULL;
     CvCapture *cap = cvCreateCameraCapture(m_cameraIndex);
@@ -76,20 +81,11 @@ void StcCameraSource::run()
 
         m_modifyMutex.lock();           // Start lock
 
-        BleImage be;
-        be.width = pImg->width;
-        be.height = pImg->height;
-
-        be.data = new char[pImg->imageSize];
-        memcpy(be.data, pImg->imageData, pImg->imageSize);
-
-        be.dataSize = pImg->imageSize;
-        be.format = BleImage_Format_BGR24;
-
-        m_image = be;
+        m_image = QImage(pImg->width, pImg->height, QImage::Format_RGB888);
+        uchar *imageData = m_image.bits();
+        memcpy(imageData, pImg->imageData, m_image.byteCount());
 
         m_modifyMutex.unlock();        // Start unlock
-
 
         int elapsedMs = elapsedTimer.elapsed();
         int needSleepMs = m_interval - elapsedMs;
@@ -103,12 +99,12 @@ void StcCameraSource::run()
     log_trace("BleCameraCapture exit normally.");
 }
 
-void StcCameraSource::setCaptureInterval(int interval)
+void BleCameraSource::setCaptureInterval(int interval)
 {
     m_interval = interval;
 }
 
-void StcCameraSource::setCameraInfo(int index, const QString &name)
+void BleCameraSource::setCameraInfo(int index, const QString &name)
 {
     m_cameraIndex = index;
     m_cameraName = name;

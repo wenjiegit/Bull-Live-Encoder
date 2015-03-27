@@ -26,12 +26,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <QString>
 #include <QRect>
+#include <QImage>
 
 #define BleImage_Format_Invalid         -1
 #define BleImage_Format_RGB24           0x01
 #define BleImage_Format_BGR24           0x02
 #define BleImage_Format_RGB32           0x03
 #define BleImage_Format_YUV420          0x04
+#define BleImage_Format_RGBA            0x05
 
 struct BleImage
 {
@@ -80,7 +82,8 @@ public:
     BleSourceAbstract();
     virtual ~BleSourceAbstract();
 
-    virtual BleImage getImage();
+    virtual QString getSourceName();
+    virtual QImage getImage();
     virtual void stopCapture();
     virtual void setCaptureInterval(int interval);
 };

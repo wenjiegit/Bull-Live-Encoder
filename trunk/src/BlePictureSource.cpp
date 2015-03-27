@@ -23,37 +23,39 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "BlePictureSource.hpp"
 
-// opecv
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/opencv.hpp"
+#include <QMovie>
 
+#include "BleUtil.hpp"
 #include "BleLog.hpp"
 
 BlePictureSource::BlePictureSource(const QString &picName)
 {
-    IplImage * pImg = cvLoadImage(picName.toLocal8Bit().data());
-    if (pImg) {
-        BleImage be;
-        be.width = pImg->width;
-        be.height = pImg->height;
+    m_movie = NULL;
 
-        be.data = new char[pImg->imageSize];
-        memcpy(be.data, pImg->imageData, pImg->imageSize);
-
-        be.dataSize = pImg->imageSize;
-        be.format = BleImage_Format_BGR24;
-
-        m_image = be;
-
-        cvReleaseImage(&pImg);
+    if(picName.endsWith(".gif") || picName.endsWith(".GIF")) {
+        m_movie = new QMovie(picName, "gif", this);
+        m_movie->setCacheMode(QMovie::CacheAll);
+        connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(onFrameChanged(int)));
+        m_movie->start();
     } else {
-        log_error("cvLoadImage %s failed.", picName.toStdString().c_str());
+        m_image = QImage(picName);
     }
 }
 
-BleImage BlePictureSource::getImage()
+BlePictureSource::~BlePictureSource()
 {
-    return m_image.clone();
+
+}
+
+QString BlePictureSource::getSourceName()
+{
+    return "BlePictureSource";
+}
+
+QImage BlePictureSource::getImage()
+{
+    BleAutoLocker(m_mutex);
+    return m_image;
 }
 
 void BlePictureSource::stopCapture()
@@ -64,4 +66,11 @@ void BlePictureSource::stopCapture()
 void BlePictureSource::setCaptureInterval(int interval)
 {
     Q_UNUSED(interval);
+}
+
+void BlePictureSource::onFrameChanged(int frameNumber)
+{
+    Q_UNUSED(frameNumber);
+    BleAutoLocker(m_mutex);
+    m_image = m_movie->currentImage();
 }

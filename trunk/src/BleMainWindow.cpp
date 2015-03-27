@@ -63,6 +63,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleAVContext.hpp"
 #include "BleContext.hpp"
 #include "BleMediaSelector.hpp"
+#include "BleSceneWidget.hpp"
+#include "BleNetStreamSource.hpp"
 
 #define BLE_TITLE "Bull Live Encoder"
 
@@ -102,8 +104,9 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
     ui->addPicBtn->setToolTip(tr("add a picture source"));
     ui->addFileSourceBtn->setToolTip(tr("add a file source"));
     ui->addTextBtn->setToolTip(tr("add text source"));
+    ui->add_media->setToolTip(tr("add media url"));
     ui->startBtn->setToolTip(tr("begin rtmp streaming"));
-    ui->startBtn->setToolTip(tr("stop rtmp streaming"));
+    ui->stopBtn->setToolTip(tr("stop rtmp streaming"));
 
     // TODO temp set false
     ui->addTextBtn->setVisible(false);
@@ -111,7 +114,7 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
     ui->titleWidget->setFixedHeight(32);
     ui->titleWidget->setTitle(BLE_TITLE);
     ui->titleWidget->setHints(TitleWidget::MAX_HINT | TitleWidget::Min_HINT
-                              | TitleWidget::CLOSE_HINT | TitleWidget::SKIN_HINT);
+                              | TitleWidget::CLOSE_HINT | TitleWidget::SKIN_HINT | TitleWidget::MENU_HINT);
 
     framelessHelper = new NcFramelessHelper;
     framelessHelper->setWidgetMovable(true);
@@ -176,6 +179,7 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
 
     m_statusLabel = new QLabel(this);
     ui->statusBar->addWidget(m_statusLabel);
+//    ui->TabBar->setVisible(false);
 }
 
 BleMainWindow::~BleMainWindow()
@@ -193,7 +197,7 @@ void BleMainWindow::paintEvent(QPaintEvent *e)
     m_linearHeight = 10;
     m_statusHeight = ui->statusBar->height();
 
-    ThemedWidgetBase::drawThemedStyle(p);
+    ThemedWidgetBase::drawThemedStyle(p, false);
 }
 
 void BleMainWindow::showEvent(QShowEvent *e)
@@ -408,7 +412,7 @@ void BleMainWindow::onAddCamera()
 
     int fps = MOption::instance()->option("fps", "encoder").toInt();
 
-    StcCameraSource *source = new StcCameraSource(this);
+    BleCameraSource *source = new BleCameraSource(this);
     source->setCameraInfo(dialog.selectedCameraIndex(), dialog.selectedCameraName());
     source->setCaptureInterval(1000 / fps / 1.5);
     source->start();
@@ -440,7 +444,7 @@ void BleMainWindow::onAddPic()
 {
     QString picName = QFileDialog::getOpenFileName(this, tr("please select a picture"),
                                                     "",
-                                                    tr("Images (*.png *.bmp *.jpg)"));
+                                                    tr("Images (*.png *.bmp *.jpg *.gif)"));
 
     if (picName.isEmpty()) return;
 
@@ -457,7 +461,7 @@ void BleMainWindow::onAddFileSource()
     if (fileName.isEmpty()) return;
 
     BleFileSource *source = new BleFileSource();
-    source->setFileName(fileName);
+    source->setMedia(fileName);
     source->start();
 
     m_imageProcessWidget->addCaptureSource(source, 30, 30, 320, 240);
@@ -484,9 +488,8 @@ void BleMainWindow::onAddMedia()
         return;
     }
 
-    // rtsp://218.204.223.237:554/live/1/0547424F573B085C/gsfp90ef4k0a6iap.sdp
-    BleFileSource *source = new BleFileSource();
-    source->setFileName(addr.trimmed());
+    BleNetStreamSource *source = new BleNetStreamSource();
+    source->setMedia(addr.trimmed());
     source->start();
 
     m_imageProcessWidget->addCaptureSource(source, 30, 30, 320, 240);

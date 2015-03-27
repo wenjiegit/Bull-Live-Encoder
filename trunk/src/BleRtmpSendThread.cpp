@@ -181,7 +181,7 @@ int BleRtmpSendThread::service(BleRtmpMuxer & muxer)
 
         BleAutoLocker(m_mutex);
 
-        while (!pkts.empty()) {
+        while (!pkts.empty() && !m_stop) {
             BleAVPacket *pkt = pkts.dequeue();
             BleAutoFree(BleAVPacket, pkt);
 
@@ -303,6 +303,12 @@ int BleRtmpSendThread::on_record()
 {
     m_record_error = false;
 
+    bool enableDvr = MOption::instance()->option("save_enabled", "Video_Save") == "true" ? true : false;
+    if (!enableDvr) {
+        m_record_error = true;
+        return BLE_SUCESS;
+    }
+
     // video save
     QString dir = MOption::instance()->option("save_path", "Video_Save").toString();
     if (dir.isEmpty()) {
@@ -376,7 +382,7 @@ int BleRtmpSendThread::record(MStream &data, qint64 dts, int flv_tag_type)
 
 int BleRtmpSendThread::on_un_record()
 {
-    if (m_record_file && m_record_file->isOpen()) {
+    if (!m_record_error && m_record_file && m_record_file->isOpen()) {
         log_trace("record finished. file save to %s"
                   , m_record_file->fileName().toStdString().c_str());
 

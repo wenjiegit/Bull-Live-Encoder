@@ -29,25 +29,34 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <QMutex>
 
+class BleVLCPlayer;
+
 class BleFileSource : public BleThread, public BleSourceAbstract
 {
     Q_OBJECT
 public:
+    enum {
+        MEDIA_TYPE_LOCAL_FILE = 0,
+        MEDIA_TYPE_NET
+    };
+
+public:
     BleFileSource(QObject * parent = 0);
 
-    virtual BleImage getImage();
+    virtual QString getSourceName();
+    virtual QImage getImage();
     virtual void stopCapture();
     virtual void run();
 
-    virtual void setCaptureInterval(int interval);
-
-    void setFileName(const QString &fileName);
+    void setMedia(const QString &fileName);
 
 private:
-    QString m_fileName;
-    BleImage m_image;
-    QMutex m_modifyMutex;
-    int m_interval;
+    static void vlc_video_display_cb(void *opaque, void *picture);
+    static void *vlc_video_lock_cb(void *opaque, void **planes);
+
+private:
+    QString m_mediaName;
+    BleVLCPlayer *m_vlcPlayer;
 };
 
 #endif // BLEFILESOURCE_HPP

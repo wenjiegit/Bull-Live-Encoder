@@ -7,13 +7,18 @@ BleTextSource::BleTextSource(QObject *parent)
 {
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
 
-    m_textImage = QImage(100, 30, QImage::Format_RGB888);
-    m_textImage.fill(Qt::black);
+    m_textImage = QImage(100, 30, QImage::Format_ARGB32);
+    memset(m_textImage.bits(), 0, m_textImage.byteCount());
 }
 
-BleImage BleTextSource::getImage()
+QString BleTextSource::getSourceName()
 {
-    return m_image.clone();
+    return "BleTextSource";
+}
+
+QImage BleTextSource::getImage()
+{
+    return m_textImage;
 }
 
 void BleTextSource::stopCapture()
@@ -32,15 +37,17 @@ void BleTextSource::onTimeout()
 {
     QPainter painter(&m_textImage);
 
-    painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    //painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
     QPen pen = painter.pen();
-    pen.setColor(Qt::red);
+    pen.setColor(Qt::blue);
     QFont font = painter.font();
     font.setBold(true);//加粗
 
     painter.setPen(pen);
     painter.setFont(font);
     painter.drawText(m_textImage.rect(),Qt::AlignCenter,"BLE 你好啊");
+
+    //m_textImage = m_textImage.rgbSwapped();
 
     BleImage be;
     be.width = m_textImage.width();
@@ -50,7 +57,7 @@ void BleTextSource::onTimeout()
     memcpy(be.data, m_textImage.bits(), m_textImage.byteCount());
 
     be.dataSize = m_textImage.byteCount();
-    be.format = BleImage_Format_BGR24;
+    be.format = BleImage_Format_RGBA;
 
     m_image = be;
 }

@@ -69,6 +69,7 @@ private:
     BleTimestampBulider m_timestampBuilder;
 
     IplImage *m_dstImage;
+    QImage *m_image;
 };
 
 #endif // BLEIMAGEPROCESSTHREAD_HPP

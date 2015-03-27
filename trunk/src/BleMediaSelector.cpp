@@ -9,6 +9,8 @@ BleMediaSelector::BleMediaSelector(QWidget *parent) :
 
     connect(ui->ok_btn, SIGNAL(clicked()), this, SIGNAL(ok()));
     connect(ui->cancel_btn, SIGNAL(clicked()), this, SIGNAL(cancel()));
+
+    ui->addr->setFocus();
 }
 
 BleMediaSelector::~BleMediaSelector()

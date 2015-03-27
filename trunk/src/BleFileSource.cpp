@@ -25,23 +25,26 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <QDebug>
 #include <QElapsedTimer>
-
-// opencv
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/opencv.hpp"
+#include <QDir>
 
 #include "BleUtil.hpp"
+#include "BleVLCPlayer.hpp"
+#include "BleErrno.hpp"
 
 BleFileSource::BleFileSource(QObject *parent)
     : BleThread(parent)
-    , m_interval(40)
 {
+    m_vlcPlayer = new BleVLCPlayer;
 }
 
-BleImage BleFileSource::getImage()
+QString BleFileSource::getSourceName()
 {
-    BleAutoLocker(m_modifyMutex);
-    return m_image.clone();
+    return "BleFileSource";
+}
+
+QImage BleFileSource::getImage()
+{
+    return m_vlcPlayer->getImage();
 }
 
 void BleFileSource::stopCapture()
@@ -53,55 +56,25 @@ void BleFileSource::stopCapture()
 
 void BleFileSource::run()
 {
-    BleAssert(!m_fileName.isEmpty());
-
-    // m_fileName = "rtsp://218.204.223.237:554/live/1/0547424F573B085C/gsfp90ef4k0a6iap.sdp";
-    CvCapture* capture = cvCreateFileCapture(m_fileName.toStdString().c_str());
-    BleAssert(capture);
-
-    IplImage* frame;
-    while(!m_stop)
-    {
-        QElapsedTimer elapsedTimer;
-        elapsedTimer.start();
-
-        frame = cvQueryFrame(capture);
-        if(!frame) break ;
-
-        m_modifyMutex.lock();           // start lock
-
-        BleImage be;
-        be.width = frame->width;
-        be.height = frame->height;
-
-        be.data = new char[frame->imageSize];
-        memcpy(be.data, frame->imageData, frame->imageSize);
-
-        be.dataSize = frame->imageSize;
-        be.format = BleImage_Format_BGR24;
-
-        m_image = be;
-
-        m_modifyMutex.unlock();        // end unlock
-
-        int elapsedMs = elapsedTimer.elapsed();
-        int needSleepMs = m_interval - elapsedMs;
-        if (needSleepMs < 0) {
-            needSleepMs = 0;
-        }
-        msleep(needSleepMs);
+    if (m_vlcPlayer->start() != BLE_SUCESS) {
+        log_error("start vlc player error");
+        return;
     }
-    cvReleaseCapture(&capture);
+
+    while (!m_stop) {
+        msleep(100);
+    }
+
+    m_vlcPlayer->stop();
+
+    // for test rtsp
+    // rtsp://218.204.223.237:554/live/1/0547424F573B085C/gsfp90ef4k0a6iap.sdp
 
     log_trace("BleFileSource Thread exit normally.");
 }
 
-void BleFileSource::setCaptureInterval(int interval)
+void BleFileSource::setMedia(const QString &fileName)
 {
-    m_interval = interval;
-}
-
-void BleFileSource::setFileName(const QString &fileName)
-{
-    m_fileName = fileName;
+    m_vlcPlayer->setMRL(fileName);
+    m_vlcPlayer->setMediaType(BleVLCPlayer::MEDIA_TYPE_FILE);
 }

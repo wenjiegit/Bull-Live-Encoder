@@ -64,7 +64,7 @@ void ThemedWidgetBase::applyNewTheme()
     m_themedWidget->update();
 }
 
-void ThemedWidgetBase::drawThemedStyle(QPainter &p)
+void ThemedWidgetBase::drawThemedStyle(QPainter &p, bool drawLinar)
 {
     QPainterPath path;
     QPoint bottomRight = m_themedWidget->rect().bottomRight();
@@ -108,6 +108,7 @@ void ThemedWidgetBase::drawThemedStyle(QPainter &p)
 
     p.setBrush(QBrush(linear));
     p.fillRect(linearRect, QBrush(linear));
+
 
     QPainterPath clientPath;
     QRect clientRect(0, m_titleHeight + m_linearHeight,

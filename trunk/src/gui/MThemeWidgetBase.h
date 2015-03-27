@@ -36,7 +36,7 @@ public:
     virtual ~ThemedWidgetBase();
 
     virtual void applyNewTheme();
-    void drawThemedStyle(QPainter &p);
+    void drawThemedStyle(QPainter &p, bool drawLinar = true);
 
 protected:
     int m_titleHeight;

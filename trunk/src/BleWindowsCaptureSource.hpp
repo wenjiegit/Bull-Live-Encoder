@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <QWidget>
 #include <QMutex>
+#include <QImage>
 
 #include "BleThread.hpp"
 #include "BleSourceAbstract.hpp"
@@ -37,7 +38,8 @@ public:
     explicit BleWindowsCaptureSource(QObject *parent = 0);
     ~BleWindowsCaptureSource();
 
-    virtual BleImage getImage();
+    virtual QString getSourceName();
+    virtual QImage getImage();
     virtual void stopCapture();
     virtual void run();
 
@@ -56,7 +58,7 @@ private:
     int m_height;
     int m_interval;
 
-    BleImage m_image;
+    QImage m_image;
     QMutex m_modifyMutex;
 };
 

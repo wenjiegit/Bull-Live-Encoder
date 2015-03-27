@@ -96,7 +96,7 @@ void BleEncoderThread::run()
             cvImage->imageData = image->data;
             cvImage->imageDataOrigin = image->data;
 
-            cvCvtColor(cvImage, imgYUV, CV_BGR2YUV_I420);
+            cvCvtColor(cvImage, imgYUV, CV_RGB2YUV_I420);
 
             m_x264Encoder->encode((uchar*)imgYUV->imageData, image->pts, image->opaque);
 

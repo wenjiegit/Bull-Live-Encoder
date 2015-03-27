@@ -57,7 +57,7 @@ public:
     void setEnableColorPrint(bool enabled);
 
     void setTimeFormat(const MString &fmt);
-    void setFilePath(const MString &path);
+    void setFilePath(const QString &path);
 
     virtual void verbose(const char *file, muint16 line, const char *function, const char *tag, const char* fmt, ...);
     virtual void info(const char *file, muint16 line, const char *function, const char *tag,  const char* fmt, ...);
@@ -82,7 +82,7 @@ private:
     muint16 m_bufferLength;
 
     MString m_timeFormat;
-    MString m_filePath;
+    QString m_filePath;
 
     QMutex m_mutex;
 };

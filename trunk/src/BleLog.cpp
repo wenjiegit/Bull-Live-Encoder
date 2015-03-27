@@ -25,6 +25,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleUtil.hpp"
 
 #include <QDateTime>
+#include <QDir>
+#include <QMessageBox>
 
 BleLog::BleLog()
     : m_logLevel(MLogLevel::Trace)
@@ -40,8 +42,6 @@ BleLog::BleLog()
     , m_bufferLength(4096)
     , m_timeFormat("MM-dd hh:mm:ss")
 {
-    m_filePath.sprintf("ble_%s.log"
-                       , QDateTime::currentDateTime().toString("MM_dd_hh_mm_ss").toStdString().c_str());
     m_buffer = new char[m_bufferLength];
 }
 
@@ -69,7 +69,7 @@ void BleLog::setLog2Console(bool enabled)
 void BleLog::setLog2File(bool enabled)
 {
     m_log2File = enabled;
-    m_file = new QFile(m_filePath.c_str());
+    m_file = new QFile(m_filePath);
     if (!m_file->open(QIODevice::WriteOnly)) {
         return;
     }
@@ -100,9 +100,13 @@ void BleLog::setTimeFormat(const MString &fmt)
     m_timeFormat = fmt;
 }
 
-void BleLog::setFilePath(const MString &path)
+void BleLog::setFilePath(const QString &path)
 {
-    m_filePath = path;
+    QDir dir;
+    dir.mkpath(path);
+    m_filePath = QString("%1/%2")
+            .arg(path)
+            .arg(QDateTime::currentDateTime().toString("MM-dd-hh-mm-ss") + ".txt");
 }
 
 void BleLog::verbose(const char *file, muint16 line, const char *function

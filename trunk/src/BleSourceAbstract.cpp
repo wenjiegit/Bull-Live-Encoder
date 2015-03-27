@@ -126,9 +126,14 @@ BleSourceAbstract::~BleSourceAbstract()
 
 }
 
-BleImage BleSourceAbstract::getImage()
+QString BleSourceAbstract::getSourceName()
 {
-    return BleImage();
+    return "BleSourceAbstract";
+}
+
+QImage BleSourceAbstract::getImage()
+{
+    return QImage();
 }
 
 void BleSourceAbstract::stopCapture()

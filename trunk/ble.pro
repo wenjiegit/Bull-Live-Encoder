@@ -11,7 +11,7 @@ TARGET = ble
 TEMPLATE = app
 
 # for RtAudio defines
-DEFINES += __WINDOWS_DS__
+DEFINES += __WINDOWS_DS__ LIBVLC_USE_PTHREAD_CANCEL
 
 INCLUDEPATH +=  src/gui
 INCLUDEPATH +=  src/core \
@@ -20,7 +20,9 @@ INCLUDEPATH +=  src/core \
                 3rdparty/libopencv/include \
                 3rdparty/libRtAudio/ \
                 3rdparty/libfaac/include \
-                3rdparty/libmp3lame/include
+                3rdparty/libmp3lame/include \
+                3rdparty/libvlc/include \
+                3rdparty/libvlc/include/vlc/plugins
 
 LIBS += -L$$PWD/3rdparty/librtmp/ -lrtmp \
         -L$$PWD/3rdparty/libx264/ -lx264 \
@@ -28,7 +30,9 @@ LIBS += -L$$PWD/3rdparty/librtmp/ -lrtmp \
         -L$$PWD/3rdparty/libopenssl/ -lcrypto \
         -L$$PWD/3rdparty/libopencv/lib/ -lopencv_core248 -lopencv_highgui248 -lopencv_imgproc248 \
         -L$$PWD/3rdparty/libfaac/lib/ -lfaac \
-        -L$$PWD/3rdparty/libmp3lame/lib/ -lmp3lame
+        -L$$PWD/3rdparty/libmp3lame/lib/ -lmp3lame \
+        $$PWD/3rdparty/libvlc/lib/libvlc.lib \
+        $$PWD/3rdparty/libvlc/lib/libvlccore.lib
 
 LIBS += -ldsound -lole32 -lwinmm -lgdi32 -lws2_32 -lz
 
@@ -91,7 +95,11 @@ SOURCES += \
     src/BleAudioEncoder_MP3.cpp \
     src/BleImageCaptureThread.cpp \
     src/BleAVContext.cpp \
-    src/BleMediaSelector.cpp
+    src/BleMediaSelector.cpp \
+    src/BleSceneWidget.cpp \
+    src/BleResizeableWidget.cpp \
+    src/BleVLCPlayer.cpp \
+    src/BleNetStreamSource.cpp
 
 HEADERS  += \
     src/BleMainWindow.hpp \
@@ -148,7 +156,11 @@ HEADERS  += \
     src/BleAudioEncoder_MP3.hpp \
     src/BleImageCaptureThread.hpp \
     src/BleAVContext.hpp \
-    src/BleMediaSelector.hpp
+    src/BleMediaSelector.hpp \
+    src/BleSceneWidget.hpp \
+    src/BleResizeableWidget.hpp \
+    src/BleVLCPlayer.hpp \
+    src/BleNetStreamSource.hpp
 
 FORMS    += \
     src/BleMainWindow.ui \
@@ -164,7 +176,8 @@ FORMS    += \
     src/gui/RecSkinPickerWidget.ui \
     src/gui/RecSkinWidget.ui \
     src/gui/TitleWidget.ui \
-    src/BleMediaSelector.ui
+    src/BleMediaSelector.ui \
+    src/BleSceneWidget.ui
 
 win32:RC_FILE = src/ble.rc
 

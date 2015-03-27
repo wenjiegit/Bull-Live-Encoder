@@ -31,13 +31,20 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="label">
+       <property name="styleSheet">
+        <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+       </property>
        <property name="text">
         <string>Network addr:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="addr"/>
+      <widget class="QLineEdit" name="addr">
+       <property name="styleSheet">
+        <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

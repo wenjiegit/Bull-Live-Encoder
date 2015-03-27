@@ -96,30 +96,9 @@ void BleImageProcess::paintEvent(QPaintEvent *event)
     // element draw
     for (int i = 0; i < m_sources.size(); ++i) {
         const SourcePair & pair = m_sources.at(i);
-        BleSourceAbstract *s = pair.source;
 
-        // TODO image data may be used by other thread
-        BleImage image = s->getImage();
-
-        if (image.dataSize <= 0) continue;
-
-        QImage qimage;
-        if (image.format == BleImage_Format_BGR24) {
-            IplImage *oriImage = cvCreateImageHeader(cvSize(image.width, image.height), IPL_DEPTH_8U, 3);
-            cvSetData(oriImage, image.data, image.width*3);
-
-            IplImage *dstImage = cvCreateImageHeader(cvSize(image.width, image.height), IPL_DEPTH_8U, 3);
-            cvSetData(dstImage, image.data, image.width*3);
-
-            cvCvtColor(oriImage, dstImage, CV_BGR2RGB);
-
-            cvReleaseImageHeader(&oriImage);
-            cvReleaseImageHeader(&dstImage);
-        }
-        qimage = QImage((uchar*)image.data, image.width, image.height, QImage::Format_RGB888);
-
-        p.drawPixmap(pair.rect, QPixmap::fromImage(qimage));
-        // p.drawImage(pair.rect, qimage);
+        QImage sourceImage = pair.source->getImage();
+        p.drawPixmap(pair.rect, QPixmap::fromImage(sourceImage));
     }
 
     if (m_activePair && m_activePair->rect.isValid()) {
@@ -237,7 +216,11 @@ void BleImageProcess::mouseDoubleClickEvent(QMouseEvent */*e*/)
 {
     if (!m_activePair) return;
 
-    m_activePair->rect = rect();
+    QImage image = m_activePair->source->getImage();
+    if (!image.isNull()) {
+        QRect r(m_activePair->rect.topLeft(), image.size());
+        m_activePair->rect = r;
+    }
 
     updateSources();
     update();

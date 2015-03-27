@@ -38,10 +38,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleLog.hpp"
 #include "BleUtil.hpp"
 
-// opecv
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/opencv.hpp"
-
 #define Default_Capture_Interval    50      // default is 20 fps
 
 BleWindowsCaptureSource::BleWindowsCaptureSource(QObject *parent)
@@ -60,13 +56,15 @@ BleWindowsCaptureSource::~BleWindowsCaptureSource()
 
 }
 
-BleImage BleWindowsCaptureSource::getImage()
+QString BleWindowsCaptureSource::getSourceName()
+{
+    return "BleWindowsCaptureSource";
+}
+
+QImage BleWindowsCaptureSource::getImage()
 {
     BleAutoLocker(m_modifyMutex);
-
-//    BleImage be;
-//    be = m_image;
-    return m_image.clone();
+    return m_image;
 }
 
 void BleWindowsCaptureSource::stopCapture()
@@ -84,45 +82,23 @@ void BleWindowsCaptureSource::run()
         QElapsedTimer elapsedTimer;
         elapsedTimer.start();
 
+        // TODO make this to option
+        // option: could select screen
         QScreen *screen = QGuiApplication::primaryScreen();
 
         if (screen) {
             QPixmap pixmap = screen->grabWindow(m_wid, m_x, m_y, m_width, m_height);
+
+            // TODO make this to option
 #if 1
-            // TODO to draw cursor to image
             QRect desktopRect = QRect(QPoint(0, 0), screen->size());
             if (desktopRect.contains(QCursor::pos())) {
                 drawCursor(&pixmap);
             }
 #endif
-            QImage image = pixmap.toImage();
-
             m_modifyMutex.lock();           // Start lock
-
-            BleImage be;
-            be.width = image.width();
-            be.height = image.height();
-
-            int imageSize = be.width * be.height * 3;
-            be.data = new char[imageSize];
-
-            IplImage *oriImage = cvCreateImageHeader(cvSize(image.width(), image.height()), IPL_DEPTH_8U, 4);
-            cvSetData(oriImage, image.bits(), image.bytesPerLine());
-
-            IplImage *dstImage = cvCreateImageHeader(cvSize(image.width(), image.height()), IPL_DEPTH_8U, 3);
-            cvSetData(dstImage, be.data, be.width * 3);
-
-            cvCvtColor(oriImage, dstImage, CV_BGRA2BGR);
-
-            be.dataSize = imageSize;
-            be.format = BleImage_Format_BGR24;
-
-            m_image = be;
-
-            cvReleaseImageHeader(&oriImage);
-            cvReleaseImageHeader(&dstImage);
-
-            m_modifyMutex.unlock();        // End unlock
+            m_image = pixmap.toImage();
+            m_modifyMutex.unlock();
         }
 
         int elapsedMs = elapsedTimer.elapsed();

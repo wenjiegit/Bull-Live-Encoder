@@ -33,6 +33,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QSize>
 #include <QDebug>
 
+static void x264Log( void *err, int i_level, const char *psz, va_list va)
+{
+    static char buf[1024];
+    vsnprintf(buf, 1024, psz, va);
+
+    log_trace("x264 log, %s", buf);
+}
+
 BleX264Encoder::BleX264Encoder()
     : m_x264Param(NULL)
     , m_pictureIn(NULL)
@@ -50,6 +58,8 @@ BleX264Encoder::~BleX264Encoder()
 
 int BleX264Encoder::init()
 {
+    int ret = BLE_SUCESS;
+
     MOption *option = MOption::instance();
 
     QString presetName  = option->option("preset", "x264").toString();
@@ -74,18 +84,33 @@ int BleX264Encoder::init()
     m_x264Param = new x264_param_t;
 
     if (tuneName == "Default" || tuneName.isEmpty()) {
-        x264_param_default_preset(m_x264Param , presetName.toStdString().c_str(), NULL);
-        log_trace("libx264 preset set to %s, tune set to NULL"
-                  , presetName.toStdString().c_str());
+        ret = x264_param_default_preset(m_x264Param , presetName.toStdString().c_str(), NULL);
+        if (ret != BLE_SUCESS) {
+            log_error("x264_param_default_preset error.");
+            return ret;
+        } else {
+            log_trace("libx264 preset set to %s, tune set to NULL"
+                      , presetName.toStdString().c_str());
+        }
     } else {
-        x264_param_default_preset(m_x264Param , presetName.toStdString().c_str(), tuneName.toStdString().c_str());
-        log_trace("libx264 preset set to %s, tune set to %s"\
-                  , presetName.toStdString().c_str(), tuneName.toStdString().c_str());
+        ret = x264_param_default_preset(m_x264Param , presetName.toStdString().c_str(), tuneName.toStdString().c_str());
+        if (ret != BLE_SUCESS) {
+            log_error("x264_param_default_preset error.");
+            return ret;
+        } else {
+            log_trace("libx264 preset set to %s, tune set to %s"\
+                      , presetName.toStdString().c_str(), tuneName.toStdString().c_str());
+        }
     }
 
     if (profileName != "Default") {
-        x264_param_apply_profile(m_x264Param, profileName.toStdString().c_str());
-        log_trace("libx264 profile set to %s", profileName.toStdString().c_str());
+        ret = x264_param_apply_profile(m_x264Param, profileName.toStdString().c_str());
+        if (ret != BLE_SUCESS) {
+            log_error("x264_param_apply_profile error.");
+            return ret;
+        } else {
+            log_trace("libx264 profile set to %s", profileName.toStdString().c_str());
+        }
     } else {
         log_trace("libx264 profile set to Default");
     }
@@ -103,8 +128,9 @@ int BleX264Encoder::init()
     {
         m_x264Param->rc.i_vbv_max_bitrate  = maxBitRate;  // vbv-maxrate
         m_x264Param->rc.i_vbv_buffer_size  = bufferSize;  // vbv-bufsize
+        m_x264Param->i_nal_hrd             = X264_NAL_HRD_VBR;
         m_x264Param->rc.i_rc_method        = X264_RC_CRF; // X264_RC_CRF;
-        m_x264Param->rc.f_rf_constant      = 10.0f + float(20 - quality);
+        m_x264Param->rc.f_rf_constant      = 20.0f + float(10 - quality);
 
         log_trace("libx264 quality set to %d", quality);
     }
@@ -133,19 +159,31 @@ int BleX264Encoder::init()
     m_x264Param->b_repeat_headers = 0;
     m_x264Param->b_annexb = 0;
 
-    m_x264Param->i_frame_reference = 5;
+    m_x264Param->pf_log = x264Log;
+    m_x264Param->p_log_private = NULL ;
+    m_x264Param->i_log_level = X264_LOG_INFO ;
+
+    // m_x264Param->i_frame_reference = 5;
     if (enableBFrame) {
         m_x264Param->i_bframe = B_frame_count;
-        m_x264Param->i_bframe_bias = 100;
-        m_x264Param->i_bframe_adaptive = 1;
+        m_x264Param->i_bframe_bias = 0;
+
+        // --b-adapt <integer>     Adaptive B-frame decision method.
+        // Higher values may lower threading efficiency.
+        //           0: Disabled
+        //         - 1: Fast
+        //         - 2: Optimal (slow with high --bframes)
+        m_x264Param->i_bframe_adaptive = 2;
+
+        // Keep some B-frames as references: 0=off, 1=strict hierarchical, 2=normal
+        // take effect only b_frames >= 2
         if (B_frame_count >= 2)
             m_x264Param->i_bframe_pyramid = 1;
     }
-    else
-        m_x264Param->i_bframe = 0;
 
-    if (threadCount > 0)
+    if (threadCount > 0) {
         m_x264Param->i_threads = threadCount;
+    }
 
     // @note
     // never use cpu capabilities.
@@ -160,8 +198,8 @@ int BleX264Encoder::init()
     m_x264Encoder = x264_encoder_open(m_x264Param);
 
     // update video sh
-    x264_nal_t *nalOut;
-    int nalNum;
+    x264_nal_t *nalOut = NULL;
+    int nalNum = 0;
     x264_encoder_headers(m_x264Encoder, &nalOut, &nalNum);
 
     for (int i = 0; i < nalNum; ++i) {
@@ -290,6 +328,7 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts, void *opaque)
         body.writeString((char*)nal.p_payload, nal.i_payload);
     }
 
+#if 0
     if (IS_X264_TYPE_I(picOut.i_type)) {
         log_trace("I");
     } else if (IS_X264_TYPE_B(picOut.i_type)) {
@@ -297,6 +336,7 @@ int BleX264Encoder::encode(unsigned char *rgbframe, mint64 pts, void *opaque)
     } else {
         log_trace("P");
     }
+#endif
 
     BleAVQueue::instance()->update_packet(pkt);
 

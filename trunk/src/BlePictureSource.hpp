@@ -26,17 +26,28 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "BleSourceAbstract.hpp"
 
-class BlePictureSource : public BleSourceAbstract
+#include <QImage>
+#include <QMutex>
+
+class BlePictureSource : public QObject, public BleSourceAbstract
 {
+    Q_OBJECT
 public:
     BlePictureSource(const QString &picName);
+    ~BlePictureSource();
 
-    virtual BleImage getImage();
+    virtual QString getSourceName();
+    virtual QImage getImage();
     virtual void stopCapture();
     virtual void setCaptureInterval(int interval);
 
+private slots:
+    void onFrameChanged(int frameNumber);
+
 private:
-    BleImage m_image;
+    QImage m_image;
+    QMutex m_mutex;
+    QMovie *m_movie;
 };
 
 #endif // BLEPICTURESOURCE_HPP

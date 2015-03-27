@@ -13,9 +13,9 @@ class BleTextSource : public QObject, public BleSourceAbstract
 public:
     explicit BleTextSource(QObject *parent = 0);
 
-    virtual BleImage getImage();
+    virtual QString getSourceName();
+    virtual QImage getImage();
     virtual void stopCapture();
-
     void setText(const QString &text);
 
 private slots:

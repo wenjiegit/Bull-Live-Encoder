@@ -116,7 +116,6 @@ BleSetting::BleSetting(QWidget *parent) :
     ui->keyFrameInterval->addItem("3");
     ui->keyFrameInterval->addItem("4");
     ui->keyFrameInterval->addItem("5");
-    ui->keyFrameInterval->addItem("5");
     ui->keyFrameInterval->addItem("6");
     ui->keyFrameInterval->addItem("7");
     ui->keyFrameInterval->addItem("8");
@@ -265,10 +264,7 @@ void BleSetting::onAudioBitrateChanged(const QString &text)
 
 void BleSetting::onQualityValueChanged(int value)
 {
-    QString text;
-    int max = ui->qualityBar->maximum();
-    text.sprintf("%3.0f%%", (float)value*100/(float)max);
-
+    QString text = QString::number(value);
     ui->qualityLabel->setText(text);
 }
 

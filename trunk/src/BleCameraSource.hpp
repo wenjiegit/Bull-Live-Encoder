@@ -28,14 +28,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleSourceAbstract.hpp"
 
 #include <QMutex>
+#include <QImage>
 
-class StcCameraSource : public BleThread, public BleSourceAbstract
+class BleCameraSource : public BleThread, public BleSourceAbstract
 {
     Q_OBJECT
 public:
-    explicit StcCameraSource(QObject *parent = 0);
+    explicit BleCameraSource(QObject *parent = 0);
 
-    virtual BleImage getImage();
+    virtual QString getSourceName();
+    virtual QImage getImage();
     virtual void stopCapture();
     virtual void run();
 
@@ -45,7 +47,7 @@ public:
 private:
     int m_interval;
 
-    BleImage m_image;
+    QImage m_image;
     QMutex m_modifyMutex;
     int m_cameraIndex;
     QString m_cameraName;

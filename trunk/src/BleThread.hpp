@@ -31,7 +31,7 @@ class BleThread : public QThread
     Q_OBJECT
 public:
     explicit BleThread(QObject *parent = 0);
-    ~BleThread();
+    virtual ~BleThread();
 
     virtual void stop();
     void start(Priority priority = InheritPriority);

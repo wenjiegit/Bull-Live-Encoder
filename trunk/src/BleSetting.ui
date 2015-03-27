@@ -26,7 +26,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-111</y>
+        <y>-135</y>
         <width>521</width>
         <height>635</height>
        </rect>
@@ -406,7 +406,7 @@ color: rgb(0, 85, 0);</string>
               <number>1</number>
              </property>
              <property name="maximum">
-              <number>20</number>
+              <number>10</number>
              </property>
              <property name="pageStep">
               <number>1</number>
