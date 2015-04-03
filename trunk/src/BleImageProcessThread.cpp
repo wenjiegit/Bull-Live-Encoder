@@ -29,32 +29,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleAVUtil.hpp"
 #include "BleAVQueue.hpp"
 
-#include <QDateTime>
-#include <QElapsedTimer>
 #include <QElapsedTimer>
 #include <QImage>
 #include <QPainter>
 
-static const int ImageProcess_Default_Width  = 320;
-static const int ImageProcess_Default_Height = 240;
+static const int ImageProcess_Default_Width  = 640;
+static const int ImageProcess_Default_Height = 480;
 static const int ImageProcess_Default_Internal = 50;        // 20 fps
-static CvRect QRect2CvRect(const QRect &rect)
-{
-    CvRect ret;
-    ret.x = rect.x();
-    ret.y = rect.y();
-    ret.width = rect.width();
-    ret.height = rect.height();
-
-    return ret;
-}
 
 BleImageProcessThread::BleImageProcessThread(QObject *parent)
     : BleThread(parent)
     , m_width(ImageProcess_Default_Width)
     , m_height(ImageProcess_Default_Height)
     , m_internal(ImageProcess_Default_Internal)
-    , m_dstImage(NULL)
 {
 }
 
@@ -163,14 +150,4 @@ BleImage *BleImageProcessThread::getImage()
     be->format = BleImage_Format_BGR24;
 
     return be;
-}
-
-QQueue<BleImage *> BleImageProcessThread::getQueue()
-{
-    BleAutoLocker(m_modifyOutputMutex);
-
-    QQueue<BleImage *> queue = m_outputQueue;
-    m_outputQueue.clear();
-
-    return queue;
 }

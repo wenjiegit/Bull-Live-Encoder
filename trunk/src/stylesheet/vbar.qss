@@ -1,6 +1,6 @@
 QScrollBar:vertical
 {
-	width:12px;
+        width:8px;
 	border:1px solid grey;
 	border-color:grey;
 	margin:0px,0px,0px,0px;
@@ -9,9 +9,9 @@ QScrollBar:vertical
 }
 QScrollBar::handle:vertical
 {
-	width:16px;
+        width:40px;
 	background:rgba(vertical_handle_1, vertical_handle_2, vertical_handle_3, vertical_handle_4);
-	border:1px solid rgba(200,200,200, 255);;
+        border: none;
 	min-height:20;
 	border-radius:4px;
 }
@@ -23,28 +23,28 @@ QScrollBar::handle:vertical::disabled
 QScrollBar::handle:vertical:hover
 {
 	background:rgba(vertical_handle_hover_1, vertical_handle_hover_2, vertical_handle_hover_3, vertical_handle_hover_4);
-	border:1px solid rgba(190,190,190, 255);
+        border:none;
 }
 QScrollBar::add-line:vertical
 {
 	height:11px;
-	background-color: rgba(vertical_add-line_1, vertical_add-line_2, vertical_add-line_3, vertical_add-line_4);
+        background-color: transparent;
 	subcontrol-position:bottom;
 }
 QScrollBar::sub-line:vertical
 {
 	height:11px;
-	 background-color: rgba(vertical_sub-line_1, vertical_sub-line_2, vertical_sub-line_3, vertical_sub-line_4);
+         background-color: transparent;
 	subcontrol-position:top;
 }
 QScrollBar::add-page:vertical
 {
-	background-color: rgba(255, 255, 255, 120);
+        background-color: transparent;
 }
 
 QScrollBar::sub-page:vertical
 {
-	background-color: rgba(255, 255, 255, 50);
+        background-color: transparent;
 }
 
 QScrollBar::up-arrow:vertical{

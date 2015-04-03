@@ -13,8 +13,9 @@ TEMPLATE = app
 # for RtAudio defines
 DEFINES += __WINDOWS_DS__ LIBVLC_USE_PTHREAD_CANCEL
 
-INCLUDEPATH +=  src/gui
-INCLUDEPATH +=  src/core \
+INCLUDEPATH +=  src \
+                src/gui \
+                src/core \
                 3rdparty/librtmp \
                 3rdparty/libx264 \
                 3rdparty/libopencv/include \
@@ -99,7 +100,11 @@ SOURCES += \
     src/BleSceneWidget.cpp \
     src/BleResizeableWidget.cpp \
     src/BleVLCPlayer.cpp \
-    src/BleNetStreamSource.cpp
+    src/BleNetStreamSource.cpp \
+    src/BlePixmapItem.cpp \
+    src/BleSceneThumbNail.cpp \
+    src/BleImageProcessProxy.cpp \
+    src/BleSettingBar.cpp
 
 HEADERS  += \
     src/BleMainWindow.hpp \
@@ -160,7 +165,11 @@ HEADERS  += \
     src/BleSceneWidget.hpp \
     src/BleResizeableWidget.hpp \
     src/BleVLCPlayer.hpp \
-    src/BleNetStreamSource.hpp
+    src/BleNetStreamSource.hpp \
+    src/BlePixmapItem.hpp \
+    src/BleSceneThumbNail.hpp \
+    src/BleImageProcessProxy.hpp \
+    src/BleSettingBar.hpp
 
 FORMS    += \
     src/BleMainWindow.ui \
@@ -177,9 +186,13 @@ FORMS    += \
     src/gui/RecSkinWidget.ui \
     src/gui/TitleWidget.ui \
     src/BleMediaSelector.ui \
-    src/BleSceneWidget.ui
+    src/BleSceneWidget.ui \
+    src/BlePixmapItem.ui \
+    src/BleSceneThumbNail.ui \
+    src/BleImageProcessProxy.ui \
+    src/BleSettingBar.ui
 
 win32:RC_FILE = src/ble.rc
-
+TRANSLATIONS = locale/zh.ts locale/tw.ts locale/en.ts
 RESOURCES += src/res.qrc \
     src/gui/gui.qrc

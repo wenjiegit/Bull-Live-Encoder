@@ -25,10 +25,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define BLESCENEWIDGET_HPP
 
 #include <QWidget>
+#include <QHash>
+#include <QTimer>
 
 namespace Ui {
 class BleSceneWidget;
 }
+
+class BleImageProcess;
+class BleImageProcessThread;
 
 class BleSceneWidget : public QWidget
 {
@@ -38,8 +43,32 @@ public:
     explicit BleSceneWidget(QWidget *parent = 0);
     ~BleSceneWidget();
 
+    static BleSceneWidget *instance();
+
+    void addWidget(QWidget *widget);
+    void addScene();
+
+    BleImageProcess *currentImageProcessWidget();
+    BleImageProcessThread *currentImageProcessThread();
+
+private slots:
+    void onSceneChanged(int index);
+    void onTimeout();
+
+private:
+    struct ScenePair
+    {
+        BleImageProcess *imageProcessWidget;
+        BleImageProcessThread *imageProcessThread;
+    };
+
 private:
     Ui::BleSceneWidget *ui;
+    QHash<int, ScenePair> m_scenesPair;
+    QTimer m_timer;
+
+signals:
+    void sizeChanged();
 };
 
 #endif // BLESCENEWIDGET_HPP

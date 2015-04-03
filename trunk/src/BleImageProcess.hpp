@@ -54,6 +54,8 @@ public:
     virtual void keyPressEvent(QKeyEvent * e);
     virtual void focusOutEvent(QFocusEvent * e);
 
+    void resizeEvent(QResizeEvent * event);
+
 private slots:
     void onIncBtnClicked();
     void onDecBtnClicked();

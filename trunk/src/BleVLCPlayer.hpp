@@ -76,6 +76,12 @@ public:
     */
     void setOptions(const QStringList &options);
     /*!
+        set audio playback info
+        @param sampleRate audio samplerate
+        @param channels channels of audio
+    */
+    void setAudioInfo(int sampleRate, int channels);
+    /*!
         start play media with mrl.
     */
     int start();
@@ -88,13 +94,24 @@ public:
     */
     void pause();
 
+    /*!
+        get video frame
+    */
     QImage getImage();
+    /*!
+        get audio samples
+        @return 0 could get @param bytes of samples.
+    */
+    int getAudioSamples(int frameSize, QByteArray &data);
 
 private:
     static void vlc_video_display_cb(void *opaque, void *picture);
     static void *vlc_video_lock_cb(void *opaque, void **planes);
+    static void vlc_audio_playback_cb(void *data, const void *samples,
+                                      unsigned count, int64_t pts);
 
     void addImage(QImage &image);
+    void addSample(const void *samples, unsigned count, int64_t pts);
 
 private:
     QString m_mrl;
@@ -106,7 +123,11 @@ private:
     libvlc_media_t *m_VLCMedia;
     QImage m_image;
     QMutex m_modifyMutex;
+    QMutex m_audioMutex;
     QStringList m_options;
+    QByteArray m_samples;
+    int m_sampleRate;
+    int m_channels;
 };
 
 #endif // BLEVLCPLAYER_HPP

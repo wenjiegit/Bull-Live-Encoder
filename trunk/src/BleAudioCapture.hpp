@@ -46,6 +46,7 @@ public:
 
 private:
     void onDataCaptured(char *data, int size);
+    void audioMix(QByteArray &a1, QByteArray &a2);
 
 private:
     RtAudio *m_grabEngine;
@@ -65,7 +66,6 @@ public:
 
     int startCapture(int bitrate = 96000, int sampleRate = 44100, int channels = 2, int deviceID = -1);
     int stopCapture();
-
 };
 
 #endif // BLEAUDIOCAPTURE_HPP

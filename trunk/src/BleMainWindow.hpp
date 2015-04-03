@@ -43,6 +43,7 @@ class BleImageProcessThread;
 class BleImageProcess;
 class BleAudioCapture;
 class BleFileSource;
+class BleSceneWidget;
 
 class QLabel;
 
@@ -63,6 +64,7 @@ private slots:
     void onMin();
     void onMax();
     void onClose();
+    void onSettins();
     void onDoubleClicked();
     void onSkin();
     void onMenu();
@@ -83,6 +85,7 @@ private slots:
     void onAddMedia();
 
     void onStatus(int audioKbps, int videoKbps, int fps, qint64 sendDataCount);
+    void settingChanged();
 
 private:
     Ui::BleMainWindow *ui;
@@ -99,6 +102,7 @@ private:
     BleAudioCapture *m_audioCaptureThread;
 
     QLabel *m_statusLabel;
+    BleSceneWidget *m_sceneWidget;
 };
 
 #endif // BleMainWindow_H

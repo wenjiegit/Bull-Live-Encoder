@@ -43,8 +43,6 @@ public:
 
     void run();
 
-    void setImageProcessThread(BleImageProcessThread *thread);
-
     QQueue<BleImage *> getQueue();
 
     void fini();

@@ -51,7 +51,7 @@ BleImageProcess::BleImageProcess(QWidget *parent)
 
     setMouseTracking(true);
     setFocusPolicy(Qt::ClickFocus);
-    setFixedSize(MOption::instance()->option("res", "encoder").toSize());
+    onSettingChanged();
 }
 
 BleImageProcess::~BleImageProcess()
@@ -91,7 +91,7 @@ void BleImageProcess::paintEvent(QPaintEvent *event)
     p.setRenderHint(QPainter::SmoothPixmapTransform);
 
     // back ground
-    p.fillRect(rect(), QBrush(QColor(48, 48, 48)));
+    p.fillRect(rect(), QBrush(QColor(20, 20, 20)));
 
     // element draw
     for (int i = 0; i < m_sources.size(); ++i) {
@@ -264,6 +264,27 @@ void BleImageProcess::focusOutEvent(QFocusEvent *e)
 
     m_activePair = NULL;
 }
+#include <QDebug>
+void BleImageProcess::resizeEvent(QResizeEvent *event)
+{
+    QSize si = event->size();
+    QSize oldSi = event->oldSize();
+
+//QList<SourcePair> m_sources;
+    float xV = (float)si.width() / oldSi.width();
+    float yV = (float)si.height() / oldSi.height();
+    for (int i = 0; i < m_sources.size(); ++i) {
+        SourcePair &pair = m_sources[i];
+        QRect oldRect = pair.rect;
+        QRect newRect(xV * oldRect.x(), yV * oldRect.y(), xV * oldRect.width(), yV * oldRect.height());
+        pair.rect = newRect;
+    }
+
+    qDebug() << event->size() << event->oldSize() << xV <<yV;
+
+
+    update();
+}
 
 void BleImageProcess::onIncBtnClicked()
 {
@@ -278,6 +299,7 @@ void BleImageProcess::onIncBtnClicked()
     }
 
     update();
+    updateSources();
 }
 
 void BleImageProcess::onDecBtnClicked()
@@ -293,6 +315,7 @@ void BleImageProcess::onDecBtnClicked()
     }
 
     update();
+    updateSources();
 }
 
 void BleImageProcess::onUpBtnClicked()
@@ -306,6 +329,7 @@ void BleImageProcess::onUpBtnClicked()
     }
 
     update();
+    updateSources();
 }
 
 void BleImageProcess::onDownBtnClicked()
@@ -319,6 +343,7 @@ void BleImageProcess::onDownBtnClicked()
     }
 
     update();
+    updateSources();
 }
 
 void BleImageProcess::onLeftBtnClicked()
@@ -332,6 +357,7 @@ void BleImageProcess::onLeftBtnClicked()
     }
 
     update();
+    updateSources();
 }
 
 void BleImageProcess::onRightBtnClicked()
@@ -345,6 +371,7 @@ void BleImageProcess::onRightBtnClicked()
     }
 
     update();
+    updateSources();
 }
 
 void BleImageProcess::onRefreshTimeout()
@@ -355,15 +382,30 @@ void BleImageProcess::onRefreshTimeout()
 
 void BleImageProcess::onSettingChanged()
 {
-    QSize si = MOption::instance()->option("res", "encoder").toSize();
-    setFixedSize(si);
+//    QSize si = MOption::instance()->option("res", "encoder").toSize();
+//    setFixedSize(si);
 }
 
 void BleImageProcess::updateSources()
 {
+    QList<SourcePair> sources = m_sources;
+
+    QSize si = MOption::instance()->option("res", "encoder").toSize();
+    QSize oldSi = size();
+
+    float xV = (float)si.width() / (float)oldSi.width();
+    float yV = (float)si.height() / (float)oldSi.height();
+
+    for (int i = 0; i < sources.size(); ++i) {
+        SourcePair &pair = sources[i];
+        QRect oldRect = pair.rect;
+        QRect newRect(xV * (float)oldRect.x(), yV * (float)oldRect.y(), xV * (float)oldRect.width(), yV * (float)oldRect.height());
+        pair.rect = newRect;
+    }
+
     BleImageProcessThread *ipt = dynamic_cast<BleImageProcessThread*>(m_processThread);
     if (ipt) {
-        ipt->updateSources(m_sources);
+        ipt->updateSources(sources);
     }
 }
 

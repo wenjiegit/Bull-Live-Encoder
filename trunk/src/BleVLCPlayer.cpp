@@ -28,24 +28,20 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleLog.hpp"
 #include "BleErrno.hpp"
 #include "BleUtil.hpp"
+#include "BleAVContext.hpp"
 
-#include "vlc/plugins/vlc_fourcc.h"
-
-#define DEFAULT_WIDTH   1024
-#define DEFAULT_HEIGHT  768
-
-static void BleImageCleanupHandler(void *info)
-{
-    log_trace("---------------");
-    char *data = (char*)info;
-    delete [] data;
-}
+#define DEFAULT_WIDTH       800
+#define DEFAULT_HEIGHT      600
+#define DEFAULT_SAMPLERATE  44100
+#define DEFAULT_CHANNELS    2
 
 BleVLCPlayer::BleVLCPlayer(QObject *parent) :
     QObject(parent)
   , m_type(MEDIA_TYPE_INVALID)
   , m_width(DEFAULT_WIDTH)
   , m_height(DEFAULT_HEIGHT)
+  , m_sampleRate(DEFAULT_SAMPLERATE)
+  , m_channels(DEFAULT_CHANNELS)
 {
 
 }
@@ -63,6 +59,12 @@ void BleVLCPlayer::setMRL(const QString &mrl)
 void BleVLCPlayer::setOptions(const QStringList &options)
 {
     m_options = options;
+}
+
+void BleVLCPlayer::setAudioInfo(int sampleRate, int channels)
+{
+    m_sampleRate = sampleRate;
+    m_channels = channels;
 }
 
 int BleVLCPlayer::start()
@@ -145,6 +147,13 @@ int BleVLCPlayer::start()
     libvlc_video_set_format(m_VLCPlayer, "RV24", m_width, m_height, m_width*3);
     libvlc_video_set_callbacks(m_VLCPlayer, vlc_video_lock_cb, NULL, vlc_video_display_cb, this);
 
+    // set audio callback
+    libvlc_audio_set_format(m_VLCPlayer, "s16l", m_sampleRate, m_channels);
+    libvlc_audio_set_callbacks(m_VLCPlayer, vlc_audio_playback_cb, NULL, NULL, NULL, NULL, this);
+
+    // reg player
+    BleAVContext::instance()->addPlayer(this);
+
     libvlc_media_player_play(m_VLCPlayer);
 
     return BLE_SUCESS;
@@ -159,6 +168,8 @@ void BleVLCPlayer::stop()
     libvlc_media_release(m_VLCMedia);
     libvlc_media_player_release(m_VLCPlayer);
     libvlc_release(m_VLCInstance);
+
+    BleAVContext::instance()->removePlayer(this);
 }
 
 void BleVLCPlayer::pause()
@@ -173,10 +184,36 @@ QImage BleVLCPlayer::getImage()
     return m_image;
 }
 
+int BleVLCPlayer::getAudioSamples(int frameSize, QByteArray &data)
+{
+    BleAutoLocker(m_audioMutex);
+
+    if (m_samples.size() >= frameSize) {
+        data = m_samples.mid(0, frameSize);
+        m_samples.remove(0, frameSize);
+    } else {
+        return BLE_VLC_SAMPLE_NOT_ENOUGH;
+    }
+
+    return BLE_SUCESS;
+}
+
 void BleVLCPlayer::addImage(QImage &image)
 {
     BleAutoLocker(m_modifyMutex);
     m_image = image;
+}
+
+void BleVLCPlayer::addSample(const void *samples, unsigned count, int64_t pts)
+{
+    BleAutoLocker(m_audioMutex);
+    Q_UNUSED(pts);
+    int size = count * 2 * m_channels;
+    if (m_samples.size() >= size * 20) {
+        m_samples.clear();
+    }
+
+    m_samples.append((char*)samples, size);
 }
 
 void BleVLCPlayer::vlc_video_display_cb(void *opaque, void *picture)
@@ -206,4 +243,13 @@ void *BleVLCPlayer::vlc_video_lock_cb(void *opaque, void **planes)
     planes[0] = pic_buffer;
 
     return pic_buffer;
+}
+
+void BleVLCPlayer::vlc_audio_playback_cb(void *data, const void *samples
+                                         , unsigned count, int64_t pts)
+{
+   BleVLCPlayer *player = (BleVLCPlayer *)data;
+   if (!player) return;
+
+   player->addSample(samples, count, pts);
 }

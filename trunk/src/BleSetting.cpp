@@ -27,11 +27,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QCameraInfo>
 #include <QSettings>
 #include <QFileDialog>
+#include <QPainter>
 
 #include <stdint.h>
 #include "x264.h"
 #include "MOption.h"
 #include "BleAudioCapture.hpp"
+#include "BleLog.hpp"
 
 static void addItem(QComboBox *box, const char * const * argv)
 {
@@ -72,9 +74,13 @@ BleSetting::BleSetting(QWidget *parent) :
         ++iter;
     }
 
-    ui->audioFormat->addItem("AAC");
+    // add language
+    ui->languageCombobox->addItem("English", "en.qm");
+    ui->languageCombobox->addItem("简体中文", "zh.qm");
+    ui->languageCombobox->addItem("繁体中文", "tw.qm");
 
-    // not support yet.
+    // audio format
+    ui->audioFormat->addItem("AAC");
     ui->audioFormat->addItem("MP3");
 
     ui->audioChannels->addItem("Stereo");
@@ -131,6 +137,25 @@ BleSetting::BleSetting(QWidget *parent) :
 
     onQualityValueChanged(ui->qualityBar->value());
     onEnableSaveStateChanged(ui->enable_record->checkState());
+
+    connect(ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(onClicked(QModelIndex)));
+
+    ui->listView->setFixedWidth(130);
+    ui->listView->setModel(&m_model);
+    ui->listView->setItemDelegate(new StyleItemDelegate(this));
+
+    QStandardItem *item1 = new QStandardItem("   Basic Settings");
+    item1->setSizeHint(QSize(130, 37));
+    m_model.appendRow(item1);
+    QStandardItem *item2 = new QStandardItem("   Encoder Settings");
+    item2->setSizeHint(QSize(130, 37));
+    m_model.appendRow(item2);
+    QStandardItem *item3 = new QStandardItem("   Network Settings");
+    item3->setSizeHint(QSize(130, 37));
+    m_model.appendRow(item3);
+    QStandardItem *item4 = new QStandardItem("   Advanced Settings");
+    item4->setSizeHint(QSize(130, 37));
+    m_model.appendRow(item4);
 }
 
 BleSetting::~BleSetting()
@@ -138,9 +163,22 @@ BleSetting::~BleSetting()
     delete ui;
 }
 
+void BleSetting::paintEvent(QPaintEvent *)
+{
+    QPainter p(this);
+
+    QRect r(0, 0, width() - 4, height() - 4);
+    r.moveCenter(rect().center());
+    p.fillRect(r, Qt::white);
+}
+
 void BleSetting::onApplyClicked()
 {
     MOption *option = MOption::instance();
+
+    // language
+    QString qm = ui->languageCombobox->itemData(ui->languageCombobox->currentIndex()).toString();
+    option->setOption(qm, "qm", "language");
 
     // audio group
     int audioDevID = ui->audioDevice->itemData(ui->audioDevice->currentIndex()).toInt();
@@ -283,6 +321,16 @@ void BleSetting::onEnableSaveStateChanged(int state)
     ui->browse->setEnabled(enabled);
 }
 
+void BleSetting::onClicked(const QModelIndex &index)
+{
+    int row = index.row();
+    if (row < 0) {
+        return;
+    }
+
+    ui->stackedWidget->setCurrentIndex(row);
+}
+
 void BleSetting::restore()
 {
     MOption *option = MOption::instance();
@@ -358,12 +406,40 @@ void BleSetting::restore()
     QString address = option->option("address", "network").toString();
 
     ui->address->setText(address);
+
+    restoreLanguage();
+}
+
+void BleSetting::restoreLanguage()
+{
+    MOption *option = MOption::instance();
+    QString lastqm = option->option("qm", "language").toString();
+    if (lastqm.isEmpty()) {
+        return;
+    }
+
+    int count = ui->languageCombobox->count();
+    for (int i = 0; i < count; ++i) {
+        QString qm = ui->languageCombobox->itemData(i).toString();
+        if (lastqm == qm) {
+            ui->languageCombobox->setCurrentIndex(i);
+            QString language = ui->languageCombobox->itemText(i);
+            log_trace("language set to %s", language.toStdString().c_str());
+            break;
+        }
+    }
 }
 
 BleSettingDialog::BleSettingDialog(QWidget *parent)
     : MCustomDialog(parent)
 {
     addWidget(new BleSetting(this));
+
+    setTitle(tr("Setting Dialog"));
+    setMovable(true);
+    setResizable(false);
+
+    setFixedSize(690, 500);
 }
 
 BleSettingDialog::~BleSettingDialog()

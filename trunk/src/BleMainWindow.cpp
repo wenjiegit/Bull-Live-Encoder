@@ -65,6 +65,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleMediaSelector.hpp"
 #include "BleSceneWidget.hpp"
 #include "BleNetStreamSource.hpp"
+#include "BleSceneWidget.hpp"
 
 #define BLE_TITLE "Bull Live Encoder"
 
@@ -78,6 +79,7 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
   , m_sendThread(NULL)
   , m_imageProcessThread(NULL)
   , m_audioCaptureThread(NULL)
+  , m_sceneWidget(NULL)
 {
     ui->setupUi(this);
 
@@ -113,7 +115,7 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
 
     ui->titleWidget->setFixedHeight(32);
     ui->titleWidget->setTitle(BLE_TITLE);
-    ui->titleWidget->setHints(TitleWidget::MAX_HINT | TitleWidget::Min_HINT
+    ui->titleWidget->setHints(TitleWidget::Min_HINT
                               | TitleWidget::CLOSE_HINT | TitleWidget::SKIN_HINT | TitleWidget::MENU_HINT);
 
     framelessHelper = new NcFramelessHelper;
@@ -158,28 +160,38 @@ BleMainWindow::BleMainWindow(QWidget *parent) :
             this, SLOT(activated(QSystemTrayIcon::ActivationReason)));
     m_systemTrayIcon->show();
 
-    BleImageDisplayArea *displayArea = new BleImageDisplayArea(this);
-    m_imageProcessWidget = new BleImageProcess(this);
-    displayArea->addWidget(m_imageProcessWidget);
-    addTabWidget(displayArea, QPixmap(":/image/ble_live.png"), tr("live"));
+    // m_imageProcessWidget = new BleImageProcess(this);
+    // add scene widget
+    m_sceneWidget = new BleSceneWidget(this);
+    //m_sceneWidget->addWidget(m_imageProcessWidget);
+
+    addTabWidget(m_sceneWidget, QPixmap(":/image/ble_live.png"), tr("live"));
+
+    //BleImageDisplayArea *displayArea = new BleImageDisplayArea(this);
+
+    //displayArea->addWidget(m_imageProcessWidget);
 
     BleSetting *settings = new BleSetting(this);
     addTabWidget(settings, QPixmap(":/image/ble_setting.png"), tr("Settings"));
 
-    connect(settings, SIGNAL(settingChanged())
-            , m_imageProcessWidget, SLOT(onSettingChanged()));
+    ui->TabBar->setVisible(false);
+
+//    connect(settings, SIGNAL(settingChanged())
+//            , m_imageProcessWidget, SLOT(onSettingChanged()));
 
 #ifdef Q_OS_WIN
     QtWin::enableBlurBehindWindow(this);
 #endif
 
     setWindowTitle(BLE_TITLE);
-    QString versionStr = QString("  version: %1").arg(BLE_VERSION_STR);
+    QString versionStr = QString(tr("  version: %1")).arg(BLE_VERSION_STR);
     ui->statusBar->addWidget(new QLabel(versionStr));
 
     m_statusLabel = new QLabel(this);
     ui->statusBar->addWidget(m_statusLabel);
 //    ui->TabBar->setVisible(false);
+
+    settingChanged();
 }
 
 BleMainWindow::~BleMainWindow()
@@ -193,8 +205,8 @@ void BleMainWindow::paintEvent(QPaintEvent *e)
 {
     Q_UNUSED(e);
     QPainter p(this);
-    m_titleHeight = ui->titleWidget->height() + ui->TabBar->height();
-    m_linearHeight = 10;
+    m_titleHeight = ui->titleWidget->height() + ui->TabBar->height() - 30;
+    m_linearHeight = 20;
     m_statusHeight = ui->statusBar->height();
 
     ThemedWidgetBase::drawThemedStyle(p, false);
@@ -210,6 +222,33 @@ void BleMainWindow::addTabWidget(QWidget *widget, const QPixmap &pixmap, const Q
 {
     ui->stackedWidget->addWidget(widget);
     ui->TabBar->addTab(pixmap, text);
+}
+
+void BleMainWindow::settingChanged()
+{
+    QSize si = MOption::instance()->option("res", "encoder").toSize();
+
+    if (si == QSize(320, 240)) {
+        setFixedSize(862, 642);
+    } else if (si == QSize(480, 360)) {
+        setFixedSize(862, 642);
+    } else if (si == QSize(640, 360)) {
+        setFixedSize(1073, 642);
+    } else if (si == QSize(640, 480)) {
+        setFixedSize(862, 642);
+    } else if (si == QSize(800, 600)) {
+        setFixedSize(862, 642);
+    } else if (si == QSize(1024, 768)) {
+        setFixedSize(862, 642);
+    } else if (si == QSize(1280, 720)) {
+        setFixedSize(1073, 642);
+    } else if (si == QSize(1440, 900)) {
+        setFixedSize(987, 642);
+    } else if (si == QSize(1600, 900)) {
+        setFixedSize(1073, 642);
+    } else if (si == QSize(1920, 1080)) {
+        setFixedSize(1073, 642);
+    }
 }
 
 void BleMainWindow::onMin()
@@ -247,6 +286,12 @@ void BleMainWindow::onClose()
     qApp->quit();
 }
 
+void BleMainWindow::onSettins()
+{
+    BleSettingDialog dialog;
+    dialog.exec();
+}
+
 void BleMainWindow::onDoubleClicked()
 {
     onMax();
@@ -266,7 +311,8 @@ void BleMainWindow::onSkin()
 void BleMainWindow::onMenu()
 {
     QMenu menu(this);
-    menu.addAction(tr("&quit"), this, SLOT(onClose()));
+    menu.addAction(tr("&Quit"), this, SLOT(onClose()));
+    menu.addAction(tr("&Settings"), this, SLOT(onSettins()));
 
     QAbstractButton *menuButton = ui->titleWidget->button(TitleWidget::MENU_HINT);
     menu.exec(menuButton->mapToGlobal(menu.rect().bottomLeft()));
@@ -312,17 +358,15 @@ void BleMainWindow::activated(QSystemTrayIcon::ActivationReason reason)
 
 void BleMainWindow::onEncodeStart()
 {
-    m_imageProcessThread = new BleImageProcessThread(this);
-    m_imageProcessWidget->setProcessThread(m_imageProcessThread);
+//    m_imageProcessThread = new BleImageProcessThread(this);
+//    m_imageProcessWidget->setProcessThread(m_imageProcessThread);
 
-    QSize si = MOption::instance()->option("res", "encoder").toSize();
-    int fps = MOption::instance()->option("fps", "encoder").toInt();
-    m_imageProcessThread->setResolution(si.width(), si.height());
-    m_imageProcessThread->setInternal(1000 / fps);
+//    QSize si = MOption::instance()->option("res", "encoder").toSize();
+//    int fps = MOption::instance()->option("fps", "encoder").toInt();
+//    m_imageProcessThread->setResolution(si.width(), si.height());
+//    m_imageProcessThread->setInternal(1000 / fps);
 
     m_encoderThread = new BleEncoderThread(this);
-    m_encoderThread->setProcessThread(m_imageProcessThread);
-
     m_encoderThread->init();
 
     m_audioCaptureThread = new BleAudioCapture;
@@ -356,10 +400,10 @@ void BleMainWindow::onEncodeStart()
 
     BleImageCaptureThread *captureThread = new BleImageCaptureThread;
     BleAVContext::instance()->captureThread = captureThread;
-    captureThread->setImageProcessThread(m_imageProcessThread);
+//    captureThread->setImageProcessThread(m_imageProcessThread);
 
     START_THREAD(m_encoderThread);
-    START_THREAD(m_imageProcessThread);
+    //START_THREAD(m_imageProcessThread);
     START_THREAD(m_audioCaptureThread);
     START_THREAD(captureThread);
 
@@ -372,7 +416,7 @@ void BleMainWindow::onEncodeStop()
     SAFE_STOP_THREAD(BleAVContext::instance()->captureThread);
     SAFE_STOP_THREAD(m_sendThread);
     SAFE_STOP_THREAD(m_encoderThread);
-    SAFE_STOP_THREAD(m_imageProcessThread);
+    //SAFE_STOP_THREAD(m_imageProcessThread);
     SAFE_STOP_THREAD(m_audioCaptureThread);
 
     if (m_audioCaptureThread) {
@@ -389,11 +433,11 @@ void BleMainWindow::onEncodeStop()
 
     BleFree(m_sendThread);
     BleFree(m_encoderThread);
-    BleFree(m_imageProcessThread);
+    //BleFree(m_imageProcessThread);
     BleFree(m_audioCaptureThread);
     BleFree(BleAVContext::instance()->captureThread);
 
-    m_imageProcessWidget->setProcessThread(m_imageProcessThread);
+    //m_imageProcessWidget->setProcessThread(m_imageProcessThread);
 
     BleAVQueue::destroy();
     appCtx->fini();
@@ -417,7 +461,8 @@ void BleMainWindow::onAddCamera()
     source->setCaptureInterval(1000 / fps / 1.5);
     source->start();
 
-    m_imageProcessWidget->addCaptureSource(source, 0, 0, 640, 480);
+    BleImageProcess *pwidget = BleSceneWidget::instance()->currentImageProcessWidget();
+    pwidget->addCaptureSource(source, 0, 0, 640, 480);
 }
 
 void BleMainWindow::onAddWindowGrab()
@@ -437,7 +482,8 @@ void BleMainWindow::onDesktopSelected(const QRect &rect)
     source->setCaptureInterval(1000 / fps);
     source->start();
 
-    m_imageProcessWidget->addCaptureSource(source, 0, 0, rect.width(), rect.height());
+    BleImageProcess *pwidget = BleSceneWidget::instance()->currentImageProcessWidget();
+    pwidget->addCaptureSource(source, 0, 0, 640, 480);
 }
 
 void BleMainWindow::onAddPic()
@@ -449,14 +495,16 @@ void BleMainWindow::onAddPic()
     if (picName.isEmpty()) return;
 
     BlePictureSource *source = new BlePictureSource(picName);
-    m_imageProcessWidget->addCaptureSource(source, 10, 10, 320, 240);
+    BleImageProcess *pwidget = BleSceneWidget::instance()->currentImageProcessWidget();
+    pwidget->addCaptureSource(source, 0, 0, 640, 480);
 }
 
 void BleMainWindow::onAddFileSource()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("please select a video file"),
                                                     "",
-                                                    tr("Videos (*.flv *.rmvb *.mp4 *.mkv *.avi *.wmv)"));
+                                                    tr("Videos (*.flv *.rmvb *.mp4 *.mkv *.avi *.wmv);;"
+                                                       "Audios (*.ape *.mp3 *.aac *.wma)"));
 
     if (fileName.isEmpty()) return;
 
@@ -464,7 +512,8 @@ void BleMainWindow::onAddFileSource()
     source->setMedia(fileName);
     source->start();
 
-    m_imageProcessWidget->addCaptureSource(source, 30, 30, 320, 240);
+    BleImageProcess *pwidget = BleSceneWidget::instance()->currentImageProcessWidget();
+    pwidget->addCaptureSource(source, 0, 0, 640, 480);
 }
 
 void BleMainWindow::onAddTextSource()
@@ -473,7 +522,8 @@ void BleMainWindow::onAddTextSource()
     BleTextSource *source = new BleTextSource;
     source->setText(text);
 
-    m_imageProcessWidget->addCaptureSource(source, 30, 30, 320, 240);
+    BleImageProcess *pwidget = BleSceneWidget::instance()->currentImageProcessWidget();
+    pwidget->addCaptureSource(source, 0, 0, 640, 480);
 }
 
 void BleMainWindow::onAddMedia()
@@ -492,7 +542,8 @@ void BleMainWindow::onAddMedia()
     source->setMedia(addr.trimmed());
     source->start();
 
-    m_imageProcessWidget->addCaptureSource(source, 30, 30, 320, 240);
+    BleImageProcess *pwidget = BleSceneWidget::instance()->currentImageProcessWidget();
+    pwidget->addCaptureSource(source, 0, 0, 640, 480);
 }
 
 void BleMainWindow::onStatus(int audioKbps, int videoKbps, int fps, qint64 sendDataCount)

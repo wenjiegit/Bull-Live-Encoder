@@ -45,7 +45,6 @@ public:
     void init();
     void fini();
     void run();
-    void setProcessThread(QThread *thread);
 
 private:
     BleX264Encoder *m_x264Encoder;

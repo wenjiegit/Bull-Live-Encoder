@@ -99,12 +99,12 @@ void ThemedWidgetBase::drawThemedStyle(QPainter &p, bool drawLinar)
     QRect linearRect(0, m_titleHeight, m_themedWidget->width(), m_linearHeight);
     QLinearGradient linear(0, m_titleHeight, 0, m_linearHeight+m_titleHeight);
 
-    QColor c1(255, 255, 255, m_widgetTransparent /2);;
-    QColor c2(255, 255, 255, m_widgetTransparent);
+    QColor c1(255, 255, 255, m_widgetTransparent);
+    QColor c2(255, 255, 255, m_widgetTransparent / 2);
 
-    linear.setColorAt(0.0, QColor(255, 255, 255, 0));
-    linear.setColorAt(0.5, c1);
-    linear.setColorAt(1.0, c2);
+    linear.setColorAt(0.0, Qt::transparent);
+    //linear.setColorAt(0.5, c2);
+    linear.setColorAt(1.0, c1);
 
     p.setBrush(QBrush(linear));
     p.fillRect(linearRect, QBrush(linear));

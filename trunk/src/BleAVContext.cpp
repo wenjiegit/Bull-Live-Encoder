@@ -14,3 +14,18 @@ BleAVContext *BleAVContext::instance()
 
     return ret;
 }
+
+void BleAVContext::addPlayer(BleVLCPlayer *player)
+{
+    m_players << player;
+}
+
+void BleAVContext::removePlayer(BleVLCPlayer *player)
+{
+    m_players.removeAll(player);
+}
+
+QList<BleVLCPlayer *> BleAVContext::getPlayers()
+{
+    return m_players;
+}

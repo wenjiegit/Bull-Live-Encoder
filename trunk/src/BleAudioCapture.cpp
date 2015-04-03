@@ -35,6 +35,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleErrno.hpp"
 #include "BleContext.hpp"
 #include "BleAVContext.hpp"
+#include "BleVLCPlayer.hpp"
 
 #include "MOption.h"
 
@@ -89,6 +90,19 @@ void BleAudioCapture::run()
         while (m_bytesCache.size() >= frameSize) {
             QByteArray frame = m_bytesCache.mid(0, frameSize);
             m_bytesCache.remove(0, frameSize);
+
+            // mix all audio
+            QList<BleVLCPlayer *> players = BleAVContext::instance()->getPlayers();
+            for (int i = 0; i < players.size(); ++i) {
+                BleVLCPlayer *player = players.at(i);
+                QByteArray playerAudioFrame;
+
+                if (player->getAudioSamples(frameSize, playerAudioFrame) != BLE_SUCESS) {
+                    continue;
+                }
+
+                audioMix(frame, playerAudioFrame);
+            }
 
             QByteArray outputArray;
             if (!m_audioEncoder->encode(frame, outputArray)) {
@@ -211,4 +225,20 @@ void BleAudioCapture::onDataCaptured(char *data, int size)
 {
     BleAutoLocker(m_mutex);
     m_bytesCache.append(data, size);
+}
+
+void BleAudioCapture::audioMix(QByteArray &a1, QByteArray &a2)
+{
+    if (a1.size() != a2.size()) return;
+
+    // TODO process PCM overflow
+    // static short pcmMax = 0x8FFF;
+
+    short *pcm_1 = ( short *)a1.data();
+    short *pcm_2 = ( short *)a2.data();
+
+    int size = a1.size() / sizeof(short);
+    for (int i = 0; i < size; ++i) {
+        pcm_1[i] = (float)pcm_1[i] * 0.5 + (float)pcm_2[i] * 0.5;
+    }
 }

@@ -25,6 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define BLESETTINGETTING_H
 
 #include <QWidget>
+#include <QStandardItemModel>
 
 #include "MCustomDialog.h"
 
@@ -40,15 +41,20 @@ public:
     explicit BleSetting(QWidget *parent = 0);
     ~BleSetting();
 
+    void paintEvent(QPaintEvent *);
+
 private slots:
     void onApplyClicked();
     void onAudioBitrateChanged(const QString & text);
     void onQualityValueChanged(int value);
     void onBrowseClicked();
     void onEnableSaveStateChanged(int state);
+    void onClicked(const QModelIndex & index);
 
 private:
     void restore();
+
+    void restoreLanguage();
 
 signals:
     void start();
@@ -57,6 +63,7 @@ signals:
 
 private:
     Ui::BleSetting *ui;
+    QStandardItemModel m_model;
 };
 
 class BleSettingDialog : public MCustomDialog
@@ -65,6 +72,40 @@ class BleSettingDialog : public MCustomDialog
 public:
     explicit BleSettingDialog(QWidget *parent = 0);
     ~BleSettingDialog();
+};
+
+#include <QStyledItemDelegate>
+
+/*!
+    why use ItemDelegate ?
+    Qt will draw a dotted line rect which is ugly, ugly, ugly!
+    so using ItemDelegate to avoid this.
+    @see http://blog.sina.com.cn/s/blog_a6fb6cc90101i8it.html
+*/
+class StyleItemDelegate : public QStyledItemDelegate
+{
+    Q_OBJECT
+public:
+    explicit StyleItemDelegate(QObject *parent = 0)
+        : QStyledItemDelegate(parent)
+    {
+
+    }
+
+    ~StyleItemDelegate()
+    {
+
+    }
+
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QStyleOptionViewItem  view_option(option);
+        if (view_option.state & QStyle::State_HasFocus) {
+            view_option.state = view_option.state ^ QStyle::State_HasFocus;
+        }
+
+        QStyledItemDelegate::paint(painter, view_option, index);
+    }
 };
 
 #endif // BLESETTINGETTING_H

@@ -26,17 +26,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleLog.hpp"
 #include "BleAVQueue.hpp"
 #include "BleUtil.hpp"
+#include "BleSceneWidget.hpp"
 
 BleImageCaptureThread::BleImageCaptureThread(QObject *parent) :
     BleThread(parent)
 {
+
 }
 
 void BleImageCaptureThread::run()
 {
-    while (!m_thread->isRunning() && !m_stop) {
-        msleep(10);
-    }
     while (!m_stop) {
         BleAVPacket *pkt = BleAVQueue::instance()->find_uncaptured_video();
         if (!pkt) {
@@ -45,7 +44,8 @@ void BleImageCaptureThread::run()
         }
 
         // capture
-        BleImage *image = m_thread->getImage();
+        BleImageProcessThread *thread = BleSceneWidget::instance()->currentImageProcessThread();
+        BleImage *image = thread->getImage();
         Q_ASSERT(image);
         image->pts = pkt->dts;
         pkt->has_captured = true;
@@ -55,11 +55,6 @@ void BleImageCaptureThread::run()
         m_queue.append(image);
         m_mutex.unlock();
     }
-}
-
-void BleImageCaptureThread::setImageProcessThread(BleImageProcessThread *thread)
-{
-    m_thread = thread;
 }
 
 QQueue<BleImage *> BleImageCaptureThread::getQueue()

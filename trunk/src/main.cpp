@@ -29,6 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "BleMainWindow.hpp"
 #include "BleLog.hpp"
+#include "MOption.h"
 
 int main(int argc, char *argv[])
 {
@@ -41,20 +42,25 @@ int main(int argc, char *argv[])
     g_logCtx->setFilePath(a.applicationDirPath() + "/logs");
     g_logCtx->setLog2File(true);
 
+    // install language
     QTranslator translator;
-    if(translator.load(QApplication::applicationDirPath()+"/zh_CN.qm"))
-            QApplication::installTranslator(&translator);
+    QString lastqm = MOption::instance()->option("qm", "language").toString();
+    if (!lastqm.isEmpty()) {
+        if(translator.load(QApplication::applicationDirPath() + "/locale/" + lastqm)) {
+                QApplication::installTranslator(&translator);
+        }
+    }
 
+    // install font
     QString fontPath = QApplication::applicationDirPath() + "/font/msyh.ttf";
-
     int fontId = QFontDatabase::addApplicationFont(fontPath);
-    if(fontId != -1)
-    {
+    if(fontId != -1) {
         QString fontFamily = QFontDatabase::applicationFontFamilies(fontId).first();
         QFont font(fontFamily, 9);
         a.setFont(font);
     }
 
+    // install style sheet
     QFile styleSheetFile(QApplication::applicationDirPath() + "/stylesheet/default.qss");
     if(styleSheetFile.open(QIODevice::ReadOnly))
     {

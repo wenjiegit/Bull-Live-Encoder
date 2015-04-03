@@ -53,22 +53,17 @@ public:
     void updateSources(QList<SourcePair> & sources);
     void setInternal(int internal);
     BleImage *getImage();
-    QQueue<BleImage *> getQueue();
 
 private:
     int m_width;
     int m_height;
 
-    QMutex m_modifyOutputMutex;
     QMutex m_updateMutex;
 
     QQueue<BleImage *> m_outputQueue;
     QList<SourcePair> m_sources;
     int m_internal;
 
-    BleTimestampBulider m_timestampBuilder;
-
-    IplImage *m_dstImage;
     QImage *m_image;
 };
 

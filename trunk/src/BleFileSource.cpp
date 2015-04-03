@@ -30,6 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "BleUtil.hpp"
 #include "BleVLCPlayer.hpp"
 #include "BleErrno.hpp"
+#include "MOption.h"
 
 BleFileSource::BleFileSource(QObject *parent)
     : BleThread(parent)
@@ -56,6 +57,18 @@ void BleFileSource::stopCapture()
 
 void BleFileSource::run()
 {
+    int audioSampleRate = MOption::instance()->option("sample_rate", "audio").toInt();
+
+    int audioChannels = 2;
+    QString audioChannelsStr = MOption::instance()->option("channels", "audio").toString();
+    if (audioChannelsStr == "Mono") {
+        audioChannels = 1;
+    } else if (audioChannelsStr == "Stereo") {
+        audioChannels = 2;
+    }
+
+    m_vlcPlayer->setAudioInfo(audioSampleRate, audioChannels);
+
     if (m_vlcPlayer->start() != BLE_SUCESS) {
         log_error("start vlc player error");
         return;

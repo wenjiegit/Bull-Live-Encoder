@@ -38,7 +38,7 @@ BleImageDisplayArea::~BleImageDisplayArea()
 
 void BleImageDisplayArea::addWidget(QWidget *widget)
 {
-    ui->horizontalLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    //ui->horizontalLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
     ui->horizontalLayout->addWidget(widget);
     ui->horizontalLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
 }

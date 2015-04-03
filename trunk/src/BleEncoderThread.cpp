@@ -73,9 +73,6 @@ void BleEncoderThread::fini()
 
 void BleEncoderThread::run()
 {
-    BleImageProcessThread * imageProcessThread = dynamic_cast<BleImageProcessThread *> (m_imageProcessThread);
-    BleAssert(imageProcessThread);
-
     while (!m_stop) {
         QQueue<BleImage*> images = BleAVContext::instance()->captureThread->getQueue();
 
@@ -114,9 +111,4 @@ void BleEncoderThread::run()
     }
 
     log_trace("BleEncoderThread exit normally.");
-}
-
-void BleEncoderThread::setProcessThread(QThread *thread)
-{
-    m_imageProcessThread = thread;
 }

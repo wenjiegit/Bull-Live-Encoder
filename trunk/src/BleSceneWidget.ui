@@ -6,24 +6,37 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>632</width>
-    <height>485</height>
+    <width>600</width>
+    <height>427</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QDial" name="dial">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>20</y>
-     <width>50</width>
-     <height>64</height>
-    </rect>
-   </property>
-  </widget>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QStackedWidget" name="stackedWidget"/>
+   </item>
+   <item>
+    <widget class="BleSceneThumbNail" name="scenes" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>200</width>
+       <height>0</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>BleSceneThumbNail</class>
+   <extends>QWidget</extends>
+   <header>BleSceneThumbNail.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
