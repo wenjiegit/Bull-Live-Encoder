@@ -44,6 +44,8 @@ public:
     void paintEvent(QPaintEvent *);
 
 private slots:
+    void onOKClicked();
+    void onCancelClicked();
     void onApplyClicked();
     void onAudioBitrateChanged(const QString & text);
     void onQualityValueChanged(int value);

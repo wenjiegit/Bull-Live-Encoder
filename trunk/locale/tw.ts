@@ -62,6 +62,14 @@
     </message>
 </context>
 <context>
+    <name>BleImageProcessProxy</name>
+    <message>
+        <location filename="../src/BleImageProcessProxy.ui" line="16"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BleMainWindow</name>
     <message>
         <location filename="../src/BleMainWindow.ui" line="14"/>
@@ -69,122 +77,127 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="102"/>
+        <location filename="../src/BleMainWindow.cpp" line="104"/>
         <source>add a camera source</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="103"/>
+        <location filename="../src/BleMainWindow.cpp" line="105"/>
         <source>add a desktop grab source</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="104"/>
+        <location filename="../src/BleMainWindow.cpp" line="106"/>
         <source>add a picture source</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="105"/>
+        <location filename="../src/BleMainWindow.cpp" line="107"/>
         <source>add a file source</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="106"/>
+        <location filename="../src/BleMainWindow.cpp" line="108"/>
         <source>add text source</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="107"/>
+        <location filename="../src/BleMainWindow.cpp" line="109"/>
         <source>add media url</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="108"/>
+        <location filename="../src/BleMainWindow.cpp" line="110"/>
         <source>begin rtmp streaming</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="109"/>
+        <location filename="../src/BleMainWindow.cpp" line="111"/>
         <source>stop rtmp streaming</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="164"/>
+        <location filename="../src/BleMainWindow.cpp" line="168"/>
         <source>live</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="167"/>
+        <location filename="../src/BleMainWindow.cpp" line="175"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="177"/>
+        <location filename="../src/BleMainWindow.cpp" line="187"/>
         <source>  version: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="234"/>
+        <location filename="../src/BleMainWindow.cpp" line="273"/>
         <source>restore</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="239"/>
+        <location filename="../src/BleMainWindow.cpp" line="278"/>
         <source>maximum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="269"/>
-        <source>&amp;quit</source>
+        <location filename="../src/BleMainWindow.cpp" line="314"/>
+        <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="292"/>
+        <location filename="../src/BleMainWindow.cpp" line="315"/>
+        <source>&amp;Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleMainWindow.cpp" line="338"/>
         <source>show</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="293"/>
+        <location filename="../src/BleMainWindow.cpp" line="339"/>
         <source>hide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="294"/>
+        <location filename="../src/BleMainWindow.cpp" line="340"/>
         <source>quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="346"/>
+        <location filename="../src/BleMainWindow.cpp" line="390"/>
         <source>error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="346"/>
+        <location filename="../src/BleMainWindow.cpp" line="390"/>
         <source>start audio capture error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="445"/>
+        <location filename="../src/BleMainWindow.cpp" line="491"/>
         <source>please select a picture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="447"/>
+        <location filename="../src/BleMainWindow.cpp" line="493"/>
         <source>Images (*.png *.bmp *.jpg *.gif)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="457"/>
+        <location filename="../src/BleMainWindow.cpp" line="504"/>
         <source>please select a video file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="459"/>
+        <location filename="../src/BleMainWindow.cpp" line="506"/>
         <source>Videos (*.flv *.rmvb *.mp4 *.mkv *.avi *.wmv);;Audios (*.ape *.mp3 *.aac *.wma)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleMainWindow.cpp" line="488"/>
+        <location filename="../src/BleMainWindow.cpp" line="537"/>
         <source>url can not be empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -221,6 +234,22 @@
     </message>
 </context>
 <context>
+    <name>BlePixmapItem</name>
+    <message>
+        <location filename="../src/BlePixmapItem.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BleSceneThumbNail</name>
+    <message>
+        <location filename="../src/BleSceneThumbNail.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BleSceneWidget</name>
     <message>
         <location filename="../src/BleSceneWidget.ui" line="14"/>
@@ -236,330 +265,426 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="44"/>
-        <source>50</source>
+        <location filename="../src/BleSetting.ui" line="91"/>
+        <source>Language:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="49"/>
-        <source>100</source>
+        <location filename="../src/BleSetting.ui" line="101"/>
+        <source>Action:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="54"/>
-        <source>120</source>
+        <location filename="../src/BleSetting.ui" line="111"/>
+        <source>Tray Icon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="59"/>
-        <source>150</source>
+        <location filename="../src/BleSetting.ui" line="121"/>
+        <source>minimize to tray</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="64"/>
-        <source>180</source>
+        <location filename="../src/BleSetting.ui" line="131"/>
+        <source>Misc:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="69"/>
-        <source>200</source>
+        <location filename="../src/BleSetting.ui" line="141"/>
+        <source>grab pic with mouse icon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="74"/>
-        <source>250</source>
+        <location filename="../src/BleSetting.ui" line="175"/>
+        <source>Apply Scene：</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="79"/>
-        <source>300</source>
+        <location filename="../src/BleSetting.ui" line="188"/>
+        <source>Normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="84"/>
-        <source>350</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="89"/>
-        <source>400</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="94"/>
-        <source>450</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="99"/>
-        <source>500</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="104"/>
-        <source>650</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="109"/>
-        <source>800</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="114"/>
-        <source>1000</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="119"/>
-        <source>1200</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="124"/>
-        <source>1500</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="129"/>
-        <source>1800</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="134"/>
-        <source>2000</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="146"/>
-        <source>X264 Settings:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="153"/>
-        <source>Preset:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="161"/>
-        <source>Auto</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="166"/>
-        <source>2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="171"/>
-        <source>4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="176"/>
-        <location filename="../src/BleSetting.ui" line="203"/>
-        <source>8</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="181"/>
-        <source>16</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="186"/>
-        <source>32</source>
+        <location filename="../src/BleSetting.ui" line="193"/>
+        <source>Game</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/BleSetting.ui" line="198"/>
+        <source>Education</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="203"/>
+        <source>Anchor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="245"/>
+        <source>Audio:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="373"/>
+        <source>50</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="378"/>
+        <source>100</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="383"/>
+        <source>120</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="388"/>
+        <source>150</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="393"/>
+        <source>180</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="398"/>
+        <source>200</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="403"/>
+        <source>250</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="408"/>
+        <source>300</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="413"/>
+        <source>350</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="418"/>
+        <source>400</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="423"/>
+        <source>450</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="428"/>
+        <source>500</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="433"/>
+        <source>650</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="438"/>
+        <source>800</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="443"/>
+        <source>1000</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="448"/>
+        <source>1200</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="453"/>
+        <source>1500</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="458"/>
+        <source>1800</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="463"/>
+        <source>2000</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="1042"/>
+        <source>H264 设置：</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="1090"/>
+        <source>&amp;OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="1100"/>
+        <source>&amp;Cancle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="1110"/>
+        <source>&amp;Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="933"/>
+        <source>Preset:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="954"/>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="959"/>
+        <source>2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="964"/>
+        <source>4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="510"/>
+        <location filename="../src/BleSetting.ui" line="969"/>
+        <source>8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="646"/>
+        <source>Video:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="706"/>
+        <source>Network:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="736"/>
+        <source>Path:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="974"/>
+        <source>16</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="979"/>
+        <source>32</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.ui" line="505"/>
         <source>6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="208"/>
+        <location filename="../src/BleSetting.ui" line="515"/>
         <source>10</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="213"/>
+        <location filename="../src/BleSetting.ui" line="520"/>
         <source>12</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="218"/>
+        <location filename="../src/BleSetting.ui" line="525"/>
         <source>15</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="223"/>
+        <location filename="../src/BleSetting.ui" line="530"/>
         <source>18</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="228"/>
+        <location filename="../src/BleSetting.ui" line="535"/>
         <source>20</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="233"/>
+        <location filename="../src/BleSetting.ui" line="540"/>
         <source>25</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="238"/>
+        <location filename="../src/BleSetting.ui" line="545"/>
         <source>30</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="262"/>
-        <location filename="../src/BleSetting.ui" line="504"/>
+        <location filename="../src/BleSetting.ui" line="556"/>
+        <location filename="../src/BleSetting.ui" line="624"/>
         <source>Format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="269"/>
+        <location filename="../src/BleSetting.ui" line="474"/>
         <source>bitrate:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="279"/>
+        <location filename="../src/BleSetting.ui" line="1013"/>
         <source>Tune:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="293"/>
-        <source>Encoder Settings:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="300"/>
+        <location filename="../src/BleSetting.ui" line="336"/>
         <source>FPS:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="307"/>
+        <location filename="../src/BleSetting.ui" line="990"/>
         <source>Profile:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="315"/>
+        <location filename="../src/BleSetting.ui" line="635"/>
         <source>H264</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="323"/>
+        <location filename="../src/BleSetting.ui" line="359"/>
         <source>Resolution:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="337"/>
-        <source>Network Settings:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="344"/>
+        <location filename="../src/BleSetting.ui" line="804"/>
         <source>address:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="357"/>
+        <location filename="../src/BleSetting.ui" line="326"/>
         <source>Bitrate Mode:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="367"/>
+        <location filename="../src/BleSetting.ui" line="899"/>
         <source>KeyFrame:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="374"/>
+        <location filename="../src/BleSetting.ui" line="484"/>
         <source>Quality</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="441"/>
+        <location filename="../src/BleSetting.ui" line="314"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="457"/>
-        <source>Audio Settings:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="464"/>
+        <location filename="../src/BleSetting.ui" line="762"/>
         <source>Device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="471"/>
+        <location filename="../src/BleSetting.ui" line="607"/>
         <source>Channels:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="478"/>
+        <location filename="../src/BleSetting.ui" line="566"/>
         <source>Sample Rate:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="485"/>
+        <location filename="../src/BleSetting.ui" line="590"/>
         <source>Bitrate:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="511"/>
-        <source>kbps</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="518"/>
-        <source>HZ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/BleSetting.ui" line="525"/>
+        <location filename="../src/BleSetting.ui" line="943"/>
         <source>ThreadCount:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="532"/>
+        <location filename="../src/BleSetting.ui" line="916"/>
         <source>B Frame:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="543"/>
+        <location filename="../src/BleSetting.ui" line="792"/>
         <source>Video Save:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="552"/>
+        <location filename="../src/BleSetting.ui" line="755"/>
         <source>enable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="562"/>
+        <location filename="../src/BleSetting.ui" line="692"/>
         <source>&amp;Browse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="573"/>
+        <location filename="../src/BleSetting.ui" line="1023"/>
         <source>enable B Frame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="584"/>
+        <location filename="../src/BleSetting.ui" line="863"/>
         <source>B Frame Count:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.ui" line="630"/>
-        <source>&amp;apply</source>
+        <location filename="../src/BleSetting.cpp" line="157"/>
+        <source>Basic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/BleSetting.cpp" line="273"/>
+        <location filename="../src/BleSetting.cpp" line="158"/>
+        <source>Encoder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.cpp" line="159"/>
+        <source>Network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.cpp" line="160"/>
+        <source>Advanced</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/BleSetting.cpp" line="331"/>
         <source>please select a directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BleSettingBar</name>
+    <message>
+        <location filename="../src/BleSettingBar.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BleSettingDialog</name>
+    <message>
+        <location filename="../src/BleSetting.cpp" line="458"/>
+        <source>Setting Dialog</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

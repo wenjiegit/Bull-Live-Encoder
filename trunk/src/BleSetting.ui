@@ -58,7 +58,7 @@ QListView::item {
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="page">
         <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -183,6 +183,26 @@ QListView::item {
                <property name="styleSheet">
                 <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
                </property>
+               <item>
+                <property name="text">
+                 <string>Normal</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Game</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Education</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Anchor</string>
+                </property>
+               </item>
               </widget>
              </item>
              <item>
@@ -1062,7 +1082,7 @@ QListView::item {
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="OKBtn">
          <property name="styleSheet">
           <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
          </property>
@@ -1072,7 +1092,7 @@ QListView::item {
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="cancelBtn">
          <property name="styleSheet">
           <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
          </property>

@@ -55,6 +55,13 @@ static void setIndex(QComboBox *box, const QString &str)
     }
 }
 
+static void insertItem(QStandardItem *item, QStandardItemModel &model)
+{
+    item->setSizeHint(QSize(130, 37));
+    item->setEditable(false);
+    model.appendRow(item);
+}
+
 BleSetting::BleSetting(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::BleSetting)
@@ -128,6 +135,8 @@ BleSetting::BleSetting(QWidget *parent) :
     ui->keyFrameInterval->addItem("9");
     ui->keyFrameInterval->addItem("10");
 
+    connect(ui->OKBtn, SIGNAL(clicked()), this, SLOT(onOKClicked()));
+    connect(ui->cancelBtn, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
     connect(ui->applyBtn, SIGNAL(clicked()), this, SLOT(onApplyClicked()));
     connect(ui->qualityBar, SIGNAL(valueChanged(int)), this, SLOT(onQualityValueChanged(int)));
     connect(ui->browse, SIGNAL(clicked()), this, SLOT(onBrowseClicked()));
@@ -144,18 +153,11 @@ BleSetting::BleSetting(QWidget *parent) :
     ui->listView->setModel(&m_model);
     ui->listView->setItemDelegate(new StyleItemDelegate(this));
 
-    QStandardItem *item1 = new QStandardItem("   Basic Settings");
-    item1->setSizeHint(QSize(130, 37));
-    m_model.appendRow(item1);
-    QStandardItem *item2 = new QStandardItem("   Encoder Settings");
-    item2->setSizeHint(QSize(130, 37));
-    m_model.appendRow(item2);
-    QStandardItem *item3 = new QStandardItem("   Network Settings");
-    item3->setSizeHint(QSize(130, 37));
-    m_model.appendRow(item3);
-    QStandardItem *item4 = new QStandardItem("   Advanced Settings");
-    item4->setSizeHint(QSize(130, 37));
-    m_model.appendRow(item4);
+    QString delim("   ");
+    insertItem(new QStandardItem(delim + tr("Basic")), m_model);
+    insertItem(new QStandardItem(delim + tr("Encoder")), m_model);
+    insertItem(new QStandardItem(delim + tr("Network")), m_model);
+    insertItem(new QStandardItem(delim + tr("Advanced")), m_model);
 }
 
 BleSetting::~BleSetting()
@@ -170,6 +172,24 @@ void BleSetting::paintEvent(QPaintEvent *)
     QRect r(0, 0, width() - 4, height() - 4);
     r.moveCenter(rect().center());
     p.fillRect(r, Qt::white);
+}
+
+void BleSetting::onOKClicked()
+{
+    onApplyClicked();
+
+    BleSettingDialog *d = dynamic_cast<BleSettingDialog *> (parentWidget());
+    if (d) {
+        d->accept();
+    }
+}
+
+void BleSetting::onCancelClicked()
+{
+    BleSettingDialog *d = dynamic_cast<BleSettingDialog *> (parentWidget());
+    if (d) {
+        d->reject();
+    }
 }
 
 void BleSetting::onApplyClicked()
